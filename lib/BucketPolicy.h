@@ -5,7 +5,7 @@
 #ifndef BUCKETPOLICY_H
 #define BUCKETPOLICY_H
 
-#include <string>
+#include <type_traits>
 
 template <typename... TCallables>
 struct BucketPolicy {
@@ -19,5 +19,18 @@ private:
     auto getBucketRangeVal();
 };
 
+/* Defines element on which lambda funcion can be called */
+//template <typename TElement>
+//concept is_element = requires (TElement element) {
+//
+//};
+
+template <typename TCallable, typename TElement>
+concept is_callable = requires (TCallable callable, TElement element) {
+
+};
+
 
 #endif //BUCKETPOLICY_H
+
+
