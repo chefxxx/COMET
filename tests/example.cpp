@@ -3,7 +3,6 @@
 //
 
 #include <gtest/gtest.h>
-#include "example.h"
 
 TEST(Example, Example) {
     ASSERT_EQ(1, 1);

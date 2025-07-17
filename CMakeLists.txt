@@ -54,7 +54,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     message("Using GNU..")
     if(BUILD_TYPE_UPPER STREQUAL "DEBUG")
-        target_compile_options(${LIB_NAME} PUBLIC
+        target_compile_options(${LIB_NAME} INTERFACE
                 -g
                 -fsanitize=undefined
                 -fsanitize=address
@@ -63,12 +63,12 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
                 -Wextra
                 -pedantic
         )
-        target_link_options(${LIB_NAME} PUBLIC
+        target_link_options(${LIB_NAME} INTERFACE
                 -fsanitize=undefined
                 -fsanitize=address
         )
     elseif (BUILD_TYPE_UPPER STREQUAL "RELEASE")
-        target_compile_options(${LIB_NAME} PUBLIC -O3;-march=native;-funroll-loops)
+        target_compile_options(${LIB_NAME} INTERFACE -O3;-march=native;-funroll-loops)
         message(FATAL_ERROR "UNKNOWN BUILD TYPE: ${BUILD_TYPE_UPPER}")
     endif()
 

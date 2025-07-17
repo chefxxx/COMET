@@ -7,7 +7,6 @@
 
 struct BucketPolicy {
 
-
 };
 
 #endif //BUCKETPOLICY_H
