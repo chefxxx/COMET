@@ -6,6 +6,7 @@
 #define HELPERS_H
 
 #include <iterator>
+#include <map>
 #include "BucketPolicy.h"
 
 struct BucketIndex {
@@ -20,8 +21,9 @@ struct BucketIndex {
 };
 
 template<std::forward_iterator TIter, typename TBucketPolicy>
-auto groupData(const TIter& start, const TIter& end, TBucketPolicy bucketPolicy, int minCatSize, int outsider) {
-
+auto groupData(TIter start, TIter end, TBucketPolicy bucketPolicy, int outsider) {
+    size_t dataIdx = 0;
+    std::map<BucketIndex, std::vector<TIter>> buckets;
 }
 
 #endif //HELPERS_H
