@@ -13,6 +13,11 @@ template <typename TElement, typename... TCallables>
 concept is_function_callable_on_element =
     (std::invocable<TCallables, TElement> && ...);
 
+template <typename TElement, typename... TCallable>
+concept is_function_binable_on_doubles =
+is_function_callable_on_element<TElement, TCallable...> &&
+  (std::is_convertible_v<std::invoke_result_t<TCallable, TElement>, double> && ...);
+
 template <typename... TCallables> struct BucketPolicy final {
   BucketPolicy(std::tuple<TCallables...> const &callables,
                std::array<std::vector<double>, sizeof...(TCallables)> const
@@ -22,9 +27,11 @@ template <typename... TCallables> struct BucketPolicy final {
         ignoreOverflows(ignoreOverflows) {}
 
   template <typename TElement>
-  auto getBucket(TElement const &arg) {
+  requires is_function_binable_on_doubles<TElement, TCallables...>
+  [[nodiscard]] auto getBucket(TElement const &arg) {
     auto values = getBucketRangeVal(arg);
     // TODO: define how to find number of a bin
+    return values;
   };
 
 private:
