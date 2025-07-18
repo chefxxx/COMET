@@ -26,4 +26,10 @@ auto groupData(TIter start, TIter end, TBucketPolicy bucketPolicy, int outsider)
     std::map<BucketIndex, std::vector<TIter>> buckets;
 }
 
+inline int findUpperIndex(std::vector<double> const& data, double value) {
+    if (data.empty())
+        return -1;
+    return static_cast<int>(distance(data.begin(), std::upper_bound(data.begin(), data.end(), value)));
+}
+
 #endif //HELPERS_H
