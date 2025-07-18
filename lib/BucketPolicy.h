@@ -26,10 +26,10 @@ struct BucketPolicy final {
 
     template<typename TElement>
         requires is_function_binable_on_doubles<TElement, TCallables...>
-    [[nodiscard]] auto getBucket(TElement const &arg) {
+    [[nodiscard]] int getBucket(TElement const &arg) {
         auto values = getBucketRangeVal(arg);
         // TODO: define how to find number of a bin
-        return values;
+        return 1;
     };
 
 private:
