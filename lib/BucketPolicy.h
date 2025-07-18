@@ -7,7 +7,6 @@
 
 #include <array>
 #include <tuple>
-#include <type_traits>
 #include <vector>
 
 template <typename TElement, typename... TCallables>
@@ -18,9 +17,8 @@ template <typename TElement, typename... TCallables> struct BucketPolicy final {
   BucketPolicy(std::tuple<TCallables...> const &callables,
                std::array<std::vector<double>, sizeof...(TCallables)> const
                    &bucketsRanges,
-               bool ignoreOverflows = true)
-    requires is_function_callable_on_element<TElement, TCallables...>
-      : mCallables(callables), mBucketsRanges(mBucketsRanges),
+               const bool ignoreOverflows = true)
+      : mCallables(callables), mBucketsRanges(bucketsRanges),
         ignoreOverflows(ignoreOverflows) {}
 
   auto getBucket(TElement const &arg) {
