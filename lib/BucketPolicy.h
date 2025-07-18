@@ -13,7 +13,7 @@ template <typename TElement, typename... TCallables>
 concept is_function_callable_on_element =
     (std::invocable<TCallables, TElement> && ...);
 
-template <typename TElement, typename... TCallables> struct BucketPolicy final {
+template <typename... TCallables> struct BucketPolicy final {
   BucketPolicy(std::tuple<TCallables...> const &callables,
                std::array<std::vector<double>, sizeof...(TCallables)> const
                    &bucketsRanges,
@@ -21,6 +21,7 @@ template <typename TElement, typename... TCallables> struct BucketPolicy final {
       : mCallables(callables), mBucketsRanges(bucketsRanges),
         ignoreOverflows(ignoreOverflows) {}
 
+  template <typename TElement>
   auto getBucket(TElement const &arg) {
     auto values = getBucketRangeVal(arg);
     // TODO: define how to find number of a bin
@@ -31,6 +32,7 @@ private:
   std::array<std::vector<double>, sizeof...(TCallables)> mBucketsRanges;
   bool ignoreOverflows;
 
+  template <typename TElement>
   auto getBucketRangeVal(TElement const &arg) {
     return std::make_tuple(std::get<TCallables>(mCallables)(arg)...);
   };

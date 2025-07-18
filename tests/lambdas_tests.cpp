@@ -22,5 +22,5 @@ TEST(LambdasTest, test1) {
 
     auto callables = std::make_tuple(lambda1, lambda2);
 
-    auto bp = BucketPolicy<MyPoint>(callables, {vec1, vec2});
+    auto bp = BucketPolicy(callables, {vec1, vec2});
 }
