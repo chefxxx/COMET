@@ -47,6 +47,15 @@ struct BucketPolicy final {
     }
 
 private:
+    template<typename... TIndices>
+    int calculateBucketAtIndices(std::tuple<TIndices...> const& indices) {
+        constexpr int N = sizeof...(TIndices);
+        auto indexSeq = std::make_index_sequence<N>();
+        auto res = [&]<size_t... I, size_t... S>(std::index_sequence<I...> first, std::index_sequence<S...> second)
+        {
+        };
+    }
+
     std::tuple<TCallables...> mCallables;
     std::array<std::vector<double>, sizeof...(TCallables)> mBucketsRanges;
     bool ignoreOverflows;
