@@ -35,8 +35,15 @@ template<std::forward_iterator TIter, typename TBucketPolicy>
         }
     }
 
-    // TODO: here we have to sort data in buckets
-    // TODO: then select common categories
+    // TODO: here we have to sort data in buckets?
+
+    /* Remove buckets with too small sizes */
+    for (auto mapIt = buckets.begin(); mapIt != buckets.end(); ) {
+        if (mapIt->second.size() < minCatSize)
+            buckets.erase(mapIt);
+        else
+            ++mapIt;
+    }
     return buckets;
 }
 
