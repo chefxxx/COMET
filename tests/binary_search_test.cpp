@@ -21,7 +21,7 @@ TEST(BinarySearchTest, emptyVector) {
 
     double value = 1.0;
 
-    int res = -1;
+    int res = 0;
     int test = findUpperIndex(v, value);
     ASSERT_EQ(res, test);
 }

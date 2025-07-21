@@ -27,4 +27,8 @@ After iterator to element was found, the distance between start and found index 
 According to first argument is a `std::vector` and its iterator is `RandomAccessIterator`, complexity of such operation should be `O(log(n))`.
 This function introduces a convention, that in vector of *N* elements, that represents *N + 1* ranges and is sorted,
 returned values gives number of range started from 0 to N. Example: Assume we have a vector:
-`[0.0, 1.0, 2.0, 3.0]`.
+`[0.0, 1.0, 2.0, 3.0]`. It gives us 5 ranges: (-Inf:0.0), [0.0:1.0), [1.0:2.0), [2.0:3.0), [3.0:+Inf), which can be named
+with indices 0, 1, 2, 3, 4. That gives us that value *3.4* is placed under index 4.
+  - type_with_less_operator T - template argument, that tells what is the type of argument of a function. Typename must 
+  have defined `< operator`.
+  - std::vector<T> const& data - vector that contains borders of ranges.

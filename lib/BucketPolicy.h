@@ -11,9 +11,13 @@
 #include <vector>
 
 template <typename T>
+concept type_with_less_operator = requires(T t, T u)
+{
+    { t < u } -> std::same_as<bool>;
+};
+
+template <type_with_less_operator T>
 inline int findUpperIndex(std::vector<T> const& data, T const& value) {
-    if (data.empty())
-        return -1;
     return static_cast<int>(distance(data.begin(), std::upper_bound(data.begin(), data.end(), value)));
 }
 
