@@ -47,4 +47,4 @@ template<std::forward_iterator TIter, typename TBucketPolicy>
     return buckets;
 }
 
-#endif // HELPERS_H
+#endif //HELPERS_H
