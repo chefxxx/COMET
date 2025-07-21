@@ -45,3 +45,24 @@ TEST(BinarySearchTest, testCaseUnderflow_0) {
 
     ASSERT_EQ(res, test);
 }
+
+struct TestElem {
+    double x;
+    double y;
+};
+
+
+TEST(BinarySearchTest, testOfGetBucket_ReturnsAtupleOfIndices) {
+    auto l1 = [](TestElem const& i){return i.x;};
+    auto l2 = [](TestElem const& i){return i.y;};
+
+    auto v1 = std::vector<double>{1.0, 2.0, 3.0, 4.0};
+    auto v2 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
+
+    auto bp = BucketPolicy(std::make_tuple(l1, l2), {v1, v2});
+
+
+    auto test = bp.getBucket(TestElem{1.5, 2.5});
+    auto res = std::make_tuple(1, 3);
+    ASSERT_EQ(res, test);
+}
