@@ -11,7 +11,7 @@
 #include <vector>
 
 template <typename T>
-inline int findUpperIndex(std::vector<T> const& data, T value) {
+inline int findUpperIndex(std::vector<T> const& data, T const& value) {
     if (data.empty())
         return -1;
     return static_cast<int>(distance(data.begin(), std::upper_bound(data.begin(), data.end(), value)));
@@ -36,7 +36,6 @@ struct BucketPolicy final {
         requires is_function_binable_on_doubles<TElement, TCallables...>
     [[nodiscard]] auto getBucket(TElement const &arg) {
         auto values = std::make_tuple(std::get<TCallables>(mCallables)(arg)...);
-        //auto indices = indices_lambda(std::make_index_sequence<sizeof...(TCallables)>{});
         return [&]<std::size_t... I>(std::index_sequence<I...>)
             {
                 return std::make_tuple(findUpperIndex(std::get<I>(mBucketsRanges), std::get<I>(values))...);
