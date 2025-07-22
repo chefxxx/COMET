@@ -45,9 +45,8 @@ struct BucketPolicy final {
 
     [[nodiscard]] int getInitialBucketCount() const {
         return [&]<std::size_t... I>(std::index_sequence<I...>) {
-            return (std::get<0>(mBucketsRanges).size() + ... + std::get<I>(mBucketsRanges).size());
-        }(std::make_index_sequence<sizeof...(TCallables) - 1>{}) +
-               sizeof...(TCallables);
+            return ((std::get<0>(mBucketsRanges).size() + 1) * ... * (std::get<I>(mBucketsRanges).size() + 1));
+        }(std::make_index_sequence<sizeof...(TCallables) - 1>{});
     }
 
 private:
