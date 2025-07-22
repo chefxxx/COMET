@@ -6,29 +6,28 @@
 #define BUCKETPOLICY_H
 
 #include <array>
-#include <complex>
 #include <tuple>
 #include <utility>
 #include <vector>
 
-template <typename T>
-concept type_with_less_operator = requires(T t, T u)
-{
+template<typename T>
+concept is_less_comparable = requires(T t, T u) {
     { t < u } -> std::same_as<bool>;
 };
-
-template <type_with_less_operator T>
-inline int findUpperIndex(std::vector<T> const& data, T const& value) {
-    return static_cast<int>(distance(data.begin(), std::upper_bound(data.begin(), data.end(), value)));
-}
 
 template<typename TElement, typename... TCallables>
 concept is_function_callable_on_element = (std::invocable<TCallables, TElement> && ...);
 
-template<typename TElement, typename... TCallable>
+template<typename TElement, typename... TCallables>
 concept is_function_binable_on_doubles =
-        is_function_callable_on_element<TElement, TCallable...> &&
-        (std::is_convertible_v<std::invoke_result_t<TCallable, TElement>, double> && ...);
+        is_function_callable_on_element<TElement, TCallables...> &&
+        (std::is_convertible_v<std::invoke_result_t<TCallables, TElement>, double> && ...);
+
+template<typename T>
+    requires is_less_comparable<T>
+int findUpperIndex(std::vector<T> const &data, T const &value) {
+    return static_cast<int>(distance(data.begin(), std::upper_bound(data.begin(), data.end(), value)));
+}
 
 template<typename... TCallables>
 struct BucketPolicy final {
@@ -72,11 +71,6 @@ private:
     std::tuple<TCallables...> mCallables;
     std::array<std::vector<double>, sizeof...(TCallables)> mBucketsRanges;
     bool ignoreOverflows;
-
-    template<typename TElement>
-    auto getBucketRangeVal(TElement const &arg) {
-        return std::make_tuple(std::get<TCallables>(mCallables)(arg)...);
-    };
 };
 
 #endif // BUCKETPOLICY_H

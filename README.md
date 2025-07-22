@@ -1,12 +1,28 @@
-Link to class diagram on DrawIO - https://drive.google.com/file/d/1WrwTxvoTF1j4UZCR_1wdCwp_3WmRjqN1/view?usp=sharing
+## EventMixing²
 
-# Library for generating combinations of elements
+Bachelor of Engineering thesis project in collaboration with the ALICE experiment group
+at the Warsaw University of Technology.
 
-## Overview
+In particle physics, scientists often have to calculate
+[combinatorial background](https://physics.stackexchange.com/questions/12590/what-is-meant-by-combinatorial-background-in-experimental-high-energy-physics).
+One common approach is to form pairs (or tuples) of data with similar properties,
+such as primary vertex Z, multiplicity, or η of the leading particle.
+
+Due to the enormous volume of data, this process must be optimized to ensure the shortest possible runtime.
+EventMixing² offers a solution to this problem. It is a generic library designed to generate combinations of
+elements, with support for applying specific constraints to the data being combined.
+
+While originally developed for particle physics applications, the library is built in a way that allows it to be used
+in broader domains. We see strong potential for future use in statistical research in many areas particularly
+such as medicine, pharmaceutical industry and biology. 
+
 ## Implementation details
+
 ### BucketPolicy
-`BucketPolicy` - a class that represent rule and functionality for definition of *buckets* - groups in which are placed
-elements with some common attributes.
+BucketPolicy is a class that provides partitioning data by *buckets*. One *bucket* defines criteria
+that elements of data have to meet in order to be assigned to that bucket. Buckets have to be defined as a 
+vector of doubles, where each consecutive pair in such vector is a valid interval e.g.
+`std::vector vec{0.1, 0.2, 0.3, 0.4}`.
 
 It is important, that user must define how to get access to parts of elements inside container by passing tuple 
 of function objects, one for each dimension of grouping.
