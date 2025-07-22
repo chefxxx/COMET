@@ -36,10 +36,18 @@ struct BucketPolicy final {
                  const bool ignoreOverflows = true) :
         mCallables(callables), mBucketsRanges(bucketsRanges), ignoreOverflows(ignoreOverflows) {}
 
+
     template<typename TElement>
         requires is_function_binable_on_doubles<TElement, TCallables...>
     [[nodiscard]] auto getBucket(TElement const &arg) {
         return calculateBucketAtIndices(getUpperIndicesForTuple(getValues(arg)));
+    }
+
+    [[nodiscard]] int getInitialBucketCount() const {
+        return [&]<std::size_t... I>(std::index_sequence<I...>) {
+            return (std::get<0>(mBucketsRanges).size() + ... + std::get<I>(mBucketsRanges).size());
+        }(std::make_index_sequence<sizeof...(TCallables) - 1>{}) +
+               sizeof...(TCallables);
     }
 
 private:
@@ -50,21 +58,20 @@ private:
 
     FRIEND_TEST(BinarySearchTest, testOfGetBucket_ReturnsAtupleOfIndices);
     template<typename... Ts>
-    auto getUpperIndicesForTuple(std::tuple<Ts...> const& values) {
-        return [&]<std::size_t... I>(std::index_sequence<I...>)
-            {
-                return std::make_tuple(findUpperIndex(std::get<I>(mBucketsRanges), std::get<I>(values))...);
-            }(std::make_index_sequence<sizeof...(TCallables)>{});
+    auto getUpperIndicesForTuple(std::tuple<Ts...> const &values) {
+        return [&]<std::size_t... I>(std::index_sequence<I...>) {
+            return std::make_tuple(findUpperIndex(std::get<I>(mBucketsRanges), std::get<I>(values))...);
+        }(std::make_index_sequence<sizeof...(TCallables)>{});
     }
 
     FRIEND_TEST(GetBucketAtTest, test1);
     template<typename... TIndices>
-    int calculateBucketAtIndices(std::tuple<TIndices...> const& indices) {
+    int calculateBucketAtIndices(std::tuple<TIndices...> const &indices) {
         constexpr auto N = sizeof...(TIndices);
         auto indexSeq = std::make_index_sequence<N - 1>();
-        return  [&]<size_t... I>(std::index_sequence<I...> first)
-        {
-            return (std::get<0>(indices) + ... + (std::get<I + 1>(indices) * (1 * ...  * (std::get<I>(mBucketsRanges).size() + 1))));
+        return [&]<size_t... I>(std::index_sequence<I...>) {
+            return (std::get<0>(indices) + ... +
+                    (std::get<I + 1>(indices) * (1 * ... * (std::get<I>(mBucketsRanges).size() + 1))));
         }(indexSeq);
     }
 
