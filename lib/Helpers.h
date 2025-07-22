@@ -9,21 +9,37 @@
 #include <map>
 #include "BucketPolicy.h"
 
-struct BucketIndex {
-    BucketIndex(size_t bucketIdx, size_t dataIdx) : mBucketIdx(bucketIdx), mDataIdx(dataIdx) {};
+template<typename TBucketPolicy, typename TIter>
+concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
+    { policy.getBucket(*iter) } -> std::same_as<int>;
+};
 
-    size_t mBucketIdx;
-    size_t mDataIdx;
+template<typename TIter>
+struct BucketIdx {
+    BucketIdx(const int dataIdx, TIter iter) : mDataIdx(dataIdx), mIter(iter) {}
 
-    bool operator<(BucketIndex const &other) const {
-        return std::tie(mBucketIdx, mDataIdx) < std::tie(other.mBucketIdx, other.mDataIdx);
-    }
+    int mDataIdx;
+    TIter mIter;
 };
 
 template<std::forward_iterator TIter, typename TBucketPolicy>
-auto groupData(TIter start, TIter end, TBucketPolicy bucketPolicy, int outsider) {
-    size_t dataIdx = 0;
-    std::map<BucketIndex, std::vector<TIter>> buckets;
+    requires is_bucket_policy<TBucketPolicy, TIter>
+[[nodiscard]] auto groupData(TIter start, TIter end, TBucketPolicy bucketPolicy, const size_t minCatSize = 1) {
+    int dataIdx = 0;
+    std::map<int, std::vector<BucketIdx<TIter>>> buckets;
+    for (auto it = start; it != end; ++it) {
+        const auto bucketNumber = bucketPolicy.getBucket(*it);
+        buckets[bucketNumber].emplace_back(dataIdx++, it);
+    }
+
+    /* Remove buckets with too small sizes */
+    for (auto mapIt = buckets.begin(); mapIt != buckets.end();) {
+        if (mapIt->second.size() < minCatSize)
+            buckets.erase(mapIt);
+        else
+            ++mapIt;
+    }
+    return buckets;
 }
 
-#endif //HELPERS_H
+#endif // HELPERS_H
