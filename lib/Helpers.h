@@ -26,7 +26,7 @@ struct BucketIdx {
 
 template<std::forward_iterator TIter, typename TBucketPolicy>
     requires is_bucket_policy<TBucketPolicy, TIter>
-[[nodiscard]] auto groupData(TIter start, TIter end, TBucketPolicy bucketPolicy, const int minCatSize = 1) {
+[[nodiscard]] auto groupData(TIter start, TIter end, TBucketPolicy bucketPolicy, const std::size_t minCatSize = 1) {
     int dataIdx = 0;
     const int maxCount = bucketPolicy.getInitialBucketCount();
     std::unordered_map<int, std::vector<BucketIdx<TIter>>> buckets;
@@ -37,7 +37,7 @@ template<std::forward_iterator TIter, typename TBucketPolicy>
 
     std::vector<BucketIdx<TIter>> resultData;
     for (int i = 0; i < maxCount; ++i) {
-        if (buckets.contains(i) && buckets[i] >= minCatSize) {
+        if (buckets.contains(i) && buckets[i].size() >= minCatSize) {
             resultData.insert(resultData.end(), buckets.at(i).begin(), buckets.at(i).end());
         }
     }
