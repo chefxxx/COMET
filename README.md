@@ -1,6 +1,21 @@
-## EventMixing²
+## 🔬 EventMixing²
 
-Bachelor of Engineering thesis project in collaboration with the ALICE experiment group
+EventMixing² is a highly optimised, generic library for generating tuples from large datasets. 
+
+## 🌟 Features
+
+- **BucketPolicy**
+  - Define bucket vectors (doubles)
+  - Get numer of bucket for given data
+  - Get maximal number of buckets possible
+  
+- **Group data**
+  - From given policy partitions data into buckets
+  - Include/discard overflow values
+
+## ℹ️ Overview
+
+Bachelor of Engineering thesis project in collaboration with the [ALICE](https://alice-collaboration.web.cern.ch/) experiment group
 at the Warsaw University of Technology.
 
 In particle physics, scientists often have to calculate
@@ -12,49 +27,12 @@ Due to the enormous volume of data, this process must be optimized to ensure the
 EventMixing² offers a solution to this problem. It is a generic library designed to generate combinations of
 elements, with support for applying specific constraints to the data being combined.
 
-While originally developed for particle physics applications, the library is built in a way that allows it to be used
-in broader domains. We see strong potential for future use in statistical research in many areas particularly
-such as medicine, pharmaceutical industry and biology. 
+## 🚀 Usage
 
-## Implementation details
+## 📖 Documentation 
 
-### BucketPolicy
-BucketPolicy is a class that provides partitioning data by *buckets*. One *bucket* defines criteria
-that elements of data have to meet in order to be assigned to that bucket. Buckets have to be defined as a 
-vector of doubles, where each consecutive pair in such vector is a valid interval e.g.
-`std::vector vec{0.1, 0.2, 0.3, 0.4}`.
+Documentation is available [here](https://drive.google.com/file/d/1xbmc14TEWe5kFkSHFa9ceQpABfisQzlN/view?usp=sharing).
 
-It is important, that user must define how to get access to parts of elements inside container by passing tuple 
-of function objects, one for each dimension of grouping.
+## 📑 License 
 
-- `template <typename TElement> auto getBucket(TElement const &arg)` - public method of `BucketPolicy`
-class, which main goal is to find number of bucket for element of container. Firstly method applies function objects from
-the tuple of function objects, which is member of a class. After that method uses function `findUpperIndex` for finding
-index of a bucket in each dimension. Method returns an index of a bucket where the argument is placed. If `ignoreOverflow`
-is set, than every element that is before or after first or last element of ranges vectors in any dimension have index
--1.
-  - typename TElement - type of element that will be passed in parameter and from which bucket number should be found.
-  - TElement const& arg - element passed by reference, every function object from member `mCallables` will be called with 
-  this element as an argument to define values for finding bucket number.
-  - *NOTE:* method requires (as concept) that every function object, passed to constructor before, can take element
-  specified in this method as an argument and return *Temporary* value convertible to double.
-  - bool ignoreOverflows - a flag that tells if elements that after calculation of values for every function object
-of `mCallables` using `arg` and having any value in tuple under minimal or over maximum will have index -1. As an example:
-Assume we have element that is constructed with two doubles `tmp = {0.0, 1.0}` and two vectors of ranges: `v1 = [-1.0, 1.0]` and 
-v2 = `[2.0, 3.0]`. We can see that if we only compare values, `tmp` must has its first value inside the range nr 1 and second
-value inside the range nr 0. That means that we have overflow in second dimension. If ignoreOverflow is true - than such
-element will have -1 as an index.
-
-- `template <typename T> findIndex(std::vector<T> const& data, T const& value)` - function that takes finds number 
-of range, in which value is placed. It uses inside function `std::upper_bound` for finding upper bound.
-After iterator to element was found, the distance between start and found index is counted. 
-According to first argument is a `std::vector` and its iterator is `RandomAccessIterator`, complexity of such operation should be `O(log(n))`.
-This function introduces a convention, that in vector of *N* elements, that represents *N + 1* ranges and is sorted,
-returned values gives number of range started from 0 to N. Example: Assume we have a vector:
-`[0.0, 1.0, 2.0, 3.0]`. It gives us 5 ranges: (-Inf:0.0), [0.0:1.0), [1.0:2.0), [2.0:3.0), [3.0:+Inf), which can be named
-with indices 0, 1, 2, 3, 4. That gives us that value *3.4* is placed under index 4. If ignoreOverflow is set to true, than
-every argument that in tuple has in any dimension 0 or max index for this dimension will have -1 instead of it in
-return value.
-  - type_with_less_operator T - template argument, that tells what is the type of argument of a function. Typename must 
-  have defined `< operator`.
-  - std::vector<T> const& data - vector that contains borders of ranges.
+This project is licensed under GPL-3.0 license. See the [LICENSE](LICENSE) file for the full license text.
