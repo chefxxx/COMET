@@ -23,14 +23,12 @@ concept is_function_binable_on_doubles =
         is_function_callable_on_element<TElement, TCallables...> &&
         (std::is_convertible_v<std::invoke_result_t<TCallables, TElement>, double> && ...);
 
-#if 1
 template<typename T>
     requires is_less_comparable<T>
     int findIndex(std::vector<T> const &data, T const &value, bool ignoreOverflows) {
     auto tmp = static_cast<int>(distance(data.begin(), std::upper_bound(data.begin(), data.end(), value)));
     return ignoreOverflows && (tmp == 0 || tmp == data.size()) ? -1 : tmp;
 }
-#endif
 
 template<typename... TCallables>
 struct BucketPolicy final {
@@ -39,21 +37,22 @@ struct BucketPolicy final {
                  const bool ignoreOverflows = true) :
         mCallables(callables), mBucketsRanges(bucketsRanges), ignoreOverflows(ignoreOverflows) {}
 
+
     template<typename TElement>
         requires is_function_binable_on_doubles<TElement, TCallables...>
     [[nodiscard]] auto getBucket(TElement const &arg) {
         return calculateBucketAtIndices(getUpperIndicesForTuple(getValues(arg)));
     }
 
+    [[nodiscard]] int getInitialBucketCount() const {
+        return [&]<std::size_t... I>(std::index_sequence<I...>) {
+            return (1 * ... * (std::get<I>(mBucketsRanges).size() + 1));
+        }(std::make_index_sequence<sizeof...(TCallables)>{});
+    }
+
 private:
 
     FRIEND_TEST(BinarySearchTest, oneElementVector_indexOne);
-
-# if 0
-        // static_cast<int>(distance(data.begin(), std::upper_bound(data.begin(), data.end(), value)));
-# endif
-
-
     template<typename... Ts>
     bool checkUnderOverflows(std::tuple<Ts...> arg) const {
         return [&arg]<size_t... I>(std::index_sequence<I...>)
@@ -80,7 +79,7 @@ private:
 
     FRIEND_TEST(GetBucketAtTest, test);
     template<typename... TIndices>
-    int calculateBucketAtIndices(std::tuple<TIndices...> const& indices) {
+    int calculateBucketAtIndices(std::tuple<TIndices...> const &indices) {
         constexpr auto N = sizeof...(TIndices);
         auto indexSeq = std::make_index_sequence<N - 1>();
         return ignoreOverflows && checkUnderOverflows(indices) ? -1 : [&]<size_t... I>(std::index_sequence<I...> first)
