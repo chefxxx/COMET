@@ -8,7 +8,7 @@
 #include "BucketPolicy.h"
 
 
-TEST(GetBucketAtTest, test1) {
+TEST(GetBucketAtTest, test) {
     struct TestElem {
         double x;
         double y;
@@ -26,3 +26,4 @@ TEST(GetBucketAtTest, test1) {
     auto res = 16;
     ASSERT_EQ(res, test);
 }
+
