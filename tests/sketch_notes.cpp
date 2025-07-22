@@ -19,14 +19,14 @@ namespace testStuff {
 
     const auto callables = std::make_tuple(lambda1, lambda2);
 
-    const std::vector<double> vec1{0.1, 0.2, 0.3, 0.4};
-    const std::vector<double> vec2{0.5, 0.6, 0.7, 0.8};
+    const std::vector vec1{0.0, 0.5, 1.0};
+    const std::vector vec2{0.0, 0.5, 1.0};
 
-    MyPoint p1{0.05, 0.1};
-    MyPoint p2{0.51, 0.2};
-    MyPoint p3{0.61, 0.3};
-    MyPoint p4{0.75, 0.4};
-    const std::vector<MyPoint> points{p1, p2, p3, p4};
+    MyPoint p1{0.1, 0.1};
+    MyPoint p2{0.6, 0.1};
+    MyPoint p3{0.6, 0.6};
+    MyPoint p4{0.1, 0.6};
+    const std::vector points{p1, p2, p3, p4};
 }
 
 TEST(LambdasTest, doesBpCompile) {
@@ -35,5 +35,5 @@ TEST(LambdasTest, doesBpCompile) {
 
 TEST(GroupTableTest, doesGroupDataGroups) {
     const auto bp = BucketPolicy(testStuff::callables, {testStuff::vec1, testStuff::vec2});
-    auto res = groupData(testStuff::points.begin(), testStuff::points.end(), bp);
+    const auto res = groupData(testStuff::points.begin(), testStuff::points.end(), bp);
 }

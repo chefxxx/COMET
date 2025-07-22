@@ -24,21 +24,16 @@ struct BucketIdx {
 
 template<std::forward_iterator TIter, typename TBucketPolicy>
     requires is_bucket_policy<TBucketPolicy, TIter>
-[[nodiscard]] auto groupData(TIter start, TIter end, TBucketPolicy bucketPolicy, const int outsider = -1,
-                             const int minCatSize = -1) {
+[[nodiscard]] auto groupData(TIter start, TIter end, TBucketPolicy bucketPolicy, const size_t minCatSize = 1) {
     int dataIdx = 0;
     std::map<int, std::vector<BucketIdx<TIter>>> buckets;
     for (auto it = start; it != end; ++it) {
-        const int bucketNumber = bucketPolicy.getBucket(*it);
-        if (bucketNumber != outsider) {
-            buckets[bucketNumber].emplace_back(dataIdx++, it);
-        }
+        const auto bucketNumber = bucketPolicy.getBucket(*it);
+        buckets[bucketNumber].emplace_back(dataIdx++, it);
     }
 
-    // TODO: here we have to sort data in buckets?
-
     /* Remove buckets with too small sizes */
-    for (auto mapIt = buckets.begin(); mapIt != buckets.end(); ) {
+    for (auto mapIt = buckets.begin(); mapIt != buckets.end();) {
         if (mapIt->second.size() < minCatSize)
             buckets.erase(mapIt);
         else
@@ -47,4 +42,4 @@ template<std::forward_iterator TIter, typename TBucketPolicy>
     return buckets;
 }
 
-#endif //HELPERS_H
+#endif // HELPERS_H
