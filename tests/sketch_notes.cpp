@@ -46,9 +46,6 @@ TEST(GroupTableTest, doesGroupDataGroups) {
     const auto res = groupData(testStuff::points.begin(), testStuff::points.end(), bp);
 
     for (const auto& p : res) {
-        std::cout << "Bucket " << p.first << ":\n";
-        for (const auto& v : p.second) {
-            std::cout << *v.mIter << "\n";
-        }
+        std::cout << "(" << p.mDataIdx << "," << *p.mIter << ") ";
     }
 }

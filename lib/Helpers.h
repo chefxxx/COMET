@@ -16,30 +16,32 @@ concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
 
 template<typename TIter>
 struct BucketIdx {
-    BucketIdx(const int dataIdx, TIter iter) : mDataIdx(dataIdx), mIter(iter) {}
+    BucketIdx(const int dataIdx, TIter iter, const int bucketIdx) :
+        mBucketIdx(bucketIdx), mDataIdx(dataIdx), mIter(iter) {}
 
+    int mBucketIdx;
     int mDataIdx;
     TIter mIter;
 };
 
 template<std::forward_iterator TIter, typename TBucketPolicy>
     requires is_bucket_policy<TBucketPolicy, TIter>
-[[nodiscard]] auto groupData(TIter start, TIter end, TBucketPolicy bucketPolicy, const size_t minCatSize = 1) {
+[[nodiscard]] auto groupData(TIter start, TIter end, TBucketPolicy bucketPolicy, const int minCatSize = 1,
+                             const int outsider = -1) {
     int dataIdx = 0;
     std::map<int, std::vector<BucketIdx<TIter>>> buckets;
     for (auto it = start; it != end; ++it) {
         const auto bucketNumber = bucketPolicy.getBucket(*it);
-        buckets[bucketNumber].emplace_back(dataIdx++, it);
+        buckets[bucketNumber].emplace_back(dataIdx++, it, bucketNumber);
     }
 
-    /* Remove buckets with too small sizes */
-    for (auto mapIt = buckets.begin(); mapIt != buckets.end();) {
-        if (mapIt->second.size() < minCatSize)
-            buckets.erase(mapIt);
-        else
-            ++mapIt;
+    std::vector<BucketIdx<TIter>> resultData;
+    for (const auto &b: buckets) {
+        if (b.second.size() >= minCatSize && b.first != outsider) {
+            resultData.insert(resultData.end(), b.second.begin(), b.second.end());
+        }
     }
-    return buckets;
+    return resultData;
 }
 
 #endif // HELPERS_H
