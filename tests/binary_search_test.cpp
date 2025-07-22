@@ -62,7 +62,7 @@ TEST(BinarySearchTest, testOfGetBucket_ReturnsAtupleOfIndices) {
     auto bp = BucketPolicy(std::make_tuple(l1, l2), {v1, v2});
 
 
-    auto test = bp.getBucket(TestElem{1.5, 2.5});
+    auto test = bp.getUpperIndicesForTuple(std::make_tuple(1.5, 2.5));
     auto res = std::make_tuple(1, 3);
     ASSERT_EQ(res, test);
 }

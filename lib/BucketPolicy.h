@@ -39,13 +39,35 @@ struct BucketPolicy final {
     template<typename TElement>
         requires is_function_binable_on_doubles<TElement, TCallables...>
     [[nodiscard]] auto getBucket(TElement const &arg) {
-        auto values = std::make_tuple(std::get<TCallables>(mCallables)(arg)...);
-        return [&]<std::size_t... I>(std::index_sequence<I...>) {
-            return std::make_tuple(findUpperIndex(std::get<I>(mBucketsRanges), std::get<I>(values))...);
-        }(std::make_index_sequence<sizeof...(TCallables)>{});
+        return calculateBucketAtIndices(getUpperIndicesForTuple(getValues(arg)));
     }
 
 private:
+    template<typename TElement>
+    auto getValues(TElement const &arg) {
+        return std::make_tuple(std::get<TCallables>(mCallables)(arg)...);
+    }
+
+    FRIEND_TEST(BinarySearchTest, testOfGetBucket_ReturnsAtupleOfIndices);
+    template<typename... Ts>
+    auto getUpperIndicesForTuple(std::tuple<Ts...> const& values) {
+        return [&]<std::size_t... I>(std::index_sequence<I...>)
+            {
+                return std::make_tuple(findUpperIndex(std::get<I>(mBucketsRanges), std::get<I>(values))...);
+            }(std::make_index_sequence<sizeof...(TCallables)>{});
+    }
+
+    FRIEND_TEST(GetBucketAtTest, test1);
+    template<typename... TIndices>
+    int calculateBucketAtIndices(std::tuple<TIndices...> const& indices) {
+        constexpr auto N = sizeof...(TIndices);
+        auto indexSeq = std::make_index_sequence<N - 1>();
+        return  [&]<size_t... I>(std::index_sequence<I...> first)
+        {
+            return (std::get<0>(indices) + ... + (std::get<I + 1>(indices) * (1 * ...  * (std::get<I>(mBucketsRanges).size() + 1))));
+        }(indexSeq);
+    }
+
     std::tuple<TCallables...> mCallables;
     std::array<std::vector<double>, sizeof...(TCallables)> mBucketsRanges;
     bool ignoreOverflows;
