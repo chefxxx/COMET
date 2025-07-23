@@ -8,7 +8,6 @@
 #include <iostream>
 
 struct FullCombinations {
-
 };
 
 struct StrictlyUpperCombinations {
