@@ -5,13 +5,12 @@
 #ifndef COMBINATIONS_H
 #define COMBINATIONS_H
 
-struct FullCombinations {
+#include <iostream>
 
+struct FullCombinations {
 };
 
 struct StrictlyUpperCombinations {
-
 };
 
-
-#endif //COMBINATIONS_H
+#endif  // COMBINATIONS_H
