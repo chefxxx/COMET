@@ -6,12 +6,9 @@
 #define COMBINATIONS_H
 
 struct FullCombinations {
-
 };
 
 struct StrictlyUpperCombinations {
-
 };
 
-
-#endif //COMBINATIONS_H
+#endif  // COMBINATIONS_H
