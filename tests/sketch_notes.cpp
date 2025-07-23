@@ -60,7 +60,7 @@ TEST(LambdasTest, doesBpCompile)
 
 TEST(GroupTableTest, doesGroupDataGroups)
 {
-    const auto bp          = BucketPolicy(testStuff::callables, {testStuff::vec1, testStuff::vec2});
+    const auto bp = BucketPolicy(testStuff::callables, {testStuff::vec1, testStuff::vec2}, false);
     const auto bucketCount = bp.getInitialBucketCount();
     ASSERT_EQ(bucketCount, 16);
     std::cout << "Initial bucket count: " << bucketCount << std::endl;
