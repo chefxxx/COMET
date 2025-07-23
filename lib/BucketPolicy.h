@@ -7,6 +7,7 @@
 
 #include <gtest/gtest_prod.h>
 #include <unordered_map>
+#include <algorithm>
 #include <array>
 #include <tuple>
 #include <vector>
