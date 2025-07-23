@@ -6,6 +6,7 @@
 #define BUCKETPOLICY_H
 
 #include <gtest/gtest_prod.h>
+#include <unordered_map>
 #include <array>
 #include <tuple>
 #include <vector>
