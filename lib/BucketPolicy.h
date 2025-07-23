@@ -5,9 +5,9 @@
 #ifndef BUCKETPOLICY_H
 #define BUCKETPOLICY_H
 
+#include <gtest/gtest_prod.h>
 #include <array>
 #include <tuple>
-#include <utility>
 #include <vector>
 
 template <typename T>
@@ -25,11 +25,11 @@ concept is_function_binable_on_doubles =
 
 template <typename T>
     requires is_less_comparable<T>
-int findIndex(std::vector<T> const &data, T const &value, bool ignoreOverflows)
+int findIndex(std::vector<T> const &data, T const &value, const bool ignoreOverflows)
 {
-    auto tmp =
+    const auto tmp =
         static_cast<int>(distance(data.begin(), std::upper_bound(data.begin(), data.end(), value)));
-    return ignoreOverflows && (tmp == 0 || tmp == data.size()) ? -1 : tmp;
+    return ignoreOverflows && (tmp == 0 || tmp == static_cast<int>(data.size())) ? -1 : tmp;
 }
 
 template <typename... TCallables>
@@ -94,7 +94,7 @@ struct BucketPolicy final {
         auto indexSeq    = std::make_index_sequence<N - 1>();
         return ignoreOverflows && checkUnderOverflows(indices)
                    ? -1
-                   : [&]<size_t... I>(std::index_sequence<I...> first) {
+                   : [&]<size_t... I>(std::index_sequence<I...>) {
                          return (
                              std::get<0>(indices) + ... +
                              (std::get<I + 1>(indices) *
