@@ -47,7 +47,7 @@ struct BucketPolicy final {
 
     template <typename TElement>
         requires is_function_binable_on_doubles<TElement, TCallables...>
-    [[nodiscard]] auto getBucket(TElement const &arg)
+    [[nodiscard]] int getBucket(TElement const &arg)
     {
         return calculateBucketAtIndices(getUpperIndicesForTuple(getValues(arg)));
     }
