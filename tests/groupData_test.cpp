@@ -10,9 +10,12 @@
 
 namespace groupDataTest
 {
+
 struct MyPoint {
     double x;
     double y;
+
+    auto operator<=>(const MyPoint&) const = default;
 };
 
 /* lambdas defined for testing */
@@ -50,17 +53,35 @@ MyPoint p14{1.6, -0.1};
 MyPoint p15{1.6, 0.6};
 MyPoint p16{1.6, 1.1};
 
-const std::vector points{p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16};
+const std::vector points1{p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16};
 
-}  // namespace testStuff
+const auto bp16overflows = BucketPolicy(callables, {vec1, vec2}, false);
+const auto bp16ignoreOverflows = BucketPolicy(callables, {vec1, vec2});
+const auto bp36 = BucketPolicy(callables, {vec3, vec4});
+const auto bp24 = BucketPolicy(callables, {vec1, vec3});
+
+
+}  // namespace groupDataTest
 
 
 TEST(GroupDataTest, initialBucketCount)
 {
-    const auto bp16 = BucketPolicy(groupDataTest::callables, {groupDataTest::vec1, groupDataTest::vec2}, false);
-    ASSERT_EQ(bp16.getInitialBucketCount(), 16);
-    const auto bp36 = BucketPolicy(groupDataTest::callables, {groupDataTest::vec3, groupDataTest::vec4}, false);
-    ASSERT_EQ(bp36.getInitialBucketCount(), 36);
-    const auto bp24 = BucketPolicy(groupDataTest::callables, {groupDataTest::vec1, groupDataTest::vec3}, false);
-    ASSERT_EQ(bp24.getInitialBucketCount(), 24);
+    ASSERT_EQ(groupDataTest::bp16overflows.getMaximalBucketCount(), 16);
+    ASSERT_EQ(groupDataTest::bp16ignoreOverflows.getMaximalBucketCount(), 16);
+    ASSERT_EQ(groupDataTest::bp36.getMaximalBucketCount(), 36);
+    ASSERT_EQ(groupDataTest::bp24.getMaximalBucketCount(), 24);
+}
+
+TEST(GroupDataTest, bucketPartitionWithOverflows)
+{
+    const auto indexes = groupData(groupDataTest::points1.begin(), groupDataTest::points1.end(), groupDataTest::bp16overflows);
+    ASSERT_EQ(indexes.size(), 16);
+    for (size_t i = 0; i < indexes.size(); i++) {
+        ASSERT_EQ(indexes[i].mBucketIdx, i);
+    }
+}
+
+TEST(GroupDataTest, bucketPartitionIgnoreOverflows)
+{
+
 }

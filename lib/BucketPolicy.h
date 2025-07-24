@@ -52,7 +52,7 @@ struct BucketPolicy final {
         return calculateBucketAtIndices(getUpperIndicesForTuple(getValues(arg)));
     }
 
-    [[nodiscard]] int getInitialBucketCount() const
+    [[nodiscard]] int getMaximalBucketCount() const
     {
         return [&]<std::size_t... I>(std::index_sequence<I...>) {
             return (1 * ... * (std::get<I>(mBucketsRanges).size() + 1));
