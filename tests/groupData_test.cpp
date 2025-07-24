@@ -90,3 +90,10 @@ TEST(GroupDataTest, bucketPartitionIgnoreOverflows)
         ASSERT_EQ(indexes[i].mBucketIdx, checkBuckets[i]);
     }
 }
+
+TEST(GroupDataTest, minCategorySize)
+{
+    constexpr int minCatSize = 2;
+    const auto indexesMinSize2 = groupData(groupDataTest::points1.begin(), groupDataTest::points1.end(), groupDataTest::bp16overflows, minCatSize);
+    ASSERT_EQ(indexesMinSize2.size(), 0);
+}
