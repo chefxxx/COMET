@@ -6,10 +6,17 @@
 #define O2OVERLAYS_H
 
 #include "BucketPolicy.h"
+#include <memory>
+
+struct BinningToBucket {
+
+};
 
 template <typename... TTypes>
 struct ColumnBinningPolicy {
-
+    BinningToBucket binningToBucket;
+    ColumnBinningPolicy(std::array<std::vector<double>, sizeof...(TTypes)> bins, bool ignoreOverflows) {
+    }
 };
 
 #endif //O2OVERLAYS_H
