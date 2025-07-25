@@ -40,14 +40,14 @@ auto lambda5 = [](auto const &arg) {
 
 const auto callableShort = std::make_tuple(lambda1, lambda2);
 const auto callablesLong = std::make_tuple(lambda1, lambda2, lambda3, lambda4, lambda5);
-}
+}  // namespace calculateBucketAtIndicesTest
 
 TEST(CalculateBucketAtIndicesTest, fiveRangesInTwoDimensionsWithout)
 {
     auto bin1 = std::vector<double>{1.0, 2.0, 3.0, 4.0};
     auto bin2 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    auto arg = std::make_tuple(1.5, 2.5);
-    auto bp = BucketPolicy(calculateBucketAtIndicesTest::callableShort, {bin1, bin2});
+    auto arg  = std::make_tuple(1.5, 2.5);
+    auto bp   = BucketPolicy(calculateBucketAtIndicesTest::callableShort, {bin1, bin2});
 
     auto test = bp.calculateBucketAtIndices(bp.getUpperIndicesForTuple(arg));
     auto res  = 16;

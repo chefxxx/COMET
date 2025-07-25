@@ -8,45 +8,45 @@
 
 namespace GetBucketTest
 {
-    struct TestElem {
-        double x;
-        double y;
-    };
+struct TestElem {
+    double x;
+    double y;
+};
 
-    struct TestElemB {
-        double x;
-        double y;
-        double z;
-        double w;
-        double v;
-    };
+struct TestElemB {
+    double x;
+    double y;
+    double z;
+    double w;
+    double v;
+};
 
-    auto lambda1 = [](auto const &arg) {
-        return arg.x;
-    };
-    auto lambda2 = [](auto const &arg) {
-        return arg.y;
-    };
-    auto lambda3 = [](auto const &arg) {
-        return arg.z;
-    };
-    auto lambda4 = [](auto const &arg) {
-        return arg.w;
-    };
-    auto lambda5 = [](auto const &arg) {
-        return arg.v;
-    };
+auto lambda1 = [](auto const &arg) {
+    return arg.x;
+};
+auto lambda2 = [](auto const &arg) {
+    return arg.y;
+};
+auto lambda3 = [](auto const &arg) {
+    return arg.z;
+};
+auto lambda4 = [](auto const &arg) {
+    return arg.w;
+};
+auto lambda5 = [](auto const &arg) {
+    return arg.v;
+};
 
-    const auto callableShort = std::make_tuple(lambda1, lambda2);
-    const auto callablesLong = std::make_tuple(lambda1, lambda2, lambda3, lambda4, lambda5);
-}
+const auto callableShort = std::make_tuple(lambda1, lambda2);
+const auto callablesLong = std::make_tuple(lambda1, lambda2, lambda3, lambda4, lambda5);
+}  // namespace GetBucketTest
 
 TEST(GetBucketTest, sevenAndFiveRngesWithOverflow)
 {
     auto bin1 = std::vector<double>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    auto bin2  = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    auto bp  = BucketPolicy(GetBucketTest::callableShort, {bin1, bin2});
-    auto arg = GetBucketTest::TestElem{-1.0, 2.0};
+    auto bin2 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
+    auto bp   = BucketPolicy(GetBucketTest::callableShort, {bin1, bin2});
+    auto arg  = GetBucketTest::TestElem{-1.0, 2.0};
 
     auto test = bp.getBucket(arg);
     auto res  = -1;
@@ -60,8 +60,8 @@ TEST(GetBucketTest, manyDimensionsWithOverflow)
     auto bin3 = std::vector<double>{-0.7, -0.6, -0.5, 3.0, 4.0, 10.0};
     auto bin4 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
     auto bin5 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    auto arg = GetBucketTest::TestElemB{-0.5, 0.44, -0.66, 2.45, 10.0};
-    auto bp = BucketPolicy(GetBucketTest::callablesLong, {bin1, bin2, bin3, bin4, bin5});
+    auto arg  = GetBucketTest::TestElemB{-0.5, 0.44, -0.66, 2.45, 10.0};
+    auto bp   = BucketPolicy(GetBucketTest::callablesLong, {bin1, bin2, bin3, bin4, bin5});
 
     auto test = bp.getBucket(arg);
     auto res  = -1;
