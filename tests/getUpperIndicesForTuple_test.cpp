@@ -3,8 +3,6 @@
 //
 
 #include <gtest/gtest.h>
-#include <oneapi/tbb/detail/_template_helpers.h>
-
 #include "BucketPolicy.h"
 
 namespace getUpperIndicesForTupleTest
