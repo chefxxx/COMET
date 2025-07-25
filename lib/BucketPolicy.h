@@ -60,7 +60,16 @@ struct BucketPolicy final {
     }
 
     private:
+    /*                  --- TEST SECTION ---                    */
     FRIEND_TEST(BinarySearchTest, oneElementVector_indexOne);
+    FRIEND_TEST(GetUpperIndicesForTupleTest, fiveRangesInEachDimensionWithOverflows);
+    FRIEND_TEST(GetUpperIndicesForTupleTest, fiveRangesInEachDimensionWithoutOverflows);
+    FRIEND_TEST(GetUpperIndicesForTupleTest, sevenAndFiveRangesWithOverflows);
+    FRIEND_TEST(GetUpperIndicesForTupleTest, manyDimensionsWithOverflows);
+    FRIEND_TEST(CalculateBucketAtIndicesTest, fiveRangesInTwoDimensionsWithout);
+    FRIEND_TEST(GetBucketTest, manyDimensionsWithOverflow);
+    /*                  ---              ---                    */
+
     template <typename... Ts>
     bool checkUnderOverflows(std::tuple<Ts...> arg) const
     {
@@ -75,9 +84,6 @@ struct BucketPolicy final {
         return std::make_tuple(std::get<TCallables>(mCallables)(arg)...);
     }
 
-    FRIEND_TEST(BinarySearchTest, testOfGetBucket_ReturnsAtupleOfIndices);
-    FRIEND_TEST(BinarySearchTest, testOfGetUpperIndices_underflow_returns_minus_one);
-    FRIEND_TEST(BinarySearchTest, testOfGetUpperIndices_overflow_with_many_dimensions);
     template <typename... Ts>
     auto getUpperIndicesForTuple(std::tuple<Ts...> const &values)
     {
@@ -88,7 +94,6 @@ struct BucketPolicy final {
         }(std::make_index_sequence<sizeof...(TCallables)>{});
     }
 
-    FRIEND_TEST(GetBucketAtTest, test);
     template <typename... TIndices>
     int calculateBucketAtIndices(std::tuple<TIndices...> const &indices)
     {

@@ -5,6 +5,40 @@
 #include <Helpers.h>
 #include <gtest/gtest.h>
 
+namespace findIndexTest
+{
+struct TestElem {
+    double x;
+    double y;
+};
+
+struct TestElemB {
+    double x;
+    double y;
+    double z;
+    double w;
+    double v;
+};
+
+auto lambda1 = [](auto const &arg) {
+    return arg.x;
+};
+auto lambda2 = [](auto const &arg) {
+    return arg.y;
+};
+auto lambda3 = [](auto const &arg) {
+    return arg.z;
+};
+auto lambda4 = [](auto const &arg) {
+    return arg.w;
+};
+auto lambda5 = [](auto const &arg) {
+    return arg.v;
+};
+
+const auto callablesShort = std::make_tuple(lambda1, lambda2);
+const auto callablesLong = std::make_tuple(lambda1, lambda2, lambda3, lambda4, lambda5);
+
 TEST(BinarySearchTest, oneElementVector_indexOne)
 {
     std::vector<double> v{0.0};
@@ -49,11 +83,6 @@ TEST(BinarySearchTest, testCaseUnderflow_0)
     ASSERT_EQ(res, test);
 }
 
-struct TestElem {
-    double x;
-    double y;
-};
-
 TEST(BinarySearchTest, testOfGetBucket_ReturnsAtupleOfIndices)
 {
     auto l1 = [](TestElem const& i) {
@@ -94,13 +123,7 @@ TEST(BinarySearchTest, testOfGetUpperIndices_underflow_returns_minus_one)
 
 TEST(BinarySearchTest, testOfGetUpperIndices_overflow_with_many_dimensions)
 {
-    struct TestElem {
-        double x;
-        double y;
-        double z;
-        double w;
-        double v;
-    };
+
 
     auto l1 = [](TestElem const& i) {
         return i.x;
@@ -128,4 +151,5 @@ TEST(BinarySearchTest, testOfGetUpperIndices_overflow_with_many_dimensions)
     auto test = bp.getUpperIndicesForTuple(std::make_tuple(-0.5, 0.44, -0.66, 2.45, 10.0));
     auto res  = std::make_tuple(3, 1, 1, 3, -1);
     ASSERT_EQ(res, test);
+}
 }
