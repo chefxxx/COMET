@@ -37,7 +37,7 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
     const int maxCount = bucketPolicy.getMaximalBucketCount();
     std::unordered_map<int, std::vector<BucketIdx<TIter>>> buckets;
     for (auto it = start; it != end; ++it) {
-        const auto bucketNumber = bucketPolicy.getBucket(*it);
+        const auto bucketNumber = bucketPolicy.getBucket(it);
         buckets[bucketNumber].emplace_back(dataIdx++, it, bucketNumber);
     }
 
