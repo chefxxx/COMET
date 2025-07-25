@@ -48,9 +48,9 @@ struct BucketPolicy final {
     template <std::forward_iterator TIter>
     [[nodiscard]] int getBucket(TIter const &it)
     {
-        auto values = getValues(*it);
+        auto values  = getValues(*it);
         auto indices = getUpperIndicesForTuple(values);
-        auto bucket = calculateBucketAtIndices(indices);
+        auto bucket  = calculateBucketAtIndices(indices);
         return bucket;
     }
 
