@@ -5,9 +5,6 @@
 #include <Helpers.h>
 #include <gtest/gtest.h>
 
-namespace findIndexTest
-{
-
 TEST(BinarySearchTest, oneElementVector_indexOne)
 {
     std::vector<double> v{0.0};
@@ -62,4 +59,3 @@ TEST(FindIndexTest, fourRangesWithOverflows)
 
     ASSERT_EQ(res, test);
 }
-}  // namespace findIndexTest

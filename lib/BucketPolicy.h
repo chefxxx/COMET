@@ -17,13 +17,13 @@ concept is_less_comparable = requires(T t, T u) {
     { t < u } -> std::same_as<bool>;
 };
 
-template <typename TElement, typename... TCallables>
-concept is_function_callable_on_element = (std::invocable<TCallables, TElement> && ...);
-
-template <typename TElement, typename... TCallables>
-concept is_function_binable_on_doubles =
-    is_function_callable_on_element<TElement, TCallables...> &&
-    (std::is_convertible_v<std::invoke_result_t<TCallables, TElement>, double> && ...);
+// template <typename TElement, typename... TCallables>
+// concept is_function_callable_on_element = (std::invocable<TCallables, TElement> && ...);
+//
+// template <typename TElement, typename... TCallables>
+// concept is_function_binable_on_doubles =
+//     is_function_callable_on_element<TElement, TCallables...> &&
+//     (std::is_convertible_v<std::invoke_result_t<TCallables, TElement>, double> && ...);
 
 template <typename T>
     requires is_less_comparable<T>
@@ -45,11 +45,13 @@ struct BucketPolicy final {
     {
     }
 
-    template <typename TElement>
-        requires is_function_binable_on_doubles<TElement, TCallables...>
-    [[nodiscard]] int getBucket(TElement const &arg)
+    template <std::forward_iterator TIter>
+    [[nodiscard]] int getBucket(TIter const &it)
     {
-        return calculateBucketAtIndices(getUpperIndicesForTuple(getValues(arg)));
+        auto values  = getValues(*it);
+        auto indices = getUpperIndicesForTuple(values);
+        auto bucket  = calculateBucketAtIndices(indices);
+        return bucket;
     }
 
     [[nodiscard]] int getMaximalBucketCount() const
