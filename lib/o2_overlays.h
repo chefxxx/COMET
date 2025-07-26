@@ -5,20 +5,36 @@
 #ifndef O2OVERLAYS_H
 #define O2OVERLAYS_H
 
-#include <memory>
+#include "Framework/ASoA.h"
 #include "BucketPolicy.h"
+#include <boost/interprocess/detail/named_proxy.hpp>
+#include <memory>
+#include <tuple>
 
-struct BinningToBucket {
-};
+namespace o2::framework
+{
+
 
 template <typename... TTypes>
 struct ColumnBinningPolicy {
-    BinningToBucket binningToBucket;
-    ColumnBinningPolicy(
-        std::array<std::vector<double>, sizeof...(TTypes)> bins, bool ignoreOverflows
-    )
-    {
+
+    
+    ColumnBinningPolicy(std::array<std::vector<double>, sizeof...(TTypes)> bins, bool ignoreOverflows) {
+        
     }
+
+    template <typename TType>
+    struct Foo {
+        template <typename TIter>
+        double operator()(TIter const &it){
+            return soa::row_helpers::getColumnValue<typename TType::type, TIter, TType>(it);
+        }
+    };
+
+    std::tuple<Foo<TTypes>...> mTuple;
 };
 
-#endif  // O2OVERLAYS_H
+
+}
+
+#endif //O2OVERLAYS_H
