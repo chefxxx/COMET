@@ -14,7 +14,7 @@
 namespace o2::framework
 {
 
-#ifdef O2_OVERLAY
+#ifndef O2_OVERLAY
 
 template <typename Type>
 struct myCallable {
