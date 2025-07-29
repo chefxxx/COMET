@@ -45,7 +45,7 @@ struct ColumnBinningPolicy {
         if (globalIndex != -1) {
             rowIterator.setCursor(globalIndex);
         }
-        return myBucket.getValues(rowIterator);
+        return myBucket.getValues(*rowIterator);
     }
 
     template <typename T>

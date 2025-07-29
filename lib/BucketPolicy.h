@@ -18,13 +18,13 @@ concept is_less_comparable = requires(T t, T u) {
     { t < u } -> std::same_as<bool>;
 };
 
-template <std::forward_iterator TIter, typename... TCallables>
-concept is_function_callable_on_element = (std::invocable<TCallables, TIter> && ...);
+template <typename TElement, typename... TCallables>
+concept is_function_callable_on_element = (std::invocable<TCallables, TElement> && ...);
 
-template <std::forward_iterator TIter, typename... TCallables>
-concept is_function_binable_on_doubles =
-    is_function_callable_on_element<TIter, TCallables...> &&
-    (std::is_convertible_v<std::invoke_result_t<TCallables, TIter>, double> && ...);
+template <typename TElement, typename... TCallables>
+concept is_function_bucketable_on_doubles =
+    is_function_callable_on_element<TElement, TCallables...> &&
+    (std::is_convertible_v<std::invoke_result_t<TCallables, TElement>, double> && ...);
 
 template <typename T>
     requires is_less_comparable<T>
@@ -47,10 +47,9 @@ struct BucketPolicy final {
     }
 
     template <std::forward_iterator TIter>
-        requires is_function_callable_on_element<TIter, TCallables...>
     [[nodiscard]] int getBucket(TIter const &it)
     {
-        auto values  = getValues(it);
+        auto values  = getValues(*it);
         auto indices = getUpperIndicesForTuple(values);
         auto bucket  = calculateBucketAtIndices(indices);
         return bucket;
@@ -63,10 +62,10 @@ struct BucketPolicy final {
         }(std::make_index_sequence<sizeof...(TCallables)>{});
     }
 
-    template <std::forward_iterator TIter>
-    [[nodiscard]] auto getValues(TIter const &it)
+    template <typename TElement>
+    [[nodiscard]] auto getValues(TElement const& arg)
     {
-        return std::make_tuple(std::get<TCallables>(mCallables)(it)...);
+        return std::make_tuple(std::get<TCallables>(mCallables)(arg)...);
     }
 
     template <typename... Types>
