@@ -28,29 +28,19 @@ auto lambda1 = [](auto const &arg) {
 auto lambda2 = [](auto const &arg) {
     return arg.y;
 };
-auto lambda3 = [](auto const &arg) {
-    return arg.z;
-};
-auto lambda4 = [](auto const &arg) {
-    return arg.w;
-};
-auto lambda5 = [](auto const &arg) {
-    return arg.v;
-};
 
 const auto callableShort = std::make_tuple(lambda1, lambda2);
-const auto callablesLong = std::make_tuple(lambda1, lambda2, lambda3, lambda4, lambda5);
 }  // namespace calculateBucketAtIndicesTest
 
 TEST(CalculateBucketAtIndicesTest, fiveRangesInTwoDimensionsWithout)
 {
-    auto bin1 = std::vector<double>{1.0, 2.0, 3.0, 4.0};
-    auto bin2 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    auto arg  = std::make_tuple(1.5, 2.5);
-    auto bp   = BucketPolicy(calculateBucketAtIndicesTest::callableShort, {bin1, bin2});
+    const auto bin1 = std::vector<double>{1.0, 2.0, 3.0, 4.0};
+    const auto bin2 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
+    const auto arg  = std::make_tuple(1.5, 2.5);
+    auto bp         = BucketPolicy(calculateBucketAtIndicesTest::callableShort, {bin1, bin2});
 
-    auto test = bp.calculateBucketAtIndices(bp.getUpperIndicesForTuple(arg));
-    auto res  = 16;
+    const auto test    = bp.calculateBucketAtIndices(bp.getUpperIndicesForTuple(arg));
+    constexpr auto res = 16;
 
     ASSERT_EQ(res, test);
 }
