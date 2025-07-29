@@ -14,6 +14,8 @@
 namespace o2::framework
 {
 
+#ifdef O2_OVERLAY
+
 template <typename Type>
 struct myCallable {
     template <std::forward_iterator TIter>
@@ -59,6 +61,15 @@ struct ColumnBinningPolicy {
         auto bucket  = myBucket.calculateBucketAtIndices(indices);
         return bucket;
     }
+};
+
+#endif
+
+template <typename, typename...>
+struct FlexibleBinningPolicy;
+
+template <typename... Types, typename... TCallables>
+struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
 };
 
 }  // namespace o2::framework
