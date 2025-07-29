@@ -5,7 +5,6 @@
 #ifndef O2OVERLAYS_H
 #define O2OVERLAYS_H
 
-#include <boost/interprocess/detail/named_proxy.hpp>
 #include <iterator>
 #include <memory>
 #include <tuple>

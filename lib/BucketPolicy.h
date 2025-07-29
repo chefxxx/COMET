@@ -8,6 +8,7 @@
 #include <gtest/gtest_prod.h>
 #include <algorithm>
 #include <array>
+#include <iterator>
 #include <tuple>
 #include <unordered_map>
 #include <vector>
@@ -17,13 +18,13 @@ concept is_less_comparable = requires(T t, T u) {
     { t < u } -> std::same_as<bool>;
 };
 
-// template <typename TElement, typename... TCallables>
-// concept is_function_callable_on_element = (std::invocable<TCallables, TElement> && ...);
-//
-// template <typename TElement, typename... TCallables>
-// concept is_function_binable_on_doubles =
-//     is_function_callable_on_element<TElement, TCallables...> &&
-//     (std::is_convertible_v<std::invoke_result_t<TCallables, TElement>, double> && ...);
+template <std::forward_iterator TIter, typename... TCallables>
+concept is_function_callable_on_element = (std::invocable<TCallables, TIter> && ...);
+
+template <std::forward_iterator TIter, typename... TCallables>
+concept is_function_binable_on_doubles =
+    is_function_callable_on_element<TIter, TCallables...> &&
+    (std::is_convertible_v<std::invoke_result_t<TCallables, TIter>, double> && ...);
 
 template <typename T>
     requires is_less_comparable<T>
@@ -46,6 +47,7 @@ struct BucketPolicy final {
     }
 
     template <std::forward_iterator TIter>
+    requires is_function_callable_on_element<TIter, TCallables...>
     [[nodiscard]] int getBucket(TIter const &it)
     {
         auto values  = getValues(*it);
