@@ -2,6 +2,7 @@
 // Created by Mateusz Mikiciuk on 24/07/2025.
 //
 #ifdef O2_OVERLAY
+// clang-format off
 
 #ifndef O2OVERLAYS_H
 #define O2OVERLAYS_H
@@ -72,4 +73,5 @@ struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
 }  // namespace o2::framework
 
 #endif  // O2OVERLAYS_H
+// clang-format on
 #endif
