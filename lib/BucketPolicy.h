@@ -47,10 +47,10 @@ struct BucketPolicy final {
     }
 
     template <std::forward_iterator TIter>
-    requires is_function_callable_on_element<TIter, TCallables...>
+        requires is_function_callable_on_element<TIter, TCallables...>
     [[nodiscard]] int getBucket(TIter const &it)
     {
-        auto values  = getValues(*it);
+        auto values  = getValues(it);
         auto indices = getUpperIndicesForTuple(values);
         auto bucket  = calculateBucketAtIndices(indices);
         return bucket;
@@ -61,6 +61,38 @@ struct BucketPolicy final {
         return [&]<std::size_t... I>(std::index_sequence<I...>) {
             return (1 * ... * (std::get<I>(mBucketsRanges).size() + 1));
         }(std::make_index_sequence<sizeof...(TCallables)>{});
+    }
+
+    template <std::forward_iterator TIter>
+    [[nodiscard]] auto getValues(TIter const &it)
+    {
+        return std::make_tuple(std::get<TCallables>(mCallables)(it)...);
+    }
+
+    template <typename... Types>
+    [[nodiscard]] auto getUpperIndicesForTuple(std::tuple<Types...> const &values)
+    {
+        return [&]<std::size_t... I>(std::index_sequence<I...>) {
+            return std::make_tuple(
+                findIndex(std::get<I>(mBucketsRanges), std::get<I>(values), ignoreOverflows)...
+            );
+        }(std::make_index_sequence<sizeof...(TCallables)>{});
+    }
+
+    template <typename... TIndices>
+    [[nodiscard]] int calculateBucketAtIndices(std::tuple<TIndices...> const &indices)
+    {
+        constexpr auto N = sizeof...(TIndices);
+        auto indexSeq    = std::make_index_sequence<N - 1>();
+        return ignoreOverflows && checkUnderOverflows(indices)
+                   ? -1
+                   : [&]<size_t... I>(std::index_sequence<I...>) {
+                         return (
+                             std::get<0>(indices) + ... +
+                             (std::get<I + 1>(indices) *
+                              (1 * ... * (std::get<I>(mBucketsRanges).size() + 1)))
+                         );
+                     }(indexSeq);
     }
 
     private:
@@ -74,44 +106,12 @@ struct BucketPolicy final {
     FRIEND_TEST(GetBucketTest, manyDimensionsWithOverflow);
     /*                  ---              ---                    */
 
-    template <typename... Ts>
-    bool checkUnderOverflows(std::tuple<Ts...> arg) const
+    template <typename... Types>
+    bool checkUnderOverflows(std::tuple<Typess...> arg) const
     {
         return [&arg]<size_t... I>(std::index_sequence<I...>) {
             return ((std::get<I>(arg) == -1) || ...);
-        }(std::make_index_sequence<sizeof...(Ts)>{});
-    }
-
-    template <typename TElement>
-    auto getValues(TElement const &arg)
-    {
-        return std::make_tuple(std::get<TCallables>(mCallables)(arg)...);
-    }
-
-    template <typename... Ts>
-    auto getUpperIndicesForTuple(std::tuple<Ts...> const &values)
-    {
-        return [&]<std::size_t... I>(std::index_sequence<I...>) {
-            return std::make_tuple(
-                findIndex(std::get<I>(mBucketsRanges), std::get<I>(values), ignoreOverflows)...
-            );
-        }(std::make_index_sequence<sizeof...(TCallables)>{});
-    }
-
-    template <typename... TIndices>
-    int calculateBucketAtIndices(std::tuple<TIndices...> const &indices)
-    {
-        constexpr auto N = sizeof...(TIndices);
-        auto indexSeq    = std::make_index_sequence<N - 1>();
-        return ignoreOverflows && checkUnderOverflows(indices)
-                   ? -1
-                   : [&]<size_t... I>(std::index_sequence<I...>) {
-                         return (
-                             std::get<0>(indices) + ... +
-                             (std::get<I + 1>(indices) *
-                              (1 * ... * (std::get<I>(mBucketsRanges).size() + 1)))
-                         );
-                     }(indexSeq);
+        }(std::make_index_sequence<sizeof...(Types)>{});
     }
 
     std::tuple<TCallables...> mCallables;
