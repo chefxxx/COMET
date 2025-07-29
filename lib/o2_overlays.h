@@ -75,4 +75,3 @@ struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
 
 #endif  // O2OVERLAYS_H
 #endif
-// clang-format on
