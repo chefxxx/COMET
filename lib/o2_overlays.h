@@ -9,12 +9,13 @@
 #include <memory>
 #include <tuple>
 #include "BucketPolicy.h"
+
+#ifdef O2_OVERLAY
+
 #include "Framework/ASoA.h"
 
 namespace o2::framework
 {
-
-#ifdef O2_OVERLAY
 
 template <typename Type>
 struct myCallable {
@@ -63,8 +64,6 @@ struct ColumnBinningPolicy {
     }
 };
 
-#endif
-
 template <typename, typename...>
 struct FlexibleBinningPolicy;
 
@@ -73,5 +72,7 @@ struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
 };
 
 }  // namespace o2::framework
+
+#endif
 
 #endif  // O2OVERLAYS_H
