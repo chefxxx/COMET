@@ -5,36 +5,39 @@
 #ifndef O2OVERLAYS_H
 #define O2OVERLAYS_H
 
-#include "Framework/ASoA.h"
-#include "BucketPolicy.h"
 #include <boost/interprocess/detail/named_proxy.hpp>
+#include <iterator>
 #include <memory>
 #include <tuple>
+#include "BucketPolicy.h"
+#include "Framework/ASoA.h"
 
 namespace o2::framework
 {
 
-
-template <typename... TTypes>
-struct ColumnBinningPolicy {
-
-    
-    ColumnBinningPolicy(std::array<std::vector<double>, sizeof...(TTypes)> bins, bool ignoreOverflows) {
-        
+template <typename Type>
+struct myCallable {
+    template <std::forward_iterator TIter>
+    auto operator()(TIter const &it)
+    {
+        return soa::row_helpers::getColumnValue<typename Type::type, TIter, Type>(it);
     }
-
-    template <typename TType>
-    struct Foo {
-        template <typename TIter>
-        double operator()(TIter const &it){
-            return soa::row_helpers::getColumnValue<typename TType::type, TIter, TType>(it);
-        }
-    };
-
-    std::tuple<Foo<TTypes>...> mTuple;
 };
 
+template <typename... Types>
+struct ColumnBinningPolicy {
+    using BucketType = BucketPolicy<myCallable<Types>...>;
 
-}
+    BucketType myBucket;
 
-#endif //O2OVERLAYS_H
+    ColumnBinningPolicy(
+        std::array<std::vector<double>, sizeof...(Types)> bins, bool ignoreOverflows
+    )
+        : myBucket(std::make_tuple(myCallable<Types>()...), bins, ignoreOverflows)
+    {
+    }
+};
+
+}  // namespace o2::framework
+
+#endif  // O2OVERLAYS_H
