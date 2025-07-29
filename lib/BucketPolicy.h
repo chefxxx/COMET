@@ -46,10 +46,11 @@ struct BucketPolicy final {
     {
     }
 
-    template <std::forward_iterator TIter>
-    [[nodiscard]] int getBucket(TIter const &it)
+    template <typename TElement>
+        requires is_function_bucketable_on_doubles<TElement, TCallables...>
+    [[nodiscard]] int getBucket(TElement const &element)
     {
-        auto values  = getValues(*it);
+        auto values  = getValues(element);
         auto indices = getUpperIndicesForTuple(values);
         auto bucket  = calculateBucketAtIndices(indices);
         return bucket;

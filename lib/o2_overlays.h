@@ -19,7 +19,7 @@ namespace o2::framework
 
 template <typename Type>
 struct myCallable {
-    template <std::forward_iterator TIter>
+    template <typename TIter>
     auto operator()(TIter const& it)
     {
         return soa::row_helpers::getColumnValue<typename Type::type, TIter, Type>(it);

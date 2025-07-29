@@ -11,9 +11,9 @@
 
 template <typename TBucketPolicy, typename TIter>
 concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
-    policy.getValues(*iter);
-    { policy.getBucket(iter) } -> std::same_as<int>;
+    { policy.getBucket(*iter) } -> std::same_as<int>;
     { policy.getMaximalBucketCount() } -> std::same_as<int>;
+    policy.getValues(*iter);
 };
 
 template <typename TIter>
@@ -38,7 +38,7 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
     const int maxCount = bucketPolicy.getMaximalBucketCount();
     std::unordered_map<int, std::vector<BucketIdx<TIter>>> buckets;
     for (auto it = start; it != end; ++it) {
-        const auto bucketNumber = bucketPolicy.getBucket(it);
+        const auto bucketNumber = bucketPolicy.getBucket(*it);
         buckets[bucketNumber].emplace_back(dataIdx++, it, bucketNumber);
     }
 

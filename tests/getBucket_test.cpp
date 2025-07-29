@@ -22,19 +22,19 @@ struct TestElemB {
 };
 
 auto lambda1 = [](auto const &arg) {
-    return arg.x;
+    return arg->x;
 };
 auto lambda2 = [](auto const &arg) {
-    return arg.y;
+    return arg->y;
 };
 auto lambda3 = [](auto const &arg) {
-    return arg.z;
+    return arg->z;
 };
 auto lambda4 = [](auto const &arg) {
-    return arg.w;
+    return arg->w;
 };
 auto lambda5 = [](auto const &arg) {
-    return arg.v;
+    return arg->v;
 };
 
 const auto callableShort = std::make_tuple(lambda1, lambda2);
