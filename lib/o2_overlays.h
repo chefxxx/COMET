@@ -1,6 +1,7 @@
 //
 // Created by Mateusz Mikiciuk on 24/07/2025.
 //
+#ifdef O2_OVERLAY
 
 #ifndef O2OVERLAYS_H
 #define O2OVERLAYS_H
@@ -9,9 +10,6 @@
 #include <memory>
 #include <tuple>
 #include "BucketPolicy.h"
-
-#ifdef O2_OVERLAY
-
 #include "Framework/ASoA.h"
 
 namespace o2::framework
@@ -73,6 +71,5 @@ struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
 
 }  // namespace o2::framework
 
-#endif
-
 #endif  // O2OVERLAYS_H
+#endif
