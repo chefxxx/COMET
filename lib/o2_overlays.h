@@ -77,36 +77,29 @@ struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
     FlexibleBinningPolicy(
         std::tuple<TCallables...> const &callables, std::array<std::vector<double>, sizeof...(Types)> bins, bool ignoreOverflows
     )
-        : myBucket(callables, bins, ignoreOverflows)
+        : myBucket(std::tuple_cat(callables, std::make_tuple(myCallable<Types>()...)), bins, ignoreOverflows)
     {
     }
 
-    template <typename TIter, typename Type>
-    auto getBinningValues(TIter& rowIterator, uint64_t globalIndex = -1) const 
+    template <typename T>
+    auto getBinningValues(T& rowIterator, uint64_t globalIndex = -1) const
     {
         if (globalIndex != -1) {
             rowIterator.setCursor(globalIndex);
         }
-        if constexpr (has_type<Type>(pack<TCallables...>{})) {
-            return myBucket.getValues(*rowIterator);
-        }
-        else {
-            return soa::row_helpers::getColumnValue<typename Type::type, TIter, Type>(rowIterator);
-        }
-    }
-
-      template <typename T>
-    auto getBinningValues(T& rowIterator, uint64_t globalIndex = -1) const
-    {
-        return std::make_tuple(getBinningValue<T, Ts>(rowIterator, globalIndex)...);
+        return myBucket.getValues(*rowIterator);
     }
 
     template <typename Table>
-    auto getBinningValues(typename Table::iterator rowIterator, Table& table, uint64_t globalIndex = -1) const {
+    auto getBinningValues(
+        typename Table::iterator rowIterator, Table& table, uint64_t globalIndex = -1
+    ) const
+    {
         return getBinningValues(rowIterator, globalIndex);
     }
 
-    int getBin(std::tuple<typename Types::type...> const &data) const {
+    int getBin(std::tuple<typename Types::type...> const& data) const
+    {
         auto indices = myBucket.getUpperIndicesForTuple(data);
         auto bucket  = myBucket.calculateBucketAtIndices(indices);
         return bucket;

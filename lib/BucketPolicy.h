@@ -64,9 +64,9 @@ struct BucketPolicy final {
     }
 
     template <typename TElement>
-    [[nodiscard]] auto getValues(TElement const &arg)
+    [[nodiscard]] auto getValues(TElement const &element)
     {
-        return std::make_tuple(std::get<TCallables>(mCallables)(arg)...);
+        return std::make_tuple(std::get<TCallables>(mCallables)(element)...);
     }
 
     template <typename... Types>
