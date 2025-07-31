@@ -3,7 +3,7 @@
 //
 
 // clang-format off
-//#ifdef O2_OVERLAY
+#ifdef O2_OVERLAY
 
 #ifndef O2OVERLAYS_H
 #define O2OVERLAYS_H
@@ -110,4 +110,4 @@ struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
 }  // namespace o2::framework
 
 #endif  // O2OVERLAYS_H
-//#endif
+#endif
