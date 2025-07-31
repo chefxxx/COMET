@@ -3,11 +3,12 @@
 //
 
 // clang-format off
-#ifdef O2_OVERLAY
+//#ifdef O2_OVERLAY
 
 #ifndef O2OVERLAYS_H
 #define O2OVERLAYS_H
 
+#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <tuple>
@@ -69,9 +70,31 @@ struct FlexibleBinningPolicy;
 
 template <typename... Types, typename... TCallables>
 struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
+    using BucketType = BucketPolicy<myCallable<Types>...>;
+
+    BucketType myBucket;
+
+    FlexibleBinningPolicy(
+        std::tuple<TCallables...> const &callables, std::array<std::vector<double>, sizeof...(Types)> bins, bool ignoreOverflows
+    )
+        : myBucket(callables, bins, ignoreOverflows)
+    {
+    }
+
+    template <typename TIter, typename Type>
+    auto getBinningValues(TIter& rowIterator, uint64_t globalIndex = -1) const 
+    {
+        if (globalIndex != -1) {
+            rowIterator.setCursor(globalIndex);
+        }
+        if constexpr (has_type<Type>(pack<TCallables...>{})) {
+            return myBucket.getValues(*rowIterator);
+        }
+
+    }
 };
 
 }  // namespace o2::framework
 
 #endif  // O2OVERLAYS_H
-#endif
+//#endif
