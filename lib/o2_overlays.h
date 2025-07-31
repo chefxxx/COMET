@@ -40,8 +40,8 @@ struct ColumnBinningPolicy {
     {
     }
 
-    template <typename T>
-    auto getBinningValues(T& rowIterator, uint64_t globalIndex = -1) const
+    template <typename TIter>
+    auto getBinningValues(TIter& rowIterator, uint64_t globalIndex = -1) const
     {
         if (globalIndex != -1) {
             rowIterator.setCursor(globalIndex);
@@ -81,8 +81,8 @@ struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
     {
     }
 
-    template <typename T>
-    auto getBinningValues(T& rowIterator, uint64_t globalIndex = -1) const
+    template <typename TIter>
+    auto getBinningValues(TIter& rowIterator, uint64_t globalIndex = -1) const
     {
         if (globalIndex != -1) {
             rowIterator.setCursor(globalIndex);
@@ -98,7 +98,8 @@ struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
         return getBinningValues(rowIterator, globalIndex);
     }
 
-    int getBin(std::tuple<typename Types::type...> const& data) const
+    template <typename... TypesAndLambdas>
+    int getBin(std::tuple<TypesAndLambdas...> const& data) const
     {
         auto indices = myBucket.getUpperIndicesForTuple(data);
         auto bucket  = myBucket.calculateBucketAtIndices(indices);
