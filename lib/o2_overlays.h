@@ -8,6 +8,7 @@
 #ifndef O2OVERLAYS_H
 #define O2OVERLAYS_H
 
+#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <tuple>
@@ -39,8 +40,8 @@ struct ColumnBinningPolicy {
     {
     }
 
-    template <typename T>
-    auto getBinningValues(T& rowIterator, uint64_t globalIndex = -1) const
+    template <typename TIter>
+    auto getBinningValues(TIter& rowIterator, uint64_t globalIndex = -1) const
     {
         if (globalIndex != -1) {
             rowIterator.setCursor(globalIndex);
@@ -48,9 +49,9 @@ struct ColumnBinningPolicy {
         return myBucket.getValues(*rowIterator);
     }
 
-    template <typename T>
+    template <typename Table>
     auto getBinningValues(
-        typename T::iterator rowIterator, T& table, uint64_t globalIndex = -1
+        typename Table::iterator rowIterator, Table& table, uint64_t globalIndex = -1
     ) const
     {
         return getBinningValues(rowIterator, globalIndex);
@@ -69,6 +70,41 @@ struct FlexibleBinningPolicy;
 
 template <typename... Types, typename... TCallables>
 struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
+    using BucketType = BucketPolicy<myCallable<Types>...>;
+
+    BucketType myBucket;
+
+    FlexibleBinningPolicy(
+        std::tuple<TCallables...> const &callables, std::array<std::vector<double>, sizeof...(Types)> bins, bool ignoreOverflows
+    )
+        : myBucket(std::tuple_cat(callables, std::make_tuple(myCallable<Types>()...)), bins, ignoreOverflows)
+    {
+    }
+
+    template <typename TIter>
+    auto getBinningValues(TIter& rowIterator, uint64_t globalIndex = -1) const
+    {
+        if (globalIndex != -1) {
+            rowIterator.setCursor(globalIndex);
+        }
+        return myBucket.getValues(*rowIterator);
+    }
+
+    template <typename Table>
+    auto getBinningValues(
+        typename Table::iterator rowIterator, Table& table, uint64_t globalIndex = -1
+    ) const
+    {
+        return getBinningValues(rowIterator, globalIndex);
+    }
+
+    template <typename... TypesAndLambdas>
+    int getBin(std::tuple<TypesAndLambdas...> const& data) const
+    {
+        auto indices = myBucket.getUpperIndicesForTuple(data);
+        auto bucket  = myBucket.calculateBucketAtIndices(indices);
+        return bucket;
+    }
 };
 
 }  // namespace o2::framework
