@@ -6,7 +6,7 @@
 #define HELPERS_H
 
 #include <iterator>
-#include <map>
+#include <unordered_map>
 #include "BucketPolicy.h"
 
 template <typename TBucketPolicy, typename TIter>

@@ -8,13 +8,12 @@
 #include <gtest/gtest_prod.h>
 #include <algorithm>
 #include <array>
-#include <iterator>
 #include <tuple>
-#include <unordered_map>
+#include <type_traits>
 #include <vector>
 
-template <typename T>
-concept is_less_comparable = requires(T t, T u) {
+template <typename T1, typename T2>
+concept is_less_comparable = requires(T1 t, T2 u) {
     { t < u } -> std::same_as<bool>;
 };
 
@@ -26,9 +25,9 @@ concept is_function_bucketable_on_doubles =
     is_function_callable_on_element<TElement, TCallables...> &&
     (std::is_convertible_v<std::invoke_result_t<TCallables, TElement>, double> && ...);
 
-template <typename T>
-    requires is_less_comparable<T>
-int findIndex(std::vector<T> const &data, T const &value, const bool ignoreOverflows)
+template <typename T1, typename T2>
+    requires is_less_comparable<T1, T2>
+int findIndex(std::vector<T1> const &data, T2 const &value, const bool ignoreOverflows)
 {
     const auto tmp =
         static_cast<int>(distance(data.begin(), std::upper_bound(data.begin(), data.end(), value)));
