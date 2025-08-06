@@ -28,12 +28,12 @@ struct myCallable {
 };
 
 template <typename... Types>
-struct ColumnBinningPolicy22 {
+struct ColumnBinningPolicy2 {
     using BucketType = BucketPolicy<myCallable<Types>...>;
 
     BucketType myBucket;
 
-    ColumnBinningPolicy(
+    ColumnBinningPolicy2(
         std::array<std::vector<double>, sizeof...(Types)> bins, bool ignoreOverflows
     )
         : myBucket(std::make_tuple(myCallable<Types>()...), bins, ignoreOverflows)
