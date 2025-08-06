@@ -66,15 +66,15 @@ struct ColumnBinningPolicy2 {
 };
 
 template <typename, typename...>
-struct FlexibleBinningPolicy;
+struct FlexibleBinningPolicy2;
 
 template <typename... Types, typename... TCallables>
-struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
+struct FlexibleBinningPolicy2<std::tuple<TCallables...>, Types...> {
     using BucketType = BucketPolicy<myCallable<Types>...>;
 
     BucketType myBucket;
 
-    FlexibleBinningPolicy(
+    FlexibleBinningPolicy2(
         std::tuple<TCallables...> const &callables, std::array<std::vector<double>, sizeof...(Types)> bins, bool ignoreOverflows
     )
         : myBucket(std::tuple_cat(callables, std::make_tuple(myCallable<Types>()...)), bins, ignoreOverflows)
