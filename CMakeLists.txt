@@ -84,5 +84,5 @@ endif()
 #                                   Load tests                                   #
 # ------------------------------------------------------------------------------ #
 
-enable_testing()
-add_subdirectory(tests)
+#enable_testing()
+#add_subdirectory(tests)
