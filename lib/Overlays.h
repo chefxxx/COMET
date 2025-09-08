@@ -21,7 +21,7 @@ namespace o2::framework
 template <typename Type>
 struct myCallable {
     template <typename TIter>
-    auto operator()(TIter& it)
+    auto operator()(TIter const& it) const
     {
         return soa::row_helpers::getColumnValue<typename Type::type, TIter, Type>(it);
     }
