@@ -69,7 +69,7 @@ struct BucketPolicy final {
     }
 
     template <typename... Types>
-    [[nodiscard]] auto getUpperIndicesForTuple(std::tuple<Types...> const &values)
+    [[nodiscard]] auto getUpperIndicesForTuple(std::tuple<Types...> const &values) const
     {
         return [&]<std::size_t... I>(std::index_sequence<I...>) {
             return std::make_tuple(
