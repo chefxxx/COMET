@@ -79,7 +79,7 @@ struct BucketPolicy final {
     }
 
     template <typename... TIndices>
-    [[nodiscard]] int calculateBucketAtIndices(std::tuple<TIndices...> const &indices)
+    [[nodiscard]] int calculateBucketAtIndices(std::tuple<TIndices...> const &indices) const
     {
         constexpr auto N = sizeof...(TIndices);
         auto indexSeq    = std::make_index_sequence<N - 1>();
