@@ -10,8 +10,9 @@
 template <typename... Ts>
 struct CombinationsPolicyBase {
     public:
+
     private:
-        std::tuple<typename Ts::iterator...> currentState;
+    std::tuple<typename Ts::iterator...> currentState;
 };
 
 template <typename... Ts>

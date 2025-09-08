@@ -52,6 +52,8 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
 }
 
 template <std::size_t N, typename TIter>
-void syncBuckets(std::array<std::unordered_map<int, std::vector<BucketIdx<TIter>>>, N> const& groupedData);
+void syncBuckets(
+    std::array<std::unordered_map<int, std::vector<BucketIdx<TIter>>>, N> const& groupedData
+);
 
 #endif  // HELPERS_H
