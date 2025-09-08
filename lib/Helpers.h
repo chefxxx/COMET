@@ -28,7 +28,7 @@ struct BucketIdx {
     TIter mIter;
 };
 
-template <typename TIter, typename TBucketPolicy>
+template <std::forward_iterator TIter, typename TBucketPolicy>
     requires is_bucket_policy<TBucketPolicy, TIter>
 [[nodiscard]] auto groupData(
     TIter start, TIter end, TBucketPolicy bucketPolicy, const std::size_t minCatSize = 1
