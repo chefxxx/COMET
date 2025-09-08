@@ -11,8 +11,8 @@
 
 template <typename TBucketPolicy, typename TIter>
 concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
-    { policy.getBucket(*iter) } -> std::same_as<int>;
-    { policy.getMaximalBucketCount() } -> std::same_as<int>;
+    { policy.getBucket(*iter) } -> std::integral;
+    { policy.getMaximalBucketCount() } -> std::integral;
     policy.getValues(*iter);
 };
 
