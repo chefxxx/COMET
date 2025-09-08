@@ -63,6 +63,11 @@ struct ColumnBinningPolicy2 {
         auto bucket  = myBucket.calculateBucketAtIndices(indices);
         return bucket;
     }
+
+    int getMaximalBucketCount()
+    {
+	return myBucket.getMaximalBucketCount();
+    }
 };
 
 template <typename, typename...>
