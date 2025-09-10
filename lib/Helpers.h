@@ -30,8 +30,7 @@ struct BucketIdx {
 };
 
 template <typename TIter>
-struct GroupedData
-{
+struct GroupedData {
     std::unordered_map<int, std::vector<BucketIdx<TIter>>> buckets;
     std::unordered_set<int> bucketsNumbers;
 };
@@ -42,7 +41,7 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
     TIter start, TIter end, TBucketPolicy bucketPolicy, const std::size_t minCatSize = 1
 )
 {
-    int dataIdx        = 0;
+    int dataIdx = 0;
     GroupedData<TIter> resultData;
     for (auto it = start; it != end; ++it) {
         const auto bucketNumber = bucketPolicy.getBucket(*it);
@@ -53,12 +52,21 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
 
     // We need this second loop,
     // bc in the one above we do not know when we hit last element in bucket.
-    for (const auto& num: resultData.bucketsNumbers) {
+    std::unordered_set<int> tooSmallBuckets;
+    for (const auto& num : resultData.bucketsNumbers) {
         if (resultData.buckets[num].size() < minCatSize) {
             resultData.buckets.erase(num);
+            tooSmallBuckets.insert(num);
         }
     }
 
+    // Furthermore we need this to remove buckets that do not
+    // meet the requirement of size (minCatSize). It is so clumsy,
+    // bc std::unordered_set does not have operator[] and cannot be
+    // modified while above loop takes place.
+    for (const auto& num : tooSmallBuckets) {
+        resultData.bucketsNumbers.erase(num);
+    }
     return resultData;
 }
 

@@ -7,8 +7,8 @@
 
 #include <gtest/gtest_prod.h>
 #include <algorithm>
-#include <tuple>
 #include <array>
+#include <tuple>
 #include <type_traits>
 #include <vector>
 

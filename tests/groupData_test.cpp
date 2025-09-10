@@ -76,7 +76,7 @@ TEST(GroupDataTest, bucketPartitionWithOverflows)
     const auto [buckets, bucketsNumbers] = groupData(
         groupDataTest::points1.begin(), groupDataTest::points1.end(), groupDataTest::bp16overflows
     );
-    for (const int& key : bucketsNumbers) {
+    for (const int &key : bucketsNumbers) {
         auto bucket = buckets.at(key);
         ASSERT_EQ(bucket.size(), 1);
         ASSERT_EQ(bucket[0].mBucketIdx, key);
@@ -86,22 +86,24 @@ TEST(GroupDataTest, bucketPartitionWithOverflows)
 TEST(GroupDataTest, bucketPartitionIgnoreOverflows)
 {
     const auto [buckets, bucketsNumbers] = groupData(
-        groupDataTest::points1.begin(), groupDataTest::points1.end(), groupDataTest::bp16ignoreOverflows
+        groupDataTest::points1.begin(), groupDataTest::points1.end(),
+        groupDataTest::bp16ignoreOverflows
     );
     ASSERT_EQ(bucketsNumbers.size(), 5);
+    ASSERT_EQ(buckets.size(), 5);
     const std::vector checkBuckets = {-1, 5, 6, 9, 10};
-    for (const int& bucket : checkBuckets) {
+    for (const int &bucket : checkBuckets) {
         ASSERT_EQ(true, bucketsNumbers.contains(bucket));
     }
 }
 
-//
-// TEST(GroupDataTest, minCategorySize)
-// {
-//     constexpr int minCatSize   = 2;
-//     const auto indexesMinSize2 = groupData(
-//         groupDataTest::points1.begin(), groupDataTest::points1.end(), groupDataTest::bp16overflows,
-//         minCatSize
-//     );
-//     ASSERT_EQ(indexesMinSize2.size(), 0);
-// }
+TEST(GroupDataTest, minCategorySize)
+{
+    constexpr int minCatSize   = 2;
+    const auto indexesMinSize2 = groupData(
+        groupDataTest::points1.begin(), groupDataTest::points1.end(), groupDataTest::bp16overflows,
+        minCatSize
+    );
+    ASSERT_EQ(indexesMinSize2.buckets.size(), 0);
+    ASSERT_EQ(indexesMinSize2.bucketsNumbers.size(), 0);
+}
