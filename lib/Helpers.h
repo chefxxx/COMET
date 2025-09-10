@@ -43,7 +43,6 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
 )
 {
     int dataIdx        = 0;
-    const int maxCount = bucketPolicy.getMaximalBucketCount();
     GroupedData<TIter> resultData;
     for (auto it = start; it != end; ++it) {
         const auto bucketNumber = bucketPolicy.getBucket(*it);
@@ -51,6 +50,15 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
         resultData.buckets[bucketNumber].push_back(bucketIdx);
         resultData.bucketsNumbers.insert(bucketNumber);
     }
+
+    // We need this second loop,
+    // bc in the one above we do not know when we hit last element in bucket.
+    for (const auto& num: resultData.bucketsNumbers) {
+        if (resultData.buckets[num].size() < minCatSize) {
+            resultData.buckets.erase(num);
+        }
+    }
+
     return resultData;
 }
 
