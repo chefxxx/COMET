@@ -83,18 +83,18 @@ TEST(GroupDataTest, bucketPartitionWithOverflows)
     }
 }
 
-// TEST(GroupDataTest, bucketPartitionIgnoreOverflows)
-// {
-//     const auto indexes = groupData(
-//         groupDataTest::points1.begin(), groupDataTest::points1.end(),
-//         groupDataTest::bp16ignoreOverflows
-//     );
-//     ASSERT_EQ(indexes.size(), 4);
-//     const std::vector checkBuckets = {5, 6, 9, 10};
-//     for (size_t i = 0; i < indexes.size(); i++) {
-//         ASSERT_EQ(indexes[i].mBucketIdx, checkBuckets[i]);
-//     }
-// }
+TEST(GroupDataTest, bucketPartitionIgnoreOverflows)
+{
+    const auto [buckets, bucketsNumbers] = groupData(
+        groupDataTest::points1.begin(), groupDataTest::points1.end(), groupDataTest::bp16ignoreOverflows
+    );
+    ASSERT_EQ(bucketsNumbers.size(), 5);
+    const std::vector checkBuckets = {-1, 5, 6, 9, 10};
+    for (const int& bucket : checkBuckets) {
+        ASSERT_EQ(true, bucketsNumbers.contains(bucket));
+    }
+}
+
 //
 // TEST(GroupDataTest, minCategorySize)
 // {
