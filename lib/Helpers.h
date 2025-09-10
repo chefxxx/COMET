@@ -7,6 +7,7 @@
 
 #include <iterator>
 #include <unordered_map>
+#include <unordered_set>
 #include "BucketPolicy.h"
 
 template <typename TBucketPolicy, typename TIter>
@@ -18,7 +19,7 @@ concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
 
 template <typename TIter>
 struct BucketIdx {
-    BucketIdx(const int dataIdx, TIter iter, const int bucketIdx)
+    BucketIdx(const int bucketIdx, const int dataIdx, TIter iter)
         : mBucketIdx(bucketIdx), mDataIdx(dataIdx), mIter(iter)
     {
     }
@@ -26,6 +27,13 @@ struct BucketIdx {
     int mBucketIdx;
     int mDataIdx;
     TIter mIter;
+};
+
+template <typename TIter>
+struct GroupedData
+{
+    std::unordered_map<int, std::vector<BucketIdx<TIter>>> buckets;
+    std::unordered_set<int> bucketsNumbers;
 };
 
 template <std::forward_iterator TIter, typename TBucketPolicy>
@@ -36,17 +44,12 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
 {
     int dataIdx        = 0;
     const int maxCount = bucketPolicy.getMaximalBucketCount();
-    std::unordered_map<int, std::vector<BucketIdx<TIter>>> buckets;
+    GroupedData<TIter> resultData;
     for (auto it = start; it != end; ++it) {
         const auto bucketNumber = bucketPolicy.getBucket(*it);
-        buckets[bucketNumber].emplace_back(dataIdx++, it, bucketNumber);
-    }
-
-    std::vector<BucketIdx<TIter>> resultData;
-    for (int i = 0; i < maxCount; ++i) {
-        if (buckets.contains(i) && buckets[i].size() >= minCatSize) {
-            resultData.insert(resultData.end(), buckets.at(i).begin(), buckets.at(i).end());
-        }
+        BucketIdx<TIter> bucketIdx{bucketNumber, dataIdx++, it};
+        resultData.buckets[bucketNumber].push_back(bucketIdx);
+        resultData.bucketsNumbers.insert(bucketNumber);
     }
     return resultData;
 }
