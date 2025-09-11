@@ -16,5 +16,5 @@ jobs:
 
       - name: Check if code is formatted
         run: |
-          sudo ln -sf /usr/bin/clang-format-17 /usr/bin/clang-format
+          sudo ln -s /usr/bin/clang-format-17 /usr/bin/clang-format
           sudo scripts/check_clang_format.sh
