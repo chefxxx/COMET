@@ -14,9 +14,7 @@
 
 template <typename T1, typename T2>
 concept is_less_comparable = requires(T1 t, T2 u) {
-    {
-        t < u
-    } -> std::same_as<bool>;
+    { t < u } -> std::same_as<bool>;
 };
 
 template <typename TElement, typename... TCallables>
