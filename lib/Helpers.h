@@ -52,21 +52,16 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
 
     // We need this second loop,
     // bc in the one above we do not know when we hit last element in bucket.
-    std::unordered_set<int> tooSmallBuckets;
-    for (const auto& num : resultData.bucketsNumbers) {
-        if (resultData.buckets[num].size() < minCatSize) {
-            resultData.buckets.erase(num);
-            tooSmallBuckets.insert(num);
+    for (auto it = resultData.bucketsNumbers.begin(); it != resultData.bucketsNumbers.end(); ) {
+        if (resultData.buckets[*it].size() < minCatSize) {
+            resultData.buckets.erase(*it);
+            it = resultData.bucketsNumbers.erase(it);
+        }
+        else {
+            ++it;
         }
     }
 
-    // Furthermore we need this to remove buckets that do not
-    // meet the requirement of size (minCatSize). It is so clumsy,
-    // bc std::unordered_set does not have operator[] and cannot be
-    // modified while above loop takes place.
-    for (const auto& num : tooSmallBuckets) {
-        resultData.bucketsNumbers.erase(num);
-    }
     return resultData;
 }
 
