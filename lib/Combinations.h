@@ -5,22 +5,23 @@
 #ifndef COMBINATIONS_H
 #define COMBINATIONS_H
 
-#include "Helpers.h"
+#include <tuple>
 
-template <typename... Ts>
+template <typename... TData>
 struct CombinationsPolicyBase {
     public:
+    CombinationsPolicyBase(TData &...data) {}
 
     private:
-    std::tuple<typename Ts::iterator...> currentState;
+    std::tuple<typename TData::iterator...> mCurrentState;
 };
 
-template <typename... Ts>
-struct FullCombinationsPolicy : CombinationsPolicyBase<Ts...> {
+template <typename... TData>
+struct FullCombinationsPolicy : CombinationsPolicyBase<TData...> {
 };
 
-template <typename... Ts>
-struct StrictlyUpperCombinationsPolicy : CombinationsPolicyBase<Ts...> {
+template <typename... TData>
+struct StrictlyUpperCombinationsPolicy : CombinationsPolicyBase<TData...> {
 };
 
 #endif  // COMBINATIONS_H

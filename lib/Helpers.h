@@ -52,12 +52,11 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
 
     // We need this second loop,
     // bc in the one above we do not know when we hit last element in bucket.
-    for (auto it = resultData.bucketsNumbers.begin(); it != resultData.bucketsNumbers.end(); ) {
+    for (auto it = resultData.bucketsNumbers.begin(); it != resultData.bucketsNumbers.end();) {
         if (resultData.buckets[*it].size() < minCatSize) {
             resultData.buckets.erase(*it);
             it = resultData.bucketsNumbers.erase(it);
-        }
-        else {
+        } else {
             ++it;
         }
     }
