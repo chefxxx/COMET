@@ -19,22 +19,18 @@ template <typename... TIter>
 struct CombinationsPolicyBase {
     using IteratorType = std::tuple<TIter...>;
     explicit CombinationsPolicyBase(std::tuple<Ranges<TIter>...>& ranges)
-        : mCurrentState(
-              std::apply(
-                  [](auto const&... r) {
-                      return std::make_tuple(r.mBegin...);
-                  },
-                  ranges
-              )
-          ),
-          mEndState(
-              std::apply(
-                  [](auto const&... r) {
-                      return std::make_tuple(r.mEnd...);
-                  },
-                  ranges
-              )
-          )
+        : mCurrentState(std::apply(
+              [](auto const&... r) {
+                  return std::make_tuple(r.mBegin...);
+              },
+              ranges
+          )),
+          mEndState(std::apply(
+              [](auto const&... r) {
+                  return std::make_tuple(r.mEnd...);
+              },
+              ranges
+          ))
     {
     }
 
