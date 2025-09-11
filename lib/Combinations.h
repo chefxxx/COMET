@@ -7,20 +7,37 @@
 
 #include <tuple>
 
-template <typename TIter1, typename TIter2, typename... TRest>
-struct IteratorType {
-    using type = typename IteratorType<TIter1, TRest...>::type;
+template <typename TIter>
+struct Ranges {
+    TIter begin;
+    TIter end;
 };
 
 template <typename... TIter>
 struct CombinationsPolicyBase {
-    using CombinationsType = IteratorType<TIter...>::type;
-    public:
-    CombinationsPolicyBase(TIter... iterators) : mCurrentState() {}
+    using IteratorType = typename std::tuple<TIter...>;
+    explicit CombinationsPolicyBase(std::tuple<Ranges<TIter>...>& ranges)
+        : mCurrentState(
+              std::apply(
+                  [](auto const&... r) {
+                      std::make_tuple(r.begin...);
+                  },
+                  ranges
+              )
+          ),
+          mEndState(
+              std::apply(
+                  [](auto const&... r) {
+                      std::make_tuple(r.end...);
+                  },
+                  ranges
+              )
+          )
+    {
+    }
 
-    private:
-    std::tuple<CombinationsType> mCurrentState;
-    std::tuple<CombinationsType> mEndState;
+    IteratorType mCurrentState;
+    IteratorType mEndState;
 };
 
 template <typename... TIter>
