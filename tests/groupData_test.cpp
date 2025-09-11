@@ -2,7 +2,6 @@
 // Created by Mateusz Mikiciuk on 18/07/2025.
 //
 
-#include <__ranges/elements_view.h>
 #include <gtest/gtest.h>
 #include <array>
 #include <vector>
