@@ -14,5 +14,8 @@ class CombinationsPolicyBaseTest : public ::testing::Test
 
 TEST_F(CombinationsPolicyBaseTest, IteratorTypeGeneratesCorrectCombinationsType)
 {
-    CombinationsPolicyBase combinations{v1.begin(), v1.end(), v2.begin(), v2.end()};
+    Ranges r1{v1.begin(), v1.end()};
+    Ranges r2{v2.begin(), v2.end()};
+    auto t = std::make_tuple(r1, r2);
+    CombinationsPolicyBase combinations{t};
 }
