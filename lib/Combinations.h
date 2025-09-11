@@ -10,14 +10,14 @@
 // TODO: think where we need copies and where we want forward values
 template <typename TIter>
 struct Ranges {
-    Ranges (TIter begin, TIter end) : mBegin(begin), mEnd(end) {}
+    Ranges(TIter begin, TIter end) : mBegin(begin), mEnd(end) {}
     TIter mBegin;
     TIter mEnd;
 };
 
 template <typename... TIter>
 struct CombinationsPolicyBase {
-    using IteratorType = typename std::tuple<TIter...>;
+    using IteratorType = std::tuple<TIter...>;
     explicit CombinationsPolicyBase(std::tuple<Ranges<TIter>...>& ranges)
         : mCurrentState(
               std::apply(
@@ -38,19 +38,30 @@ struct CombinationsPolicyBase {
     {
     }
 
+    protected:
     IteratorType mCurrentState;
     IteratorType mEndState;
 };
 
-template <typename ...TIter>
+template <typename... TIter>
 CombinationsPolicyBase(std::tuple<Ranges<TIter>...>&) -> CombinationsPolicyBase<TIter...>;
 
 template <typename... TIter>
-struct FullCombinationsPolicy : CombinationsPolicyBase<TIter...> {
+struct FullCombinationsPolicy {
+    CombinationsPolicyBase<TIter...> mBase;
+    explicit FullCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges) : mBase(ranges) {}
+
+    void addOne() {}
 };
 
 template <typename... TIter>
-struct StrictlyUpperCombinationsPolicy : CombinationsPolicyBase<TIter...> {
+struct StrictlyUpperCombinationsPolicy {
+    CombinationsPolicyBase<TIter...> mBase;
+    explicit StrictlyUpperCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges) : mBase(ranges)
+    {
+    }
+
+    void addOne() {}
 };
 
 #endif  // COMBINATIONS_H

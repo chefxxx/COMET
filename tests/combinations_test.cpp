@@ -12,7 +12,7 @@ class CombinationsPolicyBaseTest : public ::testing::Test
     std::vector<double> v2 = {1.0, 2.0, 3.0, 4.0};
 };
 
-TEST_F(CombinationsPolicyBaseTest, IteratorTypeGeneratesCorrectCombinationsType)
+TEST_F(CombinationsPolicyBaseTest, DoesItEvenCompile)
 {
     Ranges r1{v1.begin(), v1.end()};
     Ranges r2{v2.begin(), v2.end()};
