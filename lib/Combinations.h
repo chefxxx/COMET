@@ -46,7 +46,7 @@ struct CombinationsPolicyBase {
     IteratorType mBeginState;
     IteratorType mCurrentState;
     IteratorType mEndState;
-    bool isEnd;
+    bool isEnd = false;
 };
 
 template <typename... TIter>
@@ -62,7 +62,7 @@ struct FullCombinationsPolicy {
         constexpr size_t N = sizeof...(TIter);
         bool wasModified   = true;
         [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-            (addOneFun<N - 1 - Is>(), ...);
+            (addOneFun<Is, N>(wasModified), ...);
         }(std::make_index_sequence<N>());
         mBase.isEnd = wasModified;
     }
@@ -72,20 +72,22 @@ struct FullCombinationsPolicy {
     void addOneFun(bool& wasModified)
     {
         if (wasModified) {
-            auto it = ++std::get<I>(mBase.mCurrentState);
-            if (it != std::get<I>(mBase.mEndState)) {
+            constexpr auto ind = N - I - 1;
+            auto it            = ++std::get<ind>(mBase.mCurrentState);
+            if (it != std::get<ind>(mBase.mEndState)) {
                 [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-                    (addOneHelper<N - 1 - Is>(), ...);
+                    (addOneHelper<I, Is, N>(), ...);
                 }(std::make_index_sequence<I>());
-                wasModified = true;
+                wasModified = false;
             }
         }
     }
 
-    template <size_t I>
+    template <size_t I, size_t J, size_t N>
     void addOneHelper()
     {
-        std::get<I>(mBase.mCurrentState) = std::get<I>(mBase.mStartState);
+        constexpr auto ind                 = N - I + J;
+        std::get<ind>(mBase.mCurrentState) = std::get<ind>(mBase.mBeginState);
     }
 };
 
