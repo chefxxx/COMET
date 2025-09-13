@@ -57,23 +57,35 @@ struct FullCombinationsPolicy {
     CombinationsPolicyBase<TIter...> mBase;
     explicit FullCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges) : mBase(ranges) {}
     // TODO: This function is partially done!!!
-    // It is important to make one loop more, to check if we can add one to the left side
     void addOne()
     {
-        if (!mBase.isEnd) {
-            constexpr int right = mBase.rightIndex;
-            // Add one to the right index
-            auto iterRight = ++std::get<right>(mBase.mCurrentState);
+        constexpr size_t N = sizeof...(TIter);
+        bool wasModified   = true;
+        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+            (addOneFun<N - 1 - Is>(), ...);
+        }(std::make_index_sequence<N>());
+        mBase.isEnd = wasModified;
+    }
 
-            if (std::get<right>(mBase.mCurrentState) == mBase.mEndState) {
-                right = --mBase.rightIndex;
-            }
-
-            // TODO: Find how to change this for to compile time
-            for (int i = right + 1, len = sizeof...(TIter); i < len; ++i) {
-                std::get<i>(mBase.mCurrentState) = std::get<i>(mBase.mBeginState);
+    private:
+    template <size_t I, size_t N>
+    void addOneFun(bool& wasModified)
+    {
+        if (wasModified) {
+            auto it = ++std::get<I>(mBase.mCurrentState);
+            if (it != std::get<I>(mBase.mEndState)) {
+                [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+                    (addOneHelper<N - 1 - Is>(), ...);
+                }(std::make_index_sequence<I>());
+                wasModified = true;
             }
         }
+    }
+
+    template <size_t I>
+    void addOneHelper()
+    {
+        std::get<I>(mBase.mCurrentState) = std::get<I>(mBase.mStartState);
     }
 };
 
