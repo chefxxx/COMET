@@ -19,3 +19,11 @@ TEST_F(CombinationsPolicyBaseTest, DoesItEvenCompile)
     auto t = std::make_tuple(r1, r2);
     CombinationsPolicyBase combinations{t};
 }
+
+TEST_F(CombinationsPolicyBaseTest, StrictlyUpperCombinationTest)
+{
+    Ranges r1{v1.begin(), v1.end()};
+    Ranges r2{v2.begin(), v2.end()};
+    auto t = std::make_tuple(r1, r2);
+    StrictlyUpperCombinationsPolicy combinations{t};
+}

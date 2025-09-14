@@ -39,10 +39,7 @@ struct CombinationsPolicyBase {
               ranges
           ))
     {
-        // Indices for positions into mCurrentState tuple for manipulating inside the addOne()
-        rightIndex = sizeof...(TIter) - 1;
     }
-    int rightIndex;
     IteratorType mBeginState;
     IteratorType mCurrentState;
     IteratorType mEndState;
@@ -56,7 +53,6 @@ template <typename... TIter>
 struct FullCombinationsPolicy {
     CombinationsPolicyBase<TIter...> mBase;
     explicit FullCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges) : mBase(ranges) {}
-    // TODO: This function is partially done!!!
     void addOne()
     {
         constexpr size_t N = sizeof...(TIter);
@@ -83,9 +79,13 @@ struct FullCombinationsPolicy {
         }
     }
 
+    // N - number of data sources
+    // I - which position from the right side is considered
+    // J - loop iterator, which pointer is set to 0 from the N - I to right position
     template <size_t I, size_t J, size_t N>
     void addOneHelper()
     {
+        // Clang format makes it look very strange
         constexpr auto ind                 = N - I + J;
         std::get<ind>(mBase.mCurrentState) = std::get<ind>(mBase.mBeginState);
     }
@@ -94,11 +94,81 @@ struct FullCombinationsPolicy {
 template <typename... TIter>
 struct StrictlyUpperCombinationsPolicy {
     CombinationsPolicyBase<TIter...> mBase;
-    explicit StrictlyUpperCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges) : mBase(ranges)
+    explicit StrictlyUpperCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges)
+        : mBase(ranges),
+          mCurrentIndices(std::apply(
+              [](auto const&... r) {
+                  return std::array<int, sizeof...(TIter)>{[](const auto&) {
+                      return 0;
+                  }(r)...};
+              },
+              ranges
+          )),
+          mEndIndices(std::apply(
+              [](auto const&... r) {
+                  return std::array<int, sizeof...(TIter)>{[](const auto& arg) {
+                      return std::distance(arg.mBegin, arg.mEnd);
+                  }(r)...};
+              },
+              ranges
+          ))
     {
     }
 
-    void addOne() {}
+    void addOne()
+    {
+        constexpr size_t N = sizeof...(TIter);
+        bool wasModified   = true;
+        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+            (addOneFun<Is, N>(wasModified), ...);
+        }(std::make_index_sequence<N>());
+        mBase.isEnd = wasModified;
+    }
+
+    private:
+    template <size_t I, size_t N>
+    void addOneFun(bool& wasModified)
+    {
+        if (wasModified) {
+            bool wasChanged    = true;
+            constexpr auto ind = N - I - 1;
+            auto it            = ++std::get<ind>(mBase.mCurrentState);
+            ++mCurrentIndices[ind];
+            if (it != std::get<ind>(mBase.mEndState)) {
+                [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+                    (addOneHelper<I, Is, N>(wasChanged), ...);
+                }(std::make_index_sequence<I>());
+                wasModified = !wasChanged;
+            }
+        }
+    }
+
+    // Here there are changes from the Full version. The pointers must be set not to 0, but to
+    // Position + 1 from the nearest left pointer.
+    // N - number of data sources
+    // I - which position from the right side is considered
+    // J - loop iterator, which pointer is set to 0 from the N - I to right position
+    template <size_t I, size_t J, size_t N>
+    void addOneHelper(bool& wasChanged)
+    {
+        if (wasChanged) {
+            // Clang format makes it look very strange
+            constexpr auto ind = N - I + J;
+            int64_t tmpInd     = mCurrentIndices[ind - 1] + 1;
+            if (tmpInd < mEndIndices[ind]) {
+                std::get<ind>(mBase.mCurrentState) = std::get<ind>(mBase.mBeginState) + tmpInd;
+                mCurrentIndices[ind]               = tmpInd;
+            } else {
+                wasChanged = false;
+            }
+        }
+    }
+
+    // TODO: here I need to know distances between iterators and I want have additional structure
+    // TODO: to store current indices.
+
+    std::array<int, sizeof...(TIter)> mCurrentIndices;
+    std::array<int, sizeof...(TIter)> mEndIndices;
 };
 
 #endif  // COMBINATIONS_H
