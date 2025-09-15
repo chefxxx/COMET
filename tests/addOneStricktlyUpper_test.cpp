@@ -7,9 +7,6 @@
 
 namespace addOneStricktlyUpper
 {
-// TODO: There is a bug, that first couple of iterations have the same behaviour as the full
-// version.
-// TODO: We should add some function like set start ranges or smth. like that
 TEST(AddOneStricktlyFirst, twoVectorsSameSize)
 {
     std::vector<int> v1  = {1, 2, 3, 4, 5, 6, 7, 8};
@@ -23,7 +20,7 @@ TEST(AddOneStricktlyFirst, twoVectorsSameSize)
     auto combinationPolicy = StrictlyUpperCombinationsPolicy(tuple);
     // That's what I do not like - to obtain isEnd I should use mBase
     std::vector<std::tuple<int, char>> expected = {
-        {1, 'a'},
+  // {1, 'a'},
         {1, 'b'},
         {1, 'c'},
         {1, 'd'},
@@ -60,10 +57,10 @@ TEST(AddOneStricktlyFirst, threeVectorsDifferentSize)
     auto combinationPolicy = StrictlyUpperCombinationsPolicy(tuple);
     // That's what I do not like - to obtain isEnd I should use mBase
     std::vector<std::tuple<int, char, char>> expected = {
-        {1, '#', 'a'},
-        {1, '#', 'b'},
-        {1, '#', 'c'},
-        {1, '#', 'd'},
+  // {1, '#', 'a'},
+  // {1, '#', 'b'},
+  // {1, '#', 'c'},
+  // {1, '#', 'd'},
         {1, '@', 'c'},
         {1, '@', 'd'},
         {1, '$', 'd'},

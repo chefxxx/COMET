@@ -113,6 +113,10 @@ struct StrictlyUpperCombinationsPolicy {
               ranges
           ))
     {
+        // Set ranges here have the same logic as a loop into addOneFun with setting new
+        // pointers for right side positions.
+        constexpr auto N = sizeof...(TIter);
+        setRanges<N - 1, N>();
     }
 
     void addOne()
@@ -162,6 +166,17 @@ struct StrictlyUpperCombinationsPolicy {
                 wasChanged = false;
             }
         }
+    }
+
+    // TODO: I consider strong refactor here, I don't like this solution, there are a lot of
+    // TODO: code repetition and it is very hardly understandable
+    template <size_t I, size_t N>
+    void setRanges()
+    {
+        bool wasChanged = true;
+        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+            (addOneHelper<I, Is, N>(wasChanged), ...);
+        }(std::make_index_sequence<I>());
     }
 
     // TODO: here I need to know distances between iterators and I want have additional structure
