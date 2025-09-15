@@ -98,7 +98,7 @@ struct StrictlyUpperCombinationsPolicy {
         : mBase(ranges),
           mCurrentIndices(std::apply(
               [](auto const&... r) {
-                  return std::array<int, sizeof...(TIter)>{[](const auto&) {
+                  return std::array<int64_t, sizeof...(TIter)>{[](const auto&) {
                       return 0;
                   }(r)...};
               },
@@ -106,7 +106,7 @@ struct StrictlyUpperCombinationsPolicy {
           )),
           mEndIndices(std::apply(
               [](auto const&... r) {
-                  return std::array<int, sizeof...(TIter)>{[](const auto& arg) {
+                  return std::array<int64_t, sizeof...(TIter)>{[](const auto& arg) {
                       return std::distance(arg.mBegin, arg.mEnd);
                   }(r)...};
               },
@@ -182,8 +182,8 @@ struct StrictlyUpperCombinationsPolicy {
     // TODO: here I need to know distances between iterators and I want have additional structure
     // TODO: to store current indices.
 
-    std::array<int, sizeof...(TIter)> mCurrentIndices;
-    std::array<int, sizeof...(TIter)> mEndIndices;
+    std::array<int64_t, sizeof...(TIter)> mCurrentIndices;
+    std::array<int64_t, sizeof...(TIter)> mEndIndices;
 };
 
 #endif  // COMBINATIONS_H
