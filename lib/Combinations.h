@@ -26,12 +26,7 @@ struct CombinationsPolicyBase {
               },
               ranges
           )),
-          mCurrentState(std::apply(
-              [](auto const&... r) {
-                  return std::make_tuple(r.mBegin...);
-              },
-              ranges
-          )),
+          mCurrentState(mBeginState),
           mEndState(std::apply(
               [](auto const&... r) {
                   return std::make_tuple(r.mEnd...);
@@ -72,7 +67,7 @@ struct FullCombinationsPolicy {
             auto it            = ++std::get<ind>(mBase.mCurrentState);
             if (it != std::get<ind>(mBase.mEndState)) {
                 [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-                    (addOneHelper<I, Is, N>(), ...);
+                    (resetState<I, Is, N>(), ...);
                 }(std::make_index_sequence<I>());
                 wasModified = false;
             }
@@ -83,7 +78,7 @@ struct FullCombinationsPolicy {
     // I - which position from the right side is considered
     // J - loop iterator, which pointer is set to 0 from the N - I to right position
     template <size_t I, size_t J, size_t N>
-    void addOneHelper()
+    void resetState()
     {
         // Clang format makes it look very strange
         constexpr auto ind                 = N - I + J;
@@ -96,15 +91,7 @@ struct StrictlyUpperCombinationsPolicy {
     CombinationsPolicyBase<TIter...> mBase;
     explicit StrictlyUpperCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges)
         : mBase(ranges),
-          mCurrentIndices(std::apply(
-              [](auto const&... r) {
-                  return std::array<int64_t, sizeof...(TIter)>{[](const auto&) {
-                      return 0;
-                  }(r)...};
-              },
-              ranges
-          )),
-          mEndIndices(std::apply(
+          mEndIndexNumbers(std::apply(
               [](auto const&... r) {
                   return std::array<int64_t, sizeof...(TIter)>{[](const auto& arg) {
                       return std::distance(arg.mBegin, arg.mEnd);
@@ -130,21 +117,35 @@ struct StrictlyUpperCombinationsPolicy {
     }
 
     private:
+    // TODO: Is it better setRanges return boolean instead of using in/out parameter?
     template <size_t I, size_t N>
     void addOneFun(bool& wasModified)
     {
         if (wasModified) {
-            bool wasChanged    = true;
             constexpr auto ind = N - I - 1;
             auto it            = ++std::get<ind>(mBase.mCurrentState);
-            ++mCurrentIndices[ind];
+            ++mCurrentIndexNumbers[ind];
             if (it != std::get<ind>(mBase.mEndState)) {
-                [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-                    (addOneHelper<I, Is, N>(wasChanged), ...);
-                }(std::make_index_sequence<I>());
+                bool wasChanged = true;
+                setRanges<I, N>(wasChanged);
                 wasModified = !wasChanged;
             }
         }
+    }
+
+    template <size_t I, size_t N>
+    void setRanges(bool& wasChanged)
+    {
+        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+            (resetState<I, Is, N>(wasChanged), ...);
+        }(std::make_index_sequence<I>());
+    }
+
+    template <size_t I, size_t N>
+    void setRanges()
+    {
+        bool wasModified = true;
+        setRanges<I, N>(wasModified);
     }
 
     // Here there are changes from the Full version. The pointers must be set not to 0, but to
@@ -153,37 +154,22 @@ struct StrictlyUpperCombinationsPolicy {
     // I - which position from the right side is considered
     // J - loop iterator, which pointer is set to 0 from the N - I to right position
     template <size_t I, size_t J, size_t N>
-    void addOneHelper(bool& wasChanged)
+    void resetState(bool& wasChanged)
     {
         if (wasChanged) {
-            // Clang format makes it look very strange
             constexpr auto ind = N - I + J;
-            int64_t tmpInd     = mCurrentIndices[ind - 1] + 1;
-            if (tmpInd < mEndIndices[ind]) {
+            int64_t tmpInd     = mCurrentIndexNumbers[ind - 1] + 1;
+            if (tmpInd < mEndIndexNumbers[ind]) {
                 std::get<ind>(mBase.mCurrentState) = std::get<ind>(mBase.mBeginState) + tmpInd;
-                mCurrentIndices[ind]               = tmpInd;
+                mCurrentIndexNumbers[ind]          = tmpInd;
             } else {
                 wasChanged = false;
             }
         }
     }
 
-    // TODO: I consider strong refactor here, I don't like this solution, there are a lot of
-    // TODO: code repetition and it is very hardly understandable
-    template <size_t I, size_t N>
-    void setRanges()
-    {
-        bool wasChanged = true;
-        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-            (addOneHelper<I, Is, N>(wasChanged), ...);
-        }(std::make_index_sequence<I>());
-    }
-
-    // TODO: here I need to know distances between iterators and I want have additional structure
-    // TODO: to store current indices.
-
-    std::array<int64_t, sizeof...(TIter)> mCurrentIndices;
-    std::array<int64_t, sizeof...(TIter)> mEndIndices;
+    std::array<int64_t, sizeof...(TIter)> mCurrentIndexNumbers{};
+    std::array<int64_t, sizeof...(TIter)> mEndIndexNumbers;
 };
 
 #endif  // COMBINATIONS_H
