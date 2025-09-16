@@ -18,9 +18,7 @@ TEST(AddOneStricktlyFirst, twoVectorsSameSize)
     auto tuple = std::make_tuple(r1, r2);
 
     auto combinationPolicy = StrictlyUpperCombinationsPolicy(tuple);
-    // That's what I do not like - to obtain isEnd I should use mBase
     std::vector<std::tuple<int, char>> expected = {
-  // {1, 'a'},
         {1, 'b'},
         {1, 'c'},
         {1, 'd'},
@@ -57,10 +55,6 @@ TEST(AddOneStricktlyFirst, threeVectorsDifferentSize)
     auto combinationPolicy = StrictlyUpperCombinationsPolicy(tuple);
     // That's what I do not like - to obtain isEnd I should use mBase
     std::vector<std::tuple<int, char, char>> expected = {
-  // {1, '#', 'a'},
-  // {1, '#', 'b'},
-  // {1, '#', 'c'},
-  // {1, '#', 'd'},
         {1, '@', 'c'},
         {1, '@', 'd'},
         {1, '$', 'd'},
@@ -78,4 +72,22 @@ TEST(AddOneStricktlyFirst, threeVectorsDifferentSize)
     }
 }
 
-}  // namespace addOneStricktlyUpper
+TEST(AddOneStricktlyUpper, OneRangeIsLessThanItCanBe)
+{
+    std::vector<int> v1  = {1, 2, 3};
+    std::vector<char> v2 = {'#'};
+    std::vector<char> v3 = {'a', 'b', 'c', 'd'};
+
+    Ranges r1 = {v1.begin(), v1.end()};
+    Ranges r2 = {v2.begin(), v2.end()};
+    Ranges r3 = {v3.begin(), v3.end()};
+
+    auto tuple = std::make_tuple(r1, r2, r3);
+
+    auto combinationPolicy = StrictlyUpperCombinationsPolicy(tuple);
+
+    ASSERT_TRUE(combinationPolicy.mBase.isEnd);
+}
+
+}
+// namespace addOneStricktlyUpper

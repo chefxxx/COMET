@@ -5,6 +5,7 @@
 #ifndef COMBINATIONS_H
 #define COMBINATIONS_H
 
+#include <algorithm>
 #include <ios>
 #include <tuple>
 
@@ -20,25 +21,33 @@ template <typename... TIter>
 struct CombinationsPolicyBase {
     using IteratorType = std::tuple<TIter...>;
     explicit CombinationsPolicyBase(std::tuple<Ranges<TIter>...>& ranges)
-        : mBeginState(std::apply(
+        : mCurrentState(std::apply(
               [](auto const&... r) {
                   return std::make_tuple(r.mBegin...);
               },
               ranges
           )),
-          mCurrentState(mBeginState),
-          mEndState(std::apply(
+
+         mEndIndexNumbers(std::apply(
               [](auto const&... r) {
-                  return std::make_tuple(r.mEnd...);
+                  return std::array<int64_t, sizeof...(TIter)>{[](const auto& arg) {
+                      return std::distance(arg.mBegin, arg.mEnd);
+                  }(r)...};
               },
               ranges
-          ))
+         )),
+         isEnd([&]<std::size_t... Is>(std::index_sequence<Is...>) {
+                  return ((mEndIndexNumbers[Is] == 0) || ... || 0);
+              }(std::make_index_sequence<sizeof...(TIter)>()
+         ))
+
     {
     }
-    IteratorType mBeginState;
+
     IteratorType mCurrentState;
-    IteratorType mEndState;
-    bool isEnd = false;
+    std::array<int64_t, sizeof...(TIter)> mCurrentIndexNumbers{};
+    std::array<int64_t, sizeof...(TIter)> mEndIndexNumbers;
+    bool isEnd;
 };
 
 template <typename... TIter>
@@ -64,8 +73,9 @@ struct FullCombinationsPolicy {
     {
         if (wasModified) {
             constexpr auto ind = N - I - 1;
-            auto it            = ++std::get<ind>(mBase.mCurrentState);
-            if (it != std::get<ind>(mBase.mEndState)) {
+            int64_t currentPointersIndex = ++mBase.mCurrentIndexNumbers[ind];
+            ++std::get<ind>(mBase.mCurrentState);
+            if (currentPointersIndex != mBase.mEndIndexNumbers[ind]) {
                 [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
                     (resetState<I, Is, N>(), ...);
                 }(std::make_index_sequence<I>());
@@ -82,7 +92,8 @@ struct FullCombinationsPolicy {
     {
         // Clang format makes it look very strange
         constexpr auto ind                 = N - I + J;
-        std::get<ind>(mBase.mCurrentState) = std::get<ind>(mBase.mBeginState);
+        std::get<ind>(mBase.mCurrentState)-=mBase.mCurrentIndexNumbers[ind];
+        mBase.mCurrentIndexNumbers[ind] = 0;
     }
 };
 
@@ -90,20 +101,16 @@ template <typename... TIter>
 struct StrictlyUpperCombinationsPolicy {
     CombinationsPolicyBase<TIter...> mBase;
     explicit StrictlyUpperCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges)
-        : mBase(ranges),
-          mEndIndexNumbers(std::apply(
-              [](auto const&... r) {
-                  return std::array<int64_t, sizeof...(TIter)>{[](const auto& arg) {
-                      return std::distance(arg.mBegin, arg.mEnd);
-                  }(r)...};
-              },
-              ranges
-          ))
+        : mBase(ranges)
     {
         // Set ranges here have the same logic as a loop into addOneFun with setting new
         // pointers for right side positions.
         constexpr auto N = sizeof...(TIter);
-        setRanges<N - 1, N>();
+        if (!mBase.isEnd) {
+            bool shouldEnd = true;
+            setRanges<N - 1, N>(shouldEnd);
+            mBase.isEnd = !shouldEnd;
+        }
     }
 
     void addOne()
@@ -123,9 +130,9 @@ struct StrictlyUpperCombinationsPolicy {
     {
         if (wasModified) {
             constexpr auto ind = N - I - 1;
-            auto it            = ++std::get<ind>(mBase.mCurrentState);
-            ++mCurrentIndexNumbers[ind];
-            if (it != std::get<ind>(mBase.mEndState)) {
+            int64_t currentPointersIndex = ++mBase.mCurrentIndexNumbers[ind];
+            ++std::get<ind>(mBase.mCurrentState);
+            if (currentPointersIndex != mBase.mEndIndexNumbers[ind]) {
                 bool wasChanged = true;
                 setRanges<I, N>(wasChanged);
                 wasModified = !wasChanged;
@@ -158,18 +165,15 @@ struct StrictlyUpperCombinationsPolicy {
     {
         if (wasChanged) {
             constexpr auto ind = N - I + J;
-            int64_t tmpInd     = mCurrentIndexNumbers[ind - 1] + 1;
-            if (tmpInd < mEndIndexNumbers[ind]) {
-                std::get<ind>(mBase.mCurrentState) = std::get<ind>(mBase.mBeginState) + tmpInd;
-                mCurrentIndexNumbers[ind]          = tmpInd;
+            int64_t tmpInd     = mBase.mCurrentIndexNumbers[ind - 1] + 1;
+            if (tmpInd < mBase.mEndIndexNumbers[ind]) {
+                std::get<ind>(mBase.mCurrentState) += tmpInd - mBase.mCurrentIndexNumbers[ind];
+                mBase.mCurrentIndexNumbers[ind]          = tmpInd;
             } else {
                 wasChanged = false;
             }
         }
     }
-
-    std::array<int64_t, sizeof...(TIter)> mCurrentIndexNumbers{};
-    std::array<int64_t, sizeof...(TIter)> mEndIndexNumbers;
 };
 
 #endif  // COMBINATIONS_H
