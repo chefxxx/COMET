@@ -17,7 +17,7 @@ TEST(AddOneStricktlyFirst, twoVectorsSameSize)
 
     auto tuple = std::make_tuple(r1, r2);
 
-    auto combinationPolicy = StrictlyUpperCombinationsPolicy(tuple);
+    auto combinationPolicy                      = StrictlyUpperCombinationsPolicy(tuple);
     std::vector<std::tuple<int, char>> expected = {
         {1, 'b'},
         {1, 'c'},
@@ -89,5 +89,5 @@ TEST(AddOneStricktlyUpper, OneRangeIsLessThanItCanBe)
     ASSERT_TRUE(combinationPolicy.mBase.isEnd);
 }
 
-}
+}  // namespace addOneStricktlyUpper
 // namespace addOneStricktlyUpper

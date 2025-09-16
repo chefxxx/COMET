@@ -28,18 +28,17 @@ struct CombinationsPolicyBase {
               ranges
           )),
 
-         mEndIndexNumbers(std::apply(
+          mEndIndexNumbers(std::apply(
               [](auto const&... r) {
                   return std::array<int64_t, sizeof...(TIter)>{[](const auto& arg) {
                       return std::distance(arg.mBegin, arg.mEnd);
                   }(r)...};
               },
               ranges
-         )),
-         isEnd([&]<std::size_t... Is>(std::index_sequence<Is...>) {
-                  return ((mEndIndexNumbers[Is] == 0) || ... || 0);
-              }(std::make_index_sequence<sizeof...(TIter)>()
-         ))
+          )),
+          isEnd([&]<std::size_t... Is>(std::index_sequence<Is...>) {
+              return ((mEndIndexNumbers[Is] == 0) || ... || 0);
+          }(std::make_index_sequence<sizeof...(TIter)>()))
 
     {
     }
@@ -72,7 +71,7 @@ struct FullCombinationsPolicy {
     void addOneFun(bool& wasModified)
     {
         if (wasModified) {
-            constexpr auto ind = N - I - 1;
+            constexpr auto ind           = N - I - 1;
             int64_t currentPointersIndex = ++mBase.mCurrentIndexNumbers[ind];
             ++std::get<ind>(mBase.mCurrentState);
             if (currentPointersIndex != mBase.mEndIndexNumbers[ind]) {
@@ -91,8 +90,8 @@ struct FullCombinationsPolicy {
     void resetState()
     {
         // Clang format makes it look very strange
-        constexpr auto ind                 = N - I + J;
-        std::get<ind>(mBase.mCurrentState)-=mBase.mCurrentIndexNumbers[ind];
+        constexpr auto ind = N - I + J;
+        std::get<ind>(mBase.mCurrentState) -= mBase.mCurrentIndexNumbers[ind];
         mBase.mCurrentIndexNumbers[ind] = 0;
     }
 };
@@ -100,8 +99,7 @@ struct FullCombinationsPolicy {
 template <typename... TIter>
 struct StrictlyUpperCombinationsPolicy {
     CombinationsPolicyBase<TIter...> mBase;
-    explicit StrictlyUpperCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges)
-        : mBase(ranges)
+    explicit StrictlyUpperCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges) : mBase(ranges)
     {
         // Set ranges here have the same logic as a loop into addOneFun with setting new
         // pointers for right side positions.
@@ -129,7 +127,7 @@ struct StrictlyUpperCombinationsPolicy {
     void addOneFun(bool& wasModified)
     {
         if (wasModified) {
-            constexpr auto ind = N - I - 1;
+            constexpr auto ind           = N - I - 1;
             int64_t currentPointersIndex = ++mBase.mCurrentIndexNumbers[ind];
             ++std::get<ind>(mBase.mCurrentState);
             if (currentPointersIndex != mBase.mEndIndexNumbers[ind]) {
@@ -168,7 +166,7 @@ struct StrictlyUpperCombinationsPolicy {
             int64_t tmpInd     = mBase.mCurrentIndexNumbers[ind - 1] + 1;
             if (tmpInd < mBase.mEndIndexNumbers[ind]) {
                 std::get<ind>(mBase.mCurrentState) += tmpInd - mBase.mCurrentIndexNumbers[ind];
-                mBase.mCurrentIndexNumbers[ind]          = tmpInd;
+                mBase.mCurrentIndexNumbers[ind] = tmpInd;
             } else {
                 wasChanged = false;
             }
