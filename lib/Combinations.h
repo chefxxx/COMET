@@ -27,7 +27,6 @@ struct CombinationsPolicyBase {
               },
               ranges
           )),
-
           mEndIndexNumbers(std::apply(
               [](auto const&... r) {
                   return std::array<int64_t, sizeof...(TIter)>{[](const auto& arg) {
@@ -144,13 +143,6 @@ struct StrictlyUpperCombinationsPolicy {
         [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
             (resetState<I, Is, N>(wasChanged), ...);
         }(std::make_index_sequence<I>());
-    }
-
-    template <size_t I, size_t N>
-    void setRanges()
-    {
-        bool wasModified = true;
-        setRanges<I, N>(wasModified);
     }
 
     // Here there are changes from the Full version. The pointers must be set not to 0, but to

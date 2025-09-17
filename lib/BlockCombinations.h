@@ -7,7 +7,7 @@
 
 #include "Combinations.h"
 #include "Helpers.h"
-// Why block combinations and why it is in another file?
+
 template <typename... TData>
 struct BlockCombinations {
     public:
