@@ -37,6 +37,8 @@ template <typename TIter>
 struct GroupedData {
     std::unordered_map<int, std::vector<BucketIdx<TIter>>> buckets;
     std::unordered_set<int> bucketsNumbers;
+
+    auto operator()(const int& bucketIdx) const { return buckets[bucketIdx]; }
 };
 
 // TODO: think where we need copies and where we want forward values

@@ -24,6 +24,8 @@ struct BlockCombinations {
     private:
     TCombinationsPolicy mCombinationsPolicy;
     TBucketPolicy mBucketPolicy;
+
+    public:
     std::tuple<GroupedData<TIter>...> mGroupedData;
 };
 
