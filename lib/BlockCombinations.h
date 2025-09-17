@@ -9,17 +9,22 @@
 
 template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TIter>
 struct BlockCombinations {
-    public:
-    BlockCombinations(TBucketPolicy bucketPolicy, TCombinationsPolicy combinationsPolicy, std::tuple<Ranges<TIter>...>& ranges)
-        : mBucketPolicy(bucketPolicy), mCombinationsPolicy(combinationsPolicy)
+    BlockCombinations(
+        TBucketPolicy bucketPolicy, TCombinationsPolicy combinationsPolicy,
+        std::tuple<Ranges<TIter>...>& ranges
+    )
+        : mCombinationsPolicy(combinationsPolicy),
+          mBucketPolicy(bucketPolicy),
+          mGroupedData(tuple_transform(ranges, [&](auto&& r) {
+              return groupData(r.mBegin, r.mEnd, mBucketPolicy);
+          }))
     {
-
     }
 
     private:
-    std::tuple<GroupedData<TIter...>> mGroupedData;
     TCombinationsPolicy mCombinationsPolicy;
     TBucketPolicy mBucketPolicy;
+    std::tuple<GroupedData<TIter>...> mGroupedData;
 };
 
 #endif  // BLOCKCOMBINATINOS_H

@@ -47,6 +47,17 @@ struct Ranges {
     TIter mEnd;
 };
 
+template <typename... Ts, typename F>
+auto tuple_transform(const std::tuple<Ts...>& tuple, F&& f)
+{
+    return std::apply(
+        [&](auto&&... elems) {
+            return std::make_tuple(f(elems)...);
+        },
+        tuple
+    );
+}
+
 template <std::forward_iterator TIter, typename TBucketPolicy>
     requires is_bucket_policy<TBucketPolicy, TIter>
 [[nodiscard]] auto groupData(
