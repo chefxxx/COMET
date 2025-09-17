@@ -6,16 +6,20 @@
 #define BLOCKCOMBINATINOS_H
 
 #include "Combinations.h"
-#include "Helpers.h"
 
-template <typename... TData>
+template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TIter>
 struct BlockCombinations {
     public:
-    BlockCombinations(TData &...data) {}
+    BlockCombinations(TBucketPolicy bucketPolicy, TCombinationsPolicy combinationsPolicy, std::tuple<Ranges<TIter>...>& ranges)
+        : mBucketPolicy(bucketPolicy), mCombinationsPolicy(combinationsPolicy)
+    {
+
+    }
 
     private:
-    std::tuple<GroupedData<typename TData::iterator...>> mGroupedData;
-    CombinationsPolicyBase<TData...> mCombinationsPolicy;
+    std::tuple<GroupedData<TIter...>> mGroupedData;
+    TCombinationsPolicy mCombinationsPolicy;
+    TBucketPolicy mBucketPolicy;
 };
 
 #endif  // BLOCKCOMBINATINOS_H

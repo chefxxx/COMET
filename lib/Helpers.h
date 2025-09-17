@@ -39,6 +39,14 @@ struct GroupedData {
     std::unordered_set<int> bucketsNumbers;
 };
 
+// TODO: think where we need copies and where we want forward values
+template <typename TIter>
+struct Ranges {
+    Ranges(TIter begin, TIter end) : mBegin(begin), mEnd(end) {}
+    TIter mBegin;
+    TIter mEnd;
+};
+
 template <std::forward_iterator TIter, typename TBucketPolicy>
     requires is_bucket_policy<TBucketPolicy, TIter>
 [[nodiscard]] auto groupData(

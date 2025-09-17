@@ -6,16 +6,8 @@
 #define COMBINATIONS_H
 
 #include <algorithm>
-#include <ios>
 #include <tuple>
-
-// TODO: think where we need copies and where we want forward values
-template <typename TIter>
-struct Ranges {
-    Ranges(TIter begin, TIter end) : mBegin(begin), mEnd(end) {}
-    TIter mBegin;
-    TIter mEnd;
-};
+#include "Helpers.h"
 
 template <typename... TIter>
 struct CombinationsPolicyBase {
