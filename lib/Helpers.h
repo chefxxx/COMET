@@ -38,7 +38,7 @@ struct GroupedData {
     std::unordered_map<int, std::vector<BucketIdx<TIter>>> buckets;
     std::unordered_set<int> bucketsNumbers;
 
-    auto operator()(const int& bucketIdx) const { return buckets[bucketIdx]; }
+    auto operator[](const int& bucketIdx) const { return buckets[bucketIdx]; }
 };
 
 // TODO: think where we need copies and where we want forward values
@@ -89,9 +89,39 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
     return resultData;
 }
 
-template <typename... TIter>
-void syncBuckets(const std::tuple<GroupedData<TIter...>>& groupedData)
+template <typename TIter0, typename TIterI>
+void syncHelper(GroupedData<TIter0>& firstData, GroupedData<TIterI>& comparedData)
 {
+    auto& [firstBuckets, firstBucketsNumbers] = firstData;
+    auto& [buckets, bucketsNumbers]           = comparedData;
+
+    for (auto it = firstBucketsNumbers.begin(); it != firstBucketsNumbers.end();) {
+        if (!bucketsNumbers.contains(*it)) {
+            firstBuckets.erase(*it);
+            it = firstBucketsNumbers.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    for (auto it = bucketsNumbers.begin(); it != bucketsNumbers.end();) {
+        if (!firstBuckets.contains(*it)) {
+            buckets.erase(*it);
+            it = bucketsNumbers.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+template <typename... TIter>
+void syncBuckets(std::tuple<GroupedData<TIter>...>& groupedData)
+{
+    constexpr size_t N = sizeof...(TIter);
+    auto& firstData    = std::get<0>(groupedData);
+    [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+        (syncHelper(firstData, std::get<Is>(groupedData)), ...);
+    }(std::make_index_sequence<N>());
 }
 
 #endif  // HELPERS_H
