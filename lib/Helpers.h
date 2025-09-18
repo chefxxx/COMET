@@ -39,6 +39,12 @@ struct GroupedData {
     std::unordered_set<int> bucketsNumbers;
 
     auto operator[](const int& bucketIdx) const { return buckets[bucketIdx]; }
+    size_t size() const
+    {
+        if (bucketsNumbers.size() == buckets.size())
+            return buckets.size();
+        return -1;
+    }
 };
 
 // TODO: think where we need copies and where we want forward values
