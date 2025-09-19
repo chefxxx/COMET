@@ -27,7 +27,7 @@ struct GroupedData {
     std::unordered_map<int, std::vector<TIter>> buckets;
     std::unordered_set<int> bucketsNumbers;
 
-    auto operator[](const int& bucketIdx) const { return buckets[bucketIdx]; }
+    auto operator[](const int& bucketIdx) const { return buckets.at(bucketIdx); }
     [[nodiscard]] size_t size() const
     {
         if (bucketsNumbers.size() == buckets.size())
@@ -44,6 +44,7 @@ struct GroupedData {
         buckets.erase(*iter);
         return bucketsNumbers.erase(iter);
     }
+    [[nodiscard]] bool contains(const int& bucketNo) const { return bucketsNumbers.contains(bucketNo); }
     [[nodiscard]] IterType begin() const { return bucketsNumbers.begin(); }
     [[nodiscard]] IterType end() const { return bucketsNumbers.end(); }
 };
@@ -82,7 +83,7 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
     // We need this second loop,
     // bc in the one above we do not know when we hit last element in bucket.
     for (auto it = resultData.begin(); it != resultData.end();) {
-        if (resultData.buckets[*it].size() < minCatSize) {
+        if (resultData[*it].size() < minCatSize) {
             it = resultData.erase(it);
         } else {
             ++it;
@@ -95,23 +96,11 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
 template <typename TIter0, typename TIterI>
 void syncHelper(GroupedData<TIter0>& firstData, GroupedData<TIterI>& comparedData)
 {
-    auto& [firstBuckets, firstBucketsNumbers] = firstData;
-    auto& [buckets, bucketsNumbers]           = comparedData;
-
-    for (auto it = firstBucketsNumbers.begin(); it != firstBucketsNumbers.end();) {
-        if (!bucketsNumbers.contains(*it)) {
-            firstBuckets.erase(*it);
-            it = firstBucketsNumbers.erase(it);
-        } else {
-            ++it;
+    for (auto it = firstData.begin(); it != firstData.end();) {
+        if (!comparedData.contains(*it)) {
+            it = firstData.erase(it);
         }
-    }
-
-    for (auto it = bucketsNumbers.begin(); it != bucketsNumbers.end();) {
-        if (!firstBuckets.contains(*it)) {
-            buckets.erase(*it);
-            it = bucketsNumbers.erase(it);
-        } else {
+        else {
             ++it;
         }
     }
@@ -124,6 +113,7 @@ void syncBuckets(std::tuple<GroupedData<TIter>...>& groupedData)
     auto& firstData    = std::get<0>(groupedData);
     [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
         (syncHelper(firstData, std::get<Is>(groupedData)), ...);
+        (syncHelper(std::get<Is>(groupedData), firstData), ...);
     }(std::make_index_sequence<N>());
 }
 

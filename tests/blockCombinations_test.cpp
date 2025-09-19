@@ -93,9 +93,21 @@ TEST_F(BlockCombinationsTest, groupDataElementsInBucketsAreCorrect)
     }
 }
 
-TEST_F(BlockCombinationsTest, basicSyncData)
+TEST_F(BlockCombinationsTest, basicSyncBuckets)
 {
     const std::vector<double> expectedCommon{2, 3, 4};
     syncBuckets(blockP.mGroupedData);
-    const auto data = std::get<0>(blockP.mGroupedData);
+    const auto data0 = std::get<0>(blockP.mGroupedData);
+    const auto data1 = std::get<1>(blockP.mGroupedData);
+    const auto data2 = std::get<2>(blockP.mGroupedData);
+
+    ASSERT_EQ(expectedCommon.size(), data0.size());
+    ASSERT_EQ(expectedCommon.size(), data1.size());
+    ASSERT_EQ(expectedCommon.size(), data2.size());
+
+    for (const auto& num : expectedCommon) {
+        ASSERT_EQ(true, data0.contains(num));
+        ASSERT_EQ(true, data1.contains(num));
+        ASSERT_EQ(true, data2.contains(num));
+    }
 }
