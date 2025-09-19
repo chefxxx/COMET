@@ -44,7 +44,10 @@ struct GroupedData {
         buckets.erase(*iter);
         return bucketsNumbers.erase(iter);
     }
-    [[nodiscard]] bool contains(const int& bucketNo) const { return bucketsNumbers.contains(bucketNo); }
+    [[nodiscard]] bool contains(const int& bucketNo) const
+    {
+        return bucketsNumbers.contains(bucketNo);
+    }
     [[nodiscard]] IterType begin() const { return bucketsNumbers.begin(); }
     [[nodiscard]] IterType end() const { return bucketsNumbers.end(); }
 };
@@ -99,8 +102,7 @@ void syncHelper(GroupedData<TIter0>& firstData, const GroupedData<TIterI>& compa
     for (auto it = firstData.begin(); it != firstData.end();) {
         if (!comparedData.contains(*it)) {
             it = firstData.erase(it);
-        }
-        else {
+        } else {
             ++it;
         }
     }
