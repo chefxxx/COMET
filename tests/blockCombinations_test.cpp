@@ -84,11 +84,18 @@ TEST_F(BlockCombinationsTest, groupDataElementsInBucketsAreCorrect)
                                      expectedB03, expectedB04, expectedB05};
 
     for (size_t i = 0; i < buckets0.size(); ++i) {
-        auto bucket   = buckets0.at(i);
+        auto bucket          = buckets0.at(i);
         const auto& expected = expectedBuckets.at(i);
         ASSERT_EQ(expected.size(), bucket.size());
         for (size_t j = 0; j < bucket.size(); ++j) {
             ASSERT_EQ(expected.at(j), *bucket.at(j));
         }
     }
+}
+
+TEST_F(BlockCombinationsTest, basicSyncData)
+{
+    const std::vector<double> expectedCommon{2, 3, 4};
+    syncBuckets(blockP.mGroupedData);
+    const auto data = std::get<0>(blockP.mGroupedData);
 }

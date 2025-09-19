@@ -23,16 +23,29 @@ concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
 
 template <typename TIter>
 struct GroupedData {
+    using IterType = std::unordered_set<int>::iterator;
     std::unordered_map<int, std::vector<TIter>> buckets;
     std::unordered_set<int> bucketsNumbers;
 
     auto operator[](const int& bucketIdx) const { return buckets[bucketIdx]; }
-    size_t size() const
+    [[nodiscard]] size_t size() const
     {
         if (bucketsNumbers.size() == buckets.size())
             return buckets.size();
         return -1;
     }
+    void insert(int bucketNo, TIter iter)
+    {
+        buckets[bucketNo].push_back(iter);
+        bucketsNumbers.insert(bucketNo);
+    }
+    [[nodiscard]] IterType erase(IterType iter)
+    {
+        buckets.erase(*iter);
+        return bucketsNumbers.erase(iter);
+    }
+    [[nodiscard]] IterType begin() const { return bucketsNumbers.begin(); }
+    [[nodiscard]] IterType end() const { return bucketsNumbers.end(); }
 };
 
 // TODO: think where we need copies and where we want forward values
@@ -62,17 +75,15 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
 {
     GroupedData<TIter> resultData;
     for (auto it = start; it != end; ++it) {
-        const auto bucketNumber = bucketPolicy.getBucket(*it);
-        resultData.buckets[bucketNumber].push_back(it);
-        resultData.bucketsNumbers.insert(bucketNumber);
+        const int bucketNumber = bucketPolicy.getBucket(*it);
+        resultData.insert(bucketNumber, it);
     }
 
     // We need this second loop,
     // bc in the one above we do not know when we hit last element in bucket.
-    for (auto it = resultData.bucketsNumbers.begin(); it != resultData.bucketsNumbers.end();) {
+    for (auto it = resultData.begin(); it != resultData.end();) {
         if (resultData.buckets[*it].size() < minCatSize) {
-            resultData.buckets.erase(*it);
-            it = resultData.bucketsNumbers.erase(it);
+            it = resultData.erase(it);
         } else {
             ++it;
         }
