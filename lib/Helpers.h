@@ -23,7 +23,7 @@ concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
 
 template <typename TIter>
 struct GroupedData {
-    using IterType = std::unordered_set<int>::iterator;
+    using IterType = std::unordered_set<int>::const_iterator;
     std::unordered_map<int, std::vector<TIter>> buckets;
     std::unordered_set<int> bucketsNumbers;
 
@@ -94,7 +94,7 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
 }
 
 template <typename TIter0, typename TIterI>
-void syncHelper(GroupedData<TIter0>& firstData, GroupedData<TIterI>& comparedData)
+void syncHelper(GroupedData<TIter0>& firstData, const GroupedData<TIterI>& comparedData)
 {
     for (auto it = firstData.begin(); it != firstData.end();) {
         if (!comparedData.contains(*it)) {
