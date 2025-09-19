@@ -93,9 +93,9 @@ TEST_F(BlockCombinationsTest, groupDataElementsInBucketsAreCorrect)
     }
 }
 
-TEST_F(BlockCombinationsTest, basicSyncBuckets)
+TEST_F(BlockCombinationsTest, syncBucketsSizesAndNumbers)
 {
-    const std::vector<double> expectedCommon{2, 3, 4};
+    const std::vector expectedCommon{2, 3, 4};
     syncBuckets(blockP.mGroupedData);
     const auto data0 = std::get<0>(blockP.mGroupedData);
     const auto data1 = std::get<1>(blockP.mGroupedData);
@@ -109,5 +109,53 @@ TEST_F(BlockCombinationsTest, basicSyncBuckets)
         ASSERT_EQ(true, data0.contains(num));
         ASSERT_EQ(true, data1.contains(num));
         ASSERT_EQ(true, data2.contains(num));
+    }
+}
+
+TEST_F(BlockCombinationsTest, syncBucketsElementsAreCorrect)
+{
+    const std::vector expectedCommon{2, 3, 4};
+
+    const std::vector expectedB02{0.25, 0.35, 0.45};
+    const std::vector expectedB03{0.55, 0.65};
+    const std::vector expectedB04{0.75, 0.85, 0.95};
+
+    const std::vector expectedB12{0.30, 0.45};
+    const std::vector expectedB13{0.6};
+    const std::vector expectedB14{0.75, 0.90};
+
+    const std::vector expectedB22{0.33, 0.44};
+    const std::vector expectedB23{0.55, 0.66};
+    const std::vector expectedB24{0.77, 0.88, 0.99};
+
+    std::array<std::array<std::vector<double>, 3>, 3> expectedBuckets{
+        {{expectedB02, expectedB12, expectedB22},
+         {expectedB03, expectedB13, expectedB23},
+         {expectedB04, expectedB14, expectedB24}}
+    };
+
+    syncBuckets(blockP.mGroupedData);
+    const auto data0 = std::get<0>(blockP.mGroupedData);
+    const auto data1 = std::get<1>(blockP.mGroupedData);
+    const auto data2 = std::get<2>(blockP.mGroupedData);
+
+    int k = 0;
+    for (const auto& id : expectedCommon) {
+        auto bucket0 = data0[id];
+        auto bucket1 = data1[id];
+        auto bucket2 = data2[id];
+        auto arr     = expectedBuckets[k++];
+        auto exp0    = arr[0];
+        auto exp1    = arr[1];
+        auto exp2    = arr[2];
+        for (size_t i = 0; i < bucket0.size(); ++i) {
+            ASSERT_EQ(exp0[i], *bucket0[i]);
+        }
+        for (size_t i = 0; i < bucket1.size(); ++i) {
+            ASSERT_EQ(exp1[i], *bucket1[i]);
+        }
+        for (size_t i = 0; i < bucket2.size(); ++i) {
+            ASSERT_EQ(exp2[i], *bucket2[i]);
+        }
     }
 }
