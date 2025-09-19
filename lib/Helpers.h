@@ -22,18 +22,6 @@ concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
 };
 
 template <typename TIter>
-struct BucketIdx {
-    BucketIdx(const int bucketIdx, const int dataIdx, TIter iter)
-        : mBucketIdx(bucketIdx), mDataIdx(dataIdx), mIter(iter)
-    {
-    }
-
-    int mBucketIdx;
-    int mDataIdx;
-    TIter mIter;
-};
-
-template <typename TIter>
 struct GroupedData {
     std::unordered_map<int, std::vector<BucketIdx<TIter>>> buckets;
     std::unordered_set<int> bucketsNumbers;
