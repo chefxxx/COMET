@@ -88,7 +88,7 @@ TEST_F(BlockCombinationsTest, groupDataElementsInBucketsAreCorrect)
         auto expected = expectedBuckets.at(i);
         ASSERT_EQ(expected.size(), bucket.size());
         for (int j = 0; j < bucket.size(); ++j) {
-            ASSERT_EQ(expected.at(j), *bucket.at(j).mIter);
+            ASSERT_EQ(expected.at(j), *bucket.at(j));
         }
     }
 }

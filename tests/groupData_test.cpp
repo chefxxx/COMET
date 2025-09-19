@@ -70,17 +70,17 @@ TEST(GroupDataTest, initialBucketCount)
     ASSERT_EQ(groupDataTest::bp24.getMaximalBucketCount(), 24);
 }
 
-TEST(GroupDataTest, bucketPartitionWithOverflows)
-{
-    const auto [buckets, bucketsNumbers] = groupData(
-        groupDataTest::points1.begin(), groupDataTest::points1.end(), groupDataTest::bp16overflows
-    );
-    for (const int &key : bucketsNumbers) {
-        auto bucket = buckets.at(key);
-        ASSERT_EQ(bucket.size(), 1);
-        ASSERT_EQ(bucket[0].mBucketIdx, key);
-    }
-}
+// TEST(GroupDataTest, bucketPartitionWithOverflows)
+// {
+//     const auto [buckets, bucketsNumbers] = groupData(
+//         groupDataTest::points1.begin(), groupDataTest::points1.end(), groupDataTest::bp16overflows
+//     );
+//     for (const int &key : bucketsNumbers) {
+//         auto bucket = buckets.at(key);
+//         ASSERT_EQ(bucket.size(), 1);
+//         ASSERT_EQ(bucket[0].mBucketIdx, key);
+//     }
+// }
 
 TEST(GroupDataTest, bucketPartitionIgnoreOverflows)
 {

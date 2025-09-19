@@ -23,7 +23,7 @@ concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
 
 template <typename TIter>
 struct GroupedData {
-    std::unordered_map<int, std::vector<BucketIdx<TIter>>> buckets;
+    std::unordered_map<int, std::vector<TIter>> buckets;
     std::unordered_set<int> bucketsNumbers;
 
     auto operator[](const int& bucketIdx) const { return buckets[bucketIdx]; }
@@ -60,12 +60,10 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
     TIter start, TIter end, TBucketPolicy bucketPolicy, const std::size_t minCatSize = 1
 )
 {
-    int dataIdx = 0;
     GroupedData<TIter> resultData;
     for (auto it = start; it != end; ++it) {
         const auto bucketNumber = bucketPolicy.getBucket(*it);
-        BucketIdx<TIter> bucketIdx{bucketNumber, dataIdx++, it};
-        resultData.buckets[bucketNumber].push_back(bucketIdx);
+        resultData.buckets[bucketNumber].push_back(it);
         resultData.bucketsNumbers.insert(bucketNumber);
     }
 
