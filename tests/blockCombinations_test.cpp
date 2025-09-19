@@ -74,20 +74,20 @@ TEST_F(BlockCombinationsTest, groupDataElementsInBucketsAreCorrect)
     const auto [buckets0, bucketsNumbers0] = std::get<0>(blockP.mGroupedData);
 
     const std::vector expectedB00{-0.05};
-    const std::vector expectedB01{0.05, 0.15, 0.25};
-    const std::vector expectedB02{0.35, 0.45};
-    const std::vector expectedB03{0.55, 0.65, 0.75};
-    const std::vector expectedB04{0.75, 0.85};
+    const std::vector expectedB01{0.05, 0.15};
+    const std::vector expectedB02{0.25, 0.35, 0.45};
+    const std::vector expectedB03{0.55, 0.65};
+    const std::vector expectedB04{0.75, 0.85, 0.95};
     const std::vector expectedB05{1.05};
 
     const std::array expectedBuckets{expectedB00, expectedB01, expectedB02,
                                      expectedB03, expectedB04, expectedB05};
 
-    for (int i = 0; i < buckets0.size(); ++i) {
+    for (size_t i = 0; i < buckets0.size(); ++i) {
         auto bucket   = buckets0.at(i);
-        auto expected = expectedBuckets.at(i);
+        const auto& expected = expectedBuckets.at(i);
         ASSERT_EQ(expected.size(), bucket.size());
-        for (int j = 0; j < bucket.size(); ++j) {
+        for (size_t j = 0; j < bucket.size(); ++j) {
             ASSERT_EQ(expected.at(j), *bucket.at(j));
         }
     }
