@@ -11,35 +11,15 @@
 
 template <typename... TIters>
 struct CombinationsPolicyBase {
-    using IteratorType = std::tuple<TIters...>;
-    explicit CombinationsPolicyBase(std::tuple<Ranges<TIters>...>& ranges)
-        : mCurrentState(std::apply(
-              [](auto const&... r) {
-                  return std::make_tuple(r.mBegin...);
-              },
-              ranges
-          )),
-          mEndIndexNumbers(std::apply(
-              [](auto const&... r) {
-                  return std::array<int64_t, sizeof...(TIters)>{[](const auto& arg) {
-                      return std::distance(arg.mBegin, arg.mEnd);
-                  }(r)...};
-              },
-              ranges
-          )),
-          isEnd([&]<std::size_t... Is>(std::index_sequence<Is...>) {
-              return ((mEndIndexNumbers[Is] == 0) || ...);
-          }(std::make_index_sequence<sizeof...(TIters)>()))
-
-    {
-    }
+    using IteratorType                = std::tuple<TIters...>;
+    explicit CombinationsPolicyBase() = default;
 
     template <size_t I, typename TIter>
     void setDataHelper(const Ranges<TIter>& range)
     {
         std::get<I>(mCurrentState) = range.mBegin;
-        mEndIndexNumbers[I] = std::distance(range.mBegin, range.mEnd);
-        mCurrentIndexNumbers[I] = 0;
+        mEndIndexNumbers[I]        = std::distance(range.mBegin, range.mEnd);
+        mCurrentIndexNumbers[I]    = 0;
     }
 
     void setData(std::tuple<Ranges<TIters>...>& ranges)
@@ -53,7 +33,7 @@ struct CombinationsPolicyBase {
     IteratorType mCurrentState;
     std::array<int64_t, sizeof...(TIters)> mCurrentIndexNumbers{};
     std::array<int64_t, sizeof...(TIters)> mEndIndexNumbers;
-    bool isEnd;
+    bool isEnd = false;
 };
 
 template <typename... TIters>
@@ -62,7 +42,10 @@ CombinationsPolicyBase(std::tuple<Ranges<TIters>...>&) -> CombinationsPolicyBase
 template <typename... TIters>
 struct FullCombinationsPolicy {
     CombinationsPolicyBase<TIters...> mBase;
-    explicit FullCombinationsPolicy(std::tuple<Ranges<TIters>...>& ranges) : mBase(ranges) {}
+    explicit FullCombinationsPolicy(std::tuple<Ranges<TIters>...>& ranges) : mBase()
+    {
+        this->setData(ranges);
+    }
     void addOne()
     {
         constexpr size_t N = sizeof...(TIters);
@@ -102,25 +85,15 @@ struct FullCombinationsPolicy {
         mBase.mCurrentIndexNumbers[ind] = 0;
     }
 
-    void setTables(std::tuple<Ranges<TIters>...>& ranges)
-    {
-        mBase.setTables(ranges);
-    }
+    void setData(std::tuple<Ranges<TIters>...>& ranges) { mBase.setData(ranges); }
 };
 
 template <typename... TIters>
 struct StrictlyUpperCombinationsPolicy {
     CombinationsPolicyBase<TIters...> mBase;
-    explicit StrictlyUpperCombinationsPolicy(std::tuple<Ranges<TIters>...>& ranges) : mBase(ranges)
+    explicit StrictlyUpperCombinationsPolicy(std::tuple<Ranges<TIters>...>& ranges) : mBase()
     {
-        // Set ranges here have the same logic as a loop into addOneFun with setting new
-        // pointers for right side positions.
-        constexpr auto N = sizeof...(TIters);
-        if (!mBase.isEnd) {
-            bool shouldEnd = true;
-            setRanges<N - 1, N>(shouldEnd);
-            mBase.isEnd = !shouldEnd;
-        }
+        this->setData(ranges);
     }
 
     void addOne()
@@ -178,9 +151,12 @@ struct StrictlyUpperCombinationsPolicy {
         }
     }
 
-    void setTables(std::tuple<Ranges<TIters>...>& ranges)
+    void setData(std::tuple<Ranges<TIters>...>& ranges)
     {
-        mBase.setTables(ranges);
+        mBase.setData(ranges);
+
+        // Set ranges here have the same logic as a loop into addOneFun with setting new
+        // pointers for right side positions.
         constexpr auto N = sizeof...(TIters);
         if (!mBase.isEnd) {
             bool shouldEnd = true;
