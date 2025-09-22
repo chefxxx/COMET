@@ -45,7 +45,7 @@ struct GroupedData {
         buckets.erase(*iter);
         return bucketsNumbers.erase(iter);
     }
-    [[nodiscard]] bool contains(const int& bucketNo) const
+    [[nodiscard]] bool contains(const int bucketNo) const
     {
         return bucketsNumbers.contains(bucketNo);
     }

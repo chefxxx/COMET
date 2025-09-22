@@ -9,10 +9,10 @@
 #include <tuple>
 #include "Helpers.h"
 
-template <typename... TIter>
+template <typename... TIters>
 struct CombinationsPolicyBase {
-    using IteratorType = std::tuple<TIter...>;
-    explicit CombinationsPolicyBase(std::tuple<Ranges<TIter>...>& ranges)
+    using IteratorType = std::tuple<TIters...>;
+    explicit CombinationsPolicyBase(std::tuple<Ranges<TIters>...>& ranges)
         : mCurrentState(std::apply(
               [](auto const&... r) {
                   return std::make_tuple(r.mBegin...);
@@ -21,35 +21,51 @@ struct CombinationsPolicyBase {
           )),
           mEndIndexNumbers(std::apply(
               [](auto const&... r) {
-                  return std::array<int64_t, sizeof...(TIter)>{[](const auto& arg) {
+                  return std::array<int64_t, sizeof...(TIters)>{[](const auto& arg) {
                       return std::distance(arg.mBegin, arg.mEnd);
                   }(r)...};
               },
               ranges
           )),
           isEnd([&]<std::size_t... Is>(std::index_sequence<Is...>) {
-              return ((mEndIndexNumbers[Is] == 0) || ... || 0);
-          }(std::make_index_sequence<sizeof...(TIter)>()))
+              return ((mEndIndexNumbers[Is] == 0) || ...);
+          }(std::make_index_sequence<sizeof...(TIters)>()))
 
     {
     }
 
+    template <size_t I, typename TIter>
+    void setDataHelper(const Ranges<TIter>& range)
+    {
+        std::get<I>(mCurrentState) = range.mBegin;
+        mEndIndexNumbers[I] = std::distance(range.mBegin, range.mEnd);
+        mCurrentIndexNumbers[I] = 0;
+    }
+
+    void setData(std::tuple<Ranges<TIters>...>& ranges)
+    {
+        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+            (setDataHelper<Is>(std::get<Is>(ranges)), ...);
+            isEnd = ((mEndIndexNumbers[Is] == 0) || ...);
+        }(std::make_index_sequence<sizeof...(TIters)>());
+    }
+
     IteratorType mCurrentState;
-    std::array<int64_t, sizeof...(TIter)> mCurrentIndexNumbers{};
-    std::array<int64_t, sizeof...(TIter)> mEndIndexNumbers;
+    std::array<int64_t, sizeof...(TIters)> mCurrentIndexNumbers{};
+    std::array<int64_t, sizeof...(TIters)> mEndIndexNumbers;
     bool isEnd;
 };
 
-template <typename... TIter>
-CombinationsPolicyBase(std::tuple<Ranges<TIter>...>&) -> CombinationsPolicyBase<TIter...>;
+template <typename... TIters>
+CombinationsPolicyBase(std::tuple<Ranges<TIters>...>&) -> CombinationsPolicyBase<TIters...>;
 
-template <typename... TIter>
+template <typename... TIters>
 struct FullCombinationsPolicy {
-    CombinationsPolicyBase<TIter...> mBase;
-    explicit FullCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges) : mBase(ranges) {}
+    CombinationsPolicyBase<TIters...> mBase;
+    explicit FullCombinationsPolicy(std::tuple<Ranges<TIters>...>& ranges) : mBase(ranges) {}
     void addOne()
     {
-        constexpr size_t N = sizeof...(TIter);
+        constexpr size_t N = sizeof...(TIters);
         bool wasModified   = true;
         [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
             (addOneFun<Is, N>(wasModified), ...);
@@ -85,16 +101,21 @@ struct FullCombinationsPolicy {
         std::get<ind>(mBase.mCurrentState) -= mBase.mCurrentIndexNumbers[ind];
         mBase.mCurrentIndexNumbers[ind] = 0;
     }
+
+    void setTables(std::tuple<Ranges<TIters>...>& ranges)
+    {
+        mBase.setTables(ranges);
+    }
 };
 
-template <typename... TIter>
+template <typename... TIters>
 struct StrictlyUpperCombinationsPolicy {
-    CombinationsPolicyBase<TIter...> mBase;
-    explicit StrictlyUpperCombinationsPolicy(std::tuple<Ranges<TIter>...>& ranges) : mBase(ranges)
+    CombinationsPolicyBase<TIters...> mBase;
+    explicit StrictlyUpperCombinationsPolicy(std::tuple<Ranges<TIters>...>& ranges) : mBase(ranges)
     {
         // Set ranges here have the same logic as a loop into addOneFun with setting new
         // pointers for right side positions.
-        constexpr auto N = sizeof...(TIter);
+        constexpr auto N = sizeof...(TIters);
         if (!mBase.isEnd) {
             bool shouldEnd = true;
             setRanges<N - 1, N>(shouldEnd);
@@ -104,7 +125,7 @@ struct StrictlyUpperCombinationsPolicy {
 
     void addOne()
     {
-        constexpr size_t N = sizeof...(TIter);
+        constexpr size_t N = sizeof...(TIters);
         bool wasModified   = true;
         [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
             (addOneFun<Is, N>(wasModified), ...);
@@ -154,6 +175,17 @@ struct StrictlyUpperCombinationsPolicy {
             } else {
                 wasChanged = false;
             }
+        }
+    }
+
+    void setTables(std::tuple<Ranges<TIters>...>& ranges)
+    {
+        mBase.setTables(ranges);
+        constexpr auto N = sizeof...(TIters);
+        if (!mBase.isEnd) {
+            bool shouldEnd = true;
+            setRanges<N - 1, N>(shouldEnd);
+            mBase.isEnd = !shouldEnd;
         }
     }
 };

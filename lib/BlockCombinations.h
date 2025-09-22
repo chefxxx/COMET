@@ -7,11 +7,11 @@
 
 #include "Combinations.h"
 
-template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TIter>
+template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TIters>
 struct BlockCombinations {
     BlockCombinations(
         TBucketPolicy bucketPolicy, TCombinationsPolicy combinationsPolicy,
-        std::tuple<Ranges<TIter>...>& ranges
+        std::tuple<Ranges<TIters>...>& ranges
     )
         : mCombinationsPolicy(combinationsPolicy),
           mBucketPolicy(bucketPolicy),
@@ -26,7 +26,7 @@ struct BlockCombinations {
     TBucketPolicy mBucketPolicy;
 
     public:
-    std::tuple<GroupedData<TIter>...> mGroupedData;
+    std::tuple<GroupedData<TIters>...> mGroupedData;
 };
 
 #endif  // BLOCKCOMBINATINOS_H
