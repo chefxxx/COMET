@@ -9,8 +9,8 @@ namespace addOneFullIndex
 {
 TEST(AddOneFullTest, twoVectorsSameSize)
 {
-    std::vector<int> v1  = {1, 2, 3, 4, 5, 6, 7, 8};
-    std::vector<char> v2 = {'a', 'b', 'c', 'd', 'e'};
+    std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
+    std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
 
     Ranges r1 = {v1.begin(), v1.end()};
     Ranges r2 = {v2.begin(), v2.end()};
@@ -20,9 +20,12 @@ TEST(AddOneFullTest, twoVectorsSameSize)
     // Why does it compile with tuple created before and not without
     // auto combinationPolicy = FullCombinationsPolicy({r1, r2}); ??? It is interesting
     // Answer: to make it work we should add forwarding
-    auto combinationPolicy = FullCombinationsPolicy(tuple);
-    // That's what I do not like - to obtain isEnd I should use mBase
-    std::vector<std::tuple<int, char>> expected = {
+    using combinationsType =
+        FullCombinationsPolicy<std::vector<int>::iterator, std::vector<char>::iterator>;
+    combinationsType combinationPolicy{};
+    combinationPolicy.setData(tuple);
+
+    const std::vector<std::tuple<int, char>> expected = {
         {1, 'a'},
         {1, 'b'},
         {1, 'c'},
@@ -76,9 +79,9 @@ TEST(AddOneFullTest, twoVectorsSameSize)
 
 TEST(AddOneFullTest, fourVectorsDifferentSizes)
 {
-    std::vector<int> v1         = {1, 2, 3};
-    std::vector<char> v2        = {'a', 'b', 'c', 'd', 'e'};
-    std::vector<char> v3        = {'=', '#', '$', '!'};
+    std::vector v1              = {1, 2, 3};
+    std::vector v2              = {'a', 'b', 'c', 'd', 'e'};
+    std::vector v3              = {'=', '#', '$', '!'};
     std::vector<std::string> v4 = {"Michał", "Mati"};
 
     Ranges r1 = {v1.begin(), v1.end()};
@@ -88,7 +91,11 @@ TEST(AddOneFullTest, fourVectorsDifferentSizes)
 
     auto tuple = std::make_tuple(r1, r2, r3, r4);
 
-    auto combinationPolicy = FullCombinationsPolicy(tuple);
+    using combinationsType = FullCombinationsPolicy<
+        std::vector<int>::iterator, std::vector<char>::iterator, std::vector<char>::iterator,
+        std::vector<std::string>::iterator>;
+    combinationsType combinationPolicy{};
+    combinationPolicy.setData(tuple);
 
     std::vector<std::tuple<int, char, char, std::string>> expected = {
   // Combinations starting with 1
@@ -235,9 +242,9 @@ TEST(AddOneFullTest, fourVectorsDifferentSizes)
 
 TEST(AddOneFullTest, OneRangeIsEmpty)
 {
-    std::vector<int> v1  = {1, 2, 3};
+    std::vector v1       = {1, 2, 3};
     std::vector<char> v2 = {};
-    std::vector<char> v3 = {'a', 'b', 'c', 'd'};
+    std::vector v3       = {'a', 'b', 'c', 'd'};
 
     Ranges r1 = {v1.begin(), v1.end()};
     Ranges r2 = {v2.begin(), v2.end()};
@@ -245,7 +252,10 @@ TEST(AddOneFullTest, OneRangeIsEmpty)
 
     auto tuple = std::make_tuple(r1, r2, r3);
 
-    auto combinationPolicy = FullCombinationsPolicy(tuple);
+    using combinationsType = FullCombinationsPolicy<
+        std::vector<int>::iterator, std::vector<char>::iterator, std::vector<char>::iterator>;
+    combinationsType combinationPolicy{};
+    combinationPolicy.setData(tuple);
 
     ASSERT_TRUE(combinationPolicy.mBase.isEnd);
 }

@@ -27,6 +27,8 @@ struct BlockCombinations {
 
     public:
     std::tuple<GroupedData<TIters>...> mGroupedData;
+
+    void SetBuckets() {}
 };
 
 #endif  // BLOCKCOMBINATINOS_H

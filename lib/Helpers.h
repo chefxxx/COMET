@@ -109,10 +109,10 @@ void syncHelper(GroupedData<TIter0>& firstData, const GroupedData<TIterI>& compa
     }
 }
 
-template <typename... TIter>
-void syncBuckets(std::tuple<GroupedData<TIter>...>& groupedData)
+template <typename... TIters>
+void syncBuckets(std::tuple<GroupedData<TIters>...>& groupedData)
 {
-    constexpr size_t N = sizeof...(TIter);
+    constexpr size_t N = sizeof...(TIters);
     auto& firstData    = std::get<0>(groupedData);
     [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
         (syncHelper(firstData, std::get<Is>(groupedData)), ...);

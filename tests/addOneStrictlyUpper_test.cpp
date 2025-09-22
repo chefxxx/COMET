@@ -5,17 +5,21 @@
 #include <gtest/gtest.h>
 #include "Combinations.h"
 
-TEST(AddOneStricktlyFirst, twoVectorsSameSize)
+TEST(AddOneStrictlyFirst, twoVectorsSameSize)
 {
-    std::vector<int> v1  = {1, 2, 3, 4, 5, 6, 7, 8};
-    std::vector<char> v2 = {'a', 'b', 'c', 'd', 'e'};
+    std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
+    std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
 
     Ranges r1 = {v1.begin(), v1.end()};
     Ranges r2 = {v2.begin(), v2.end()};
 
     auto tuple = std::make_tuple(r1, r2);
 
-    auto combinationPolicy                      = StrictlyUpperCombinationsPolicy(tuple);
+    using combinationsType =
+        StrictlyUpperCombinationsPolicy<std::vector<int>::iterator, std::vector<char>::iterator>;
+    combinationsType combinationPolicy{};
+    combinationPolicy.setData(tuple);
+
     std::vector<std::tuple<int, char>> expected = {
         {1, 'b'},
         {1, 'c'},
@@ -29,8 +33,8 @@ TEST(AddOneStricktlyFirst, twoVectorsSameSize)
         {4, 'e'},
     };
     for (int i = 0; !combinationPolicy.mBase.isEnd; combinationPolicy.addOne(), i++) {
-        auto current_val1 = *std::get<0>(combinationPolicy.mBase.mCurrentState);
-        auto current_val2 = *std::get<1>(combinationPolicy.mBase.mCurrentState);
+        const auto current_val1 = *std::get<0>(combinationPolicy.mBase.mCurrentState);
+        const auto current_val2 = *std::get<1>(combinationPolicy.mBase.mCurrentState);
 
         std::cout << current_val1 << " " << current_val2 << std::endl;
         ASSERT_TRUE(current_val1 == std::get<0>(expected[i]));
@@ -38,11 +42,11 @@ TEST(AddOneStricktlyFirst, twoVectorsSameSize)
     }
 }
 
-TEST(AddOneStricktlyFirst, threeVectorsDifferentSize)
+TEST(AddOneStrictlyFirst, threeVectorsDifferentSize)
 {
-    std::vector<int> v1  = {1, 2, 3};
-    std::vector<char> v2 = {'#', '@', '$', '%', '*'};
-    std::vector<char> v3 = {'a', 'b', 'c', 'd'};
+    std::vector v1 = {1, 2, 3};
+    std::vector v2 = {'#', '@', '$', '%', '*'};
+    std::vector v3 = {'a', 'b', 'c', 'd'};
 
     Ranges r1 = {v1.begin(), v1.end()};
     Ranges r2 = {v2.begin(), v2.end()};
@@ -50,14 +54,18 @@ TEST(AddOneStricktlyFirst, threeVectorsDifferentSize)
 
     auto tuple = std::make_tuple(r1, r2, r3);
 
-    auto combinationPolicy = StrictlyUpperCombinationsPolicy(tuple);
-    // That's what I do not like - to obtain isEnd I should use mBase
-    std::vector<std::tuple<int, char, char>> expected = {
+    using combinationsType = StrictlyUpperCombinationsPolicy<
+        std::vector<int>::iterator, std::vector<char>::iterator, std::vector<char>::iterator>;
+    combinationsType combinationPolicy{};
+    combinationPolicy.setData(tuple);
+
+    const std::vector<std::tuple<int, char, char>> expected = {
         {1, '@', 'c'},
         {1, '@', 'd'},
         {1, '$', 'd'},
         {2, '$', 'd'}
     };
+
     for (int i = 0; !combinationPolicy.mBase.isEnd; combinationPolicy.addOne(), i++) {
         auto current_val1 = *std::get<0>(combinationPolicy.mBase.mCurrentState);
         auto current_val2 = *std::get<1>(combinationPolicy.mBase.mCurrentState);
@@ -70,11 +78,11 @@ TEST(AddOneStricktlyFirst, threeVectorsDifferentSize)
     }
 }
 
-TEST(AddOneStricktlyUpper, OneRangeIsLessThanItCanBe)
+TEST(AddOneStrictlyUpper, OneRangeIsLessThanItCanBe)
 {
-    std::vector<int> v1  = {1, 2, 3};
-    std::vector<char> v2 = {'#'};
-    std::vector<char> v3 = {'a', 'b', 'c', 'd'};
+    std::vector v1 = {1, 2, 3};
+    std::vector v2 = {'#'};
+    std::vector v3 = {'a', 'b', 'c', 'd'};
 
     Ranges r1 = {v1.begin(), v1.end()};
     Ranges r2 = {v2.begin(), v2.end()};
@@ -82,16 +90,19 @@ TEST(AddOneStricktlyUpper, OneRangeIsLessThanItCanBe)
 
     auto tuple = std::make_tuple(r1, r2, r3);
 
-    const auto combinationPolicy = StrictlyUpperCombinationsPolicy(tuple);
+    using combinationsType = StrictlyUpperCombinationsPolicy<
+        std::vector<int>::iterator, std::vector<char>::iterator, std::vector<char>::iterator>;
+    combinationsType combinationPolicy{};
+    combinationPolicy.setData(tuple);
 
     ASSERT_TRUE(combinationPolicy.mBase.isEnd);
 }
 
 TEST(AddOneStrictlyUpper, ClassicExampleTest)
 {
-    std::vector<int> v1 = {0, 1, 2, 3, 4};
-    std::vector<int> v2 = {0, 1, 2, 3, 4};
-    std::vector<int> v3 = {0, 1, 2, 3, 4};
+    std::vector v1 = {0, 1, 2, 3, 4};
+    std::vector v2 = {0, 1, 2, 3, 4};
+    std::vector v3 = {0, 1, 2, 3, 4};
 
     Ranges r1 = {v1.begin(), v1.end()};
     Ranges r2 = {v2.begin(), v2.end()};
@@ -99,7 +110,10 @@ TEST(AddOneStrictlyUpper, ClassicExampleTest)
 
     auto tuple = std::make_tuple(r1, r2, r3);
 
-    auto combinationPolicy = StrictlyUpperCombinationsPolicy(tuple);
+    using combinationsType = StrictlyUpperCombinationsPolicy<
+        std::vector<int>::iterator, std::vector<int>::iterator, std::vector<int>::iterator>;
+    combinationsType combinationPolicy{};
+    combinationPolicy.setData(tuple);
 
     const std::vector<std::tuple<int, int, int>> expected = {
         {0, 1, 2},
