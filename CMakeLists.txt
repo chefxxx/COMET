@@ -40,6 +40,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
                 -Wall
                 -Wextra
                 -pedantic
+                -Werror=return-type
         )
         target_link_options(${LIB_NAME} INTERFACE
                 -fsanitize=undefined
