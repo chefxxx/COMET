@@ -27,8 +27,8 @@ struct GroupedData {
     std::unordered_map<int, std::vector<TIter>> buckets;
     std::unordered_set<int> bucketsNumbers;
 
-    auto operator[](int bucketIdx) const { return buckets.at(bucketIdx); }
-    auto operator[](IterType iter) const { return buckets.at(*iter); }
+    const std::vector<TIter>& operator[](int bucketIdx) const { return buckets.at(bucketIdx); }
+    const std::vector<TIter>& operator[](IterType iter) const { return buckets.at(*iter); }
     [[nodiscard]] size_t size() const
     {
         if (bucketsNumbers.size() == buckets.size())

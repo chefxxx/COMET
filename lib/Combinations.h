@@ -15,7 +15,7 @@ struct CombinationsPolicyBase {
     CombinationsPolicyBase() = default;
 
     template <size_t I, typename TIter>
-    void setDataHelper(const Ranges<TIter>& range)
+    void setDataHelper(Ranges<TIter>& range)
     {
         std::get<I>(mCurrentState) = range.mBegin;
         mEndIndexNumbers[I]        = std::distance(range.mBegin, range.mEnd);
@@ -36,8 +36,8 @@ struct CombinationsPolicyBase {
     bool isEnd = false;
 };
 
-template <typename... TIters>
-CombinationsPolicyBase(std::tuple<Ranges<TIters>...>&) -> CombinationsPolicyBase<TIters...>;
+// template <typename... TIters>
+// CombinationsPolicyBase(std::tuple<Ranges<TIters>...>&) -> CombinationsPolicyBase<TIters...>;
 
 template <typename... TIters>
 struct FullCombinationsPolicy {

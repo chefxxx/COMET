@@ -26,12 +26,12 @@ class BlockCombinationsTest : public ::testing::Test
     Ranges<dataType::iterator> r1{v1.begin(), v1.end()};
     Ranges<dataType::iterator> r2{v2.begin(), v2.end()};
     Ranges<dataType::iterator> r3{v3.begin(), v3.end()};
+    std::tuple<decltype(r1), decltype(r2), decltype(r3)> tuple = std::make_tuple(r1, r2, r3);
 
     // std::vector<int> expectedBN0{0, 1, 2, 3, 4, 5};
     // std::vector<int> expectedBN1{1, 2, 3, 4};
     // std::vector<int> expectedBN2{2, 3, 4};
     //
-    // std::tuple<decltype(r1), decltype(r2), decltype(r3)> tuple = std::make_tuple(r1, r2, r3);
     // using iterType                                             = std::vector<double>::iterator;
     // using elementType                                          = std::vector<iterType>::iterator;
     // using combinationsType = FullCombinationsPolicy<elementType, elementType, elementType>;
@@ -42,7 +42,7 @@ class BlockCombinationsTest : public ::testing::Test
     //     blockP = BlockCombinations{bp, cp, tuple};
 };
 
-TEST_F(BlockCombinationsTest, doesItCompile) {}
+TEST_F(BlockCombinationsTest, doesItCompile) { BlockFullCombinations blockFull{bp, tuple}; }
 
 // TEST_F(BlockCombinationsTest, groupDataSizesAreCorrect)
 // {

@@ -5,17 +5,20 @@
 #ifndef BLOCKCOMBINATINOS_H
 #define BLOCKCOMBINATINOS_H
 
+#include <sys/stat.h>
+
 #include <cassert>
 #include "Combinations.h"
 
-template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TIters>
+template <
+    typename TBucketPolicy, typename TCombinationsPolicy, typename TCombinationsType,
+    typename... TIters>
 struct BlockCombinations {
-    using BucketIterType   = std::unordered_set<int>::const_iterator;
-    using CombinationsType = typename TCombinationsPolicy::CombinationsType;
+    using BucketIterType = std::unordered_set<int>::const_iterator;
 
     BlockCombinations(
-        TBucketPolicy bucketPolicy, TCombinationsPolicy combinationsPolicy,
-        std::tuple<Ranges<TIters>...>& ranges
+        const TBucketPolicy& bucketPolicy, const TCombinationsPolicy& combinationsPolicy,
+        const std::tuple<Ranges<TIters>...>& ranges
     )
         : mGroupedData(tuple_transform(
               ranges,
@@ -37,7 +40,7 @@ struct BlockCombinations {
      * std::unordered_map<int, std::vector<TIter>> - so we have vector of iterators */
     std::tuple<GroupedData<TIters>...> mGroupedData;
 
-    CombinationsType moveForward()
+    TCombinationsType moveForward()
     {
         assert(mCurrent != mEnd);
         return mCombinationsPolicy.state();
@@ -69,15 +72,17 @@ struct BlockCombinations {
 template <typename TBucketPolicy, typename... TIters>
 struct BlockFullCombinations {
     using CombinationsType = std::tuple<typename std::vector<TIters>::iterator...>;
-    using PolicyType = FullCombinationsPolicy<CombinationsType>;
+    using PolicyType       = FullCombinationsPolicy<typename std::vector<TIters>::iterator...>;
     PolicyType mCombinationsPolicy{};
 
-    BlockFullCombinations(TBucketPolicy bucketPolicy, std::tuple<Ranges<TIters>...>& ranges)
-        : mBase(bucketPolicy, ranges, mCombinationsPolicy)
+    BlockFullCombinations(
+        const TBucketPolicy& bucketPolicy, const std::tuple<Ranges<TIters>...>& ranges
+    )
+        : mBase(bucketPolicy, mCombinationsPolicy, ranges)
     {
     }
 
-    BlockCombinations<TBucketPolicy, TIters...> mBase;
+    BlockCombinations<TBucketPolicy, PolicyType, CombinationsType, TIters...> mBase;
 };
 
 #endif  // BLOCKCOMBINATINOS_H
