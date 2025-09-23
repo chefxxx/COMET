@@ -28,6 +28,7 @@ struct GroupedData {
     std::unordered_set<int> bucketsNumbers;
 
     const std::vector<TIter>& at(IterType iter) const { return buckets.at(*iter); }
+    const std::vector<TIter>& at(const int bucketNo) const { return buckets.at(bucketNo); }
     [[nodiscard]] size_t size() const
     {
         if (bucketsNumbers.size() == buckets.size())
@@ -86,7 +87,7 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
     // We need this second loop,
     // bc in the one above we do not know when we hit last element in bucket.
     for (auto it = resultData.begin(); it != resultData.end();) {
-        if (resultData[it].size() < minCatSize) {
+        if (resultData.at(it).size() < minCatSize) {
             it = resultData.erase(it);
         } else {
             ++it;

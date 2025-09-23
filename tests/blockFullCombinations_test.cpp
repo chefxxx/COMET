@@ -84,9 +84,9 @@ TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
 
     int k = 0;
     for (const auto& id : expectedBucketsNums) {
-        auto bucket0 = data0[id];
-        auto bucket1 = data1[id];
-        auto bucket2 = data2[id];
+        auto bucket0 = data0.at(id);
+        auto bucket1 = data1.at(id);
+        auto bucket2 = data2.at(id);
         auto arr     = expectedBuckets[k++];
         auto exp0    = arr[0];
         auto exp1    = arr[1];

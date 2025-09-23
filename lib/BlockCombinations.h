@@ -56,7 +56,7 @@ struct BlockCombinations {
     template <typename TIter>
     auto createRanges(const GroupedData<TIter>& data, BucketIterType current)
     {
-        auto bucket = data[current];
+        auto bucket = data.at(current);
         return Ranges(bucket.begin(), bucket.end());
     }
 
