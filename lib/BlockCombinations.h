@@ -29,6 +29,7 @@ struct BlockCombinations {
           mCombinationsPolicy(combinationsPolicy),
           mBucketPolicy(bucketPolicy)
     {
+        syncBuckets(mGroupedData);
         /* Now in each GroupedData<> object set of buckets numbers is the same.
          * So just take from first one begin() and end(). */
         mCurrent = std::get<0>(mGroupedData).begin();
@@ -83,6 +84,8 @@ struct BlockFullCombinations {
     }
 
     BlockCombinations<TBucketPolicy, PolicyType, CombinationsType, TIters...> mBase;
+
+    auto data() { return mBase.mGroupedData; }
 };
 
 #endif  // BLOCKCOMBINATINOS_H
