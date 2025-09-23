@@ -10,8 +10,8 @@
 
 template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TIters>
 struct BlockCombinations {
-    using CombinationsType = std::tuple<TIters...>;
     using BucketIterType   = std::unordered_set<int>::const_iterator;
+    using CombinationsType = typename TCombinationsPolicy::CombinationsType;
 
     BlockCombinations(
         TBucketPolicy bucketPolicy, TCombinationsPolicy combinationsPolicy,
@@ -64,6 +64,20 @@ struct BlockCombinations {
         });
         mCombinationsPolicy.setData(bucketsRanges);
     }
+};
+
+template <typename TBucketPolicy, typename... TIters>
+struct BlockFullCombinations {
+    using CombinationsType = std::tuple<typename std::vector<TIters>::iterator...>;
+    using PolicyType = FullCombinationsPolicy<CombinationsType>;
+    PolicyType mCombinationsPolicy{};
+
+    BlockFullCombinations(TBucketPolicy bucketPolicy, std::tuple<Ranges<TIters>...>& ranges)
+        : mBase(bucketPolicy, ranges, mCombinationsPolicy)
+    {
+    }
+
+    BlockCombinations<TBucketPolicy, TIters...> mBase;
 };
 
 #endif  // BLOCKCOMBINATINOS_H

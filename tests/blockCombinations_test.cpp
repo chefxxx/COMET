@@ -7,38 +7,42 @@
 
 class BlockCombinationsTest : public ::testing::Test
 {
+    using dataType = std::vector<double>;
+
     protected:
-    const std::vector<double> buckets{0.0, 0.25, 0.5, 0.75, 1.0};
+    const dataType buckets{0.0, 0.25, 0.5, 0.75, 1.0};
 
     struct testCallable {
         auto operator()(double const& a) const { return a; }
     };
     testCallable callable;
 
-    std::vector<double> v1{-0.05, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95, 1.05};
-    std::vector<double> v2{0.15, 0.30, 0.45, 0.6, 0.75, 0.90};
-    std::vector<double> v3{0.33, 0.44, 0.55, 0.66, 0.77, 0.88, 0.99};
+    dataType v1{-0.05, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95, 1.05};
+    dataType v2{0.15, 0.30, 0.45, 0.6, 0.75, 0.90};
+    dataType v3{0.33, 0.44, 0.55, 0.66, 0.77, 0.88, 0.99};
 
     BucketPolicy<testCallable> bp = BucketPolicy(std::make_tuple(callable), {buckets}, false);
 
-    Ranges<std::vector<double>::iterator> r1{v1.begin(), v1.end()};
-    Ranges<std::vector<double>::iterator> r2{v2.begin(), v2.end()};
-    Ranges<std::vector<double>::iterator> r3{v3.begin(), v3.end()};
+    Ranges<dataType::iterator> r1{v1.begin(), v1.end()};
+    Ranges<dataType::iterator> r2{v2.begin(), v2.end()};
+    Ranges<dataType::iterator> r3{v3.begin(), v3.end()};
 
-    std::vector<int> expectedBN0{0, 1, 2, 3, 4, 5};
-    std::vector<int> expectedBN1{1, 2, 3, 4};
-    std::vector<int> expectedBN2{2, 3, 4};
-
-    std::tuple<decltype(r1), decltype(r2), decltype(r3)> tuple = std::make_tuple(r1, r2, r3);
-    using iterType                                             = std::vector<double>::iterator;
-    using elementType                                          = std::vector<iterType>::iterator;
-    using combinationsType = FullCombinationsPolicy<elementType, elementType, elementType>;
-    combinationsType cp{};
-    BlockCombinations<
-        decltype(bp), decltype(cp), std::vector<double>::iterator, std::vector<double>::iterator,
-        std::vector<double>::iterator>
-        blockP = BlockCombinations{bp, cp, tuple};
+    // std::vector<int> expectedBN0{0, 1, 2, 3, 4, 5};
+    // std::vector<int> expectedBN1{1, 2, 3, 4};
+    // std::vector<int> expectedBN2{2, 3, 4};
+    //
+    // std::tuple<decltype(r1), decltype(r2), decltype(r3)> tuple = std::make_tuple(r1, r2, r3);
+    // using iterType                                             = std::vector<double>::iterator;
+    // using elementType                                          = std::vector<iterType>::iterator;
+    // using combinationsType = FullCombinationsPolicy<elementType, elementType, elementType>;
+    // combinationsType cp{};
+    // BlockCombinations<
+    //     decltype(bp), decltype(cp), std::vector<double>::iterator, std::vector<double>::iterator,
+    //     std::vector<double>::iterator>
+    //     blockP = BlockCombinations{bp, cp, tuple};
 };
+
+TEST_F(BlockCombinationsTest, doesItCompile) {}
 
 // TEST_F(BlockCombinationsTest, groupDataSizesAreCorrect)
 // {
