@@ -65,8 +65,8 @@ template <typename... Ts, typename F>
 auto tuple_transform(const std::tuple<Ts...>& tuple, F&& f)
 {
     return std::apply(
-        [&](auto&&... elems) {
-            return std::make_tuple(f(elems)...);
+        [&](auto&&... elem) {
+            return std::make_tuple(f(elem)...);
         },
         tuple
     );

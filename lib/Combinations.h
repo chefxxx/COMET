@@ -11,7 +11,7 @@
 
 template <typename... TIters>
 struct CombinationsPolicyBase {
-    using IteratorType       = std::tuple<TIters...>;
+    using CombinationsType   = std::tuple<TIters...>;
     CombinationsPolicyBase() = default;
 
     template <size_t I, typename TIter>
@@ -30,7 +30,7 @@ struct CombinationsPolicyBase {
         }(std::make_index_sequence<sizeof...(TIters)>());
     }
 
-    IteratorType mCurrentState;
+    CombinationsType mCurrentState;
     std::array<int64_t, sizeof...(TIters)> mCurrentIndexNumbers{};
     std::array<int64_t, sizeof...(TIters)> mEndIndexNumbers;
     bool isEnd = false;
@@ -55,6 +55,8 @@ struct FullCombinationsPolicy {
     }
 
     void setData(std::tuple<Ranges<TIters>...>& ranges) { mBase.setData(ranges); }
+
+    auto state() { return mBase.mCurrentState; }
 
     private:
     template <size_t I, size_t N>
@@ -114,6 +116,8 @@ struct StrictlyUpperCombinationsPolicy {
             mBase.isEnd = !shouldEnd;
         }
     }
+
+    auto state() { return mBase.mCurrentState; }
 
     private:
     // TODO: Is it better setRanges return boolean instead of using in/out parameter?

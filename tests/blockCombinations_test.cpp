@@ -30,9 +30,9 @@ class BlockCombinationsTest : public ::testing::Test
     std::vector<int> expectedBN2{2, 3, 4};
 
     std::tuple<decltype(r1), decltype(r2), decltype(r3)> tuple = std::make_tuple(r1, r2, r3);
-    using combinationsType                                     = FullCombinationsPolicy<
-        std::vector<double>::iterator, std::vector<double>::iterator,
-        std::vector<double>::iterator>;
+    using iterType                                             = std::vector<double>::iterator;
+    using elementType                                          = std::vector<iterType>::iterator;
+    using combinationsType = FullCombinationsPolicy<elementType, elementType, elementType>;
     combinationsType cp{};
     BlockCombinations<
         decltype(bp), decltype(cp), std::vector<double>::iterator, std::vector<double>::iterator,
