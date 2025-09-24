@@ -5,7 +5,6 @@
 #ifndef COMBINATIONS_H
 #define COMBINATIONS_H
 
-#include <algorithm>
 #include <tuple>
 #include "Helpers.h"
 
@@ -36,9 +35,6 @@ struct CombinationsPolicyBase {
     bool isEnd = false;
 };
 
-// template <typename... TIters>
-// CombinationsPolicyBase(std::tuple<Ranges<TIters>...>&) -> CombinationsPolicyBase<TIters...>;
-
 template <typename... TIters>
 struct FullCombinationsPolicy {
     CombinationsPolicyBase<TIters...> mBase;
@@ -57,6 +53,8 @@ struct FullCombinationsPolicy {
     void setData(std::tuple<Ranges<TIters>...>& ranges) { mBase.setData(ranges); }
 
     auto state() { return mBase.mCurrentState; }
+
+    bool isEnd() { return mBase.isEnd; }
 
     private:
     template <size_t I, size_t N>
@@ -118,6 +116,8 @@ struct StrictlyUpperCombinationsPolicy {
     }
 
     auto state() { return mBase.mCurrentState; }
+
+    bool isEnd() { return mBase.isEnd; }
 
     private:
     // TODO: Is it better setRanges return boolean instead of using in/out parameter?

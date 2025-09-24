@@ -24,8 +24,6 @@ concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
 template <typename TIter>
 struct GroupedData {
     using IterType = std::unordered_set<int>::const_iterator;
-    std::unordered_map<int, std::vector<TIter>> buckets;
-    std::unordered_set<int> bucketsNumbers;
 
     const std::vector<TIter>& at(IterType iter) const { return buckets.at(*iter); }
     const std::vector<TIter>& at(const int bucketNo) const { return buckets.at(bucketNo); }
@@ -49,6 +47,10 @@ struct GroupedData {
     }
     [[nodiscard]] IterType begin() const { return bucketsNumbers.begin(); }
     [[nodiscard]] IterType end() const { return bucketsNumbers.end(); }
+
+    private:
+    std::unordered_map<int, std::vector<TIter>> buckets;
+    std::unordered_set<int> bucketsNumbers;
 };
 
 // TODO: think where we need copies and where we want forward values

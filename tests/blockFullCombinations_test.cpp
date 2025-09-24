@@ -102,3 +102,9 @@ TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
         }
     }
 }
+
+TEST_F(BlockFullCombinationsTest, simpleIterationOverCombinations)
+{
+    BlockFullCombinations blockFull{bp, tuple};
+
+}

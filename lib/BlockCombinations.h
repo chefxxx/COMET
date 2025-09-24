@@ -28,24 +28,27 @@ struct BlockCombinations {
           mBucketPolicy(bucketPolicy)
     {
         syncBuckets(mGroupedData);
-        /* Now in each GroupedData<> object set of buckets numbers is the same.
-         * So just take from first one begin() and end(). */
         mCurrent = std::get<0>(mGroupedData).begin();
         mEnd     = std::get<0>(mGroupedData).end();
         setCombinations(std::make_index_sequence<sizeof...(TIters)>{}, mCurrent);
     }
 
-    /* Here we have GroupedData templated with TIter type, but inside this struct we store
-     * std::unordered_map<int, std::vector<TIter>> - so we have vector of iterators */
-    std::tuple<GroupedData<TIters>...> mGroupedData;
-
-    TCombinationsType moveForward()
+    void addOne()
     {
-        assert(mCurrent != mEnd);
-        return mCombinationsPolicy.state();
+        /* Case where we have to change buckets */
+        if (mCombinationsPolicy.isEnd()) {
+            ++mCurrent;
+            if (mCurrent != mEnd) {
+                setCombinations(std::make_index_sequence<sizeof...(TIters)>{}, mCurrent);
+            }
+        }
+        else {
+            mCombinationsPolicy.addOne();
+        }
     }
 
     private:
+    std::tuple<GroupedData<TIters>...> mGroupedData;
     TCombinationsPolicy mCombinationsPolicy;
     TBucketPolicy mBucketPolicy;
     BucketIterType mCurrent;
