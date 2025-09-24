@@ -5,9 +5,7 @@
 #ifndef BLOCKCOMBINATINOS_H
 #define BLOCKCOMBINATINOS_H
 
-#include <sys/stat.h>
 
-#include <cassert>
 #include "Combinations.h"
 
 template <

@@ -31,9 +31,7 @@ struct GroupedData {
     const std::vector<TIter>& at(const int bucketNo) const { return buckets.at(bucketNo); }
     [[nodiscard]] size_t size() const
     {
-        if (bucketsNumbers.size() == buckets.size())
-            return buckets.size();
-        return -1;
+        return bucketsNumbers.size();
     }
     void insert(int bucketNo, TIter iter)
     {
