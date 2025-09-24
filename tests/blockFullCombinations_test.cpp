@@ -25,7 +25,7 @@ class BlockFullCombinationsTest : public ::testing::Test
     dataType v4{0.33, 0.66, 0.99};
     dataType v5{0.25, 0.5, 0.75};
 
-    BucketPolicy<testCallable> bp = BucketPolicy(std::make_tuple(callable), {buckets}, false);
+    BucketPolicy<testCallable> bp  = BucketPolicy(std::make_tuple(callable), {buckets}, false);
     BucketPolicy<testCallable> bp2 = BucketPolicy(std::make_tuple(callable), {buckets2}, false);
 
     Ranges<dataType::iterator> r1{v1.begin(), v1.end()};
@@ -35,7 +35,7 @@ class BlockFullCombinationsTest : public ::testing::Test
     Ranges<dataType::iterator> r5{v5.begin(), v5.end()};
 
     std::tuple<decltype(r1), decltype(r2), decltype(r3)> tuple = std::make_tuple(r1, r2, r3);
-    std::tuple<decltype(r4), decltype(r5)> tuple2 = std::make_tuple(r4, r5);
+    std::tuple<decltype(r4), decltype(r5)> tuple2              = std::make_tuple(r4, r5);
 
     std::vector<int> expectedBucketsNums{2, 3, 4};
 };
@@ -115,7 +115,7 @@ TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
 TEST_F(BlockFullCombinationsTest, simpleIterationSize)
 {
     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp2, tuple2);
-    int k = 0;
+    int k          = 0;
     for (const auto& combination : blockFull) {
         std::get<0>(combination);
         k++;

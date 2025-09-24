@@ -93,7 +93,7 @@ struct BlockCombinations {
     auto createRanges(const GroupedData<TIter>& data, BucketIterType current)
     {
         const std::vector<TIter>& bucket = data.at(current);
-        using IterType = typename std::vector<TIter>::const_iterator;
+        using IterType                   = typename std::vector<TIter>::const_iterator;
         return Ranges<IterType>(bucket.begin(), bucket.end());
     }
 
