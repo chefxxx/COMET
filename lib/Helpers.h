@@ -6,8 +6,8 @@
 #define HELPERS_H
 
 #include <iterator>
+#include <set>
 #include <unordered_map>
-#include <unordered_set>
 #include "BucketPolicy.h"
 
 template <typename TBucketPolicy, typename TIter>
@@ -23,7 +23,7 @@ concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
 
 template <typename TIter>
 struct GroupedData {
-    using IterType = std::unordered_set<int>::const_iterator;
+    using IterType = std::set<int>::const_iterator;
 
     const std::vector<TIter>& at(IterType iter) const { return buckets.at(*iter); }
     const std::vector<TIter>& at(const int bucketNo) const { return buckets.at(bucketNo); }
@@ -47,7 +47,7 @@ struct GroupedData {
 
     private:
     std::unordered_map<int, std::vector<TIter>> buckets;
-    std::unordered_set<int> bucketsNumbers;
+    std::set<int> bucketsNumbers;
 };
 
 // TODO: think where we need copies and where we want forward values

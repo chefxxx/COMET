@@ -112,23 +112,58 @@ TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
     }
 }
 
-TEST_F(BlockFullCombinationsTest, simpleIterationSize)
-{
-    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp2, tuple2);
-    int k          = 0;
-    for (const auto& combination : blockFull) {
-        std::get<0>(combination);
-        k++;
-    }
-    ASSERT_EQ(k, 9);
-}
-
 TEST_F(BlockFullCombinationsTest, simpleIterationElementsAreCorrect)
 {
+    const std::array<std::tuple<double, double>, 9> arr = {
+        {{0.33, 0.25},
+         {0.33, 0.5},
+         {0.33, 0.75},
+         {0.66, 0.25},
+         {0.66, 0.5},
+         {0.66, 0.75},
+         {0.99, 0.25},
+         {0.99, 0.5},
+         {0.99, 0.75}}
+    };
+
+    int k          = 0;
     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp2, tuple2);
+    for (auto& combination : blockFull) {
+        auto& elem0    = std::get<0>(combination);
+        auto& elem1    = std::get<1>(combination);
+        auto& expected = arr[k++];
+        ASSERT_EQ(**elem0, std::get<0>(expected));
+        ASSERT_EQ(**elem1, std::get<1>(expected));
+    }
+}
+
+TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
+{
+    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
+    const std::array<std::tuple<double, double, double>, 34> arr = {
+        {
+         {0.25, 0.3, 0.33}, {0.25, 0.3, 0.44}, {0.25, 0.45, 0.33}, {0.25, 0.45, 0.44},
+         {0.35, 0.3, 0.33}, {0.35, 0.3, 0.44}, {0.35, 0.45, 0.33}, {0.35, 0.45, 0.44},
+         {0.45, 0.3, 0.33}, {0.45, 0.3, 0.44}, {0.45, 0.45, 0.33}, {0.45, 0.45, 0.44},
+         {0.55, 0.6, 0.55}, {0.55, 0.6, 0.66}, {0.65, 0.6, 0.55}, {0.65, 0.6, 0.66},
+         {0.75, 0.75, 0.77}, {0.75, 0.75, 0.88}, {0.75, 0.75, 0.99}, {0.75, 0.90, 0.77},
+         {0.75, 0.90, 0.88}, {0.75, 0.90, 0.99}, {0.85, 0.75, 0.77}, {0.85, 0.75, 0.88},
+         {0.85, 0.75, 0.99}, {0.85, 0.90, 0.77}, {0.85, 0.90, 0.88}, {0.85, 0.90, 0.99},
+         {0.95, 0.75, 0.77}, {0.95, 0.75, 0.88}, {0.95, 0.75, 0.99}, {0.95, 0.90, 0.77},
+         {0.95, 0.90, 0.88}, {0.95, 0.90, 0.99},
+         }
+    };
+
+    int k = 0;
     for (auto& combination : blockFull) {
         auto& elem0 = std::get<0>(combination);
         auto& elem1 = std::get<1>(combination);
-        std::cout << "(" << **elem0 << ", " << **elem1 << ")" << '\n';
+        auto& elem2 = std::get<2>(combination);
+        assert(k < 34);
+        auto& expected            = arr[k++];
+        const std::string message = "At iteration " + std::to_string(k) + "\n";
+        ASSERT_EQ(**elem0, std::get<0>(expected)) << message;
+        ASSERT_EQ(**elem1, std::get<1>(expected)) << message;
+        ASSERT_EQ(**elem2, std::get<2>(expected)) << message;
     }
 }

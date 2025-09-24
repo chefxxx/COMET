@@ -11,7 +11,7 @@ template <
     typename TBucketPolicy, typename TCombinationsPolicy, typename TCombinations,
     typename... TIters>
 struct BlockCombinations {
-    using BucketIterType = std::unordered_set<int>::const_iterator;
+    using BucketIterType = std::set<int>::const_iterator;
 
     BlockCombinations(
         const TBucketPolicy& bucketPolicy, const TCombinationsPolicy& combinationsPolicy,
@@ -40,8 +40,7 @@ struct BlockCombinations {
 
         BlockIterator& operator++()
         {
-            if (mBlock.mCurrent != mBlock.mEnd)
-                mBlock.addOne();
+            mBlock.addOne();
             return *this;
         }
         BlockIterator operator++(int)
@@ -74,16 +73,16 @@ struct BlockCombinations {
     BucketIterType mCurrent;
     BucketIterType mEnd;
 
-    bool isEnd() const { return mCombinationsPolicy.isEnd() && mCurrent == mEnd; }
+    [[nodiscard]] bool isEnd() const { return mCombinationsPolicy.isEnd() && mCurrent == mEnd; }
 
     void addOne()
     {
-        if (mCombinationsPolicy.isEnd() && mCurrent != mEnd) {
-            setCombinations(std::make_index_sequence<sizeof...(TIters)>{}, mCurrent);
-        } else {
-            mCombinationsPolicy.addOne();
-            if (mCombinationsPolicy.isEnd())
-                ++mCurrent;
+        mCombinationsPolicy.addOne();
+        if (mCombinationsPolicy.isEnd()) {
+            ++mCurrent;
+            if (mCurrent != mEnd) {
+                setCombinations(std::make_index_sequence<sizeof...(TIters)>{}, mCurrent);
+            }
         }
     }
 
