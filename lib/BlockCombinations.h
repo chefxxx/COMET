@@ -92,8 +92,9 @@ struct BlockCombinations {
     template <typename TIter>
     auto createRanges(const GroupedData<TIter>& data, BucketIterType current)
     {
-        auto bucket = data.at(current);
-        return Ranges(bucket.begin(), bucket.end());
+        const std::vector<TIter>& bucket = data.at(current);
+        using IterType = typename std::vector<TIter>::const_iterator;
+        return Ranges<IterType>(bucket.begin(), bucket.end());
     }
 
     template <std::size_t... Is>
@@ -112,8 +113,8 @@ auto makeBlockCombinations(
     const TBucketPolicy& bucketPolicy, const std::tuple<Ranges<TIters>...>& ranges
 )
 {
-    using CombinationsType = std::tuple<typename std::vector<TIters>::iterator...>;
-    using PolicyType       = TCombinationsPolicy<typename std::vector<TIters>::iterator...>;
+    using CombinationsType = std::tuple<typename std::vector<TIters>::const_iterator...>;
+    using PolicyType       = TCombinationsPolicy<typename std::vector<TIters>::const_iterator...>;
     return BlockCombinations<TBucketPolicy, PolicyType, CombinationsType, TIters...>(
         bucketPolicy, PolicyType{}, ranges
     );

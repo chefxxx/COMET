@@ -122,3 +122,13 @@ TEST_F(BlockFullCombinationsTest, simpleIterationSize)
     }
     ASSERT_EQ(k, 9);
 }
+
+TEST_F(BlockFullCombinationsTest, simpleIterationElementsAreCorrect)
+{
+    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp2, tuple2);
+    for (auto& combination : blockFull) {
+        auto& elem0 = std::get<0>(combination);
+        auto& elem1 = std::get<1>(combination);
+        std::cout << "(" << **elem0 << ", " << **elem1 << ")" << '\n';
+    }
+}
