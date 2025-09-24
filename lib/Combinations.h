@@ -52,9 +52,9 @@ struct FullCombinationsPolicy {
 
     void setData(std::tuple<Ranges<TIters>...>& ranges) { mBase.setData(ranges); }
 
-    auto state() { return mBase.mCurrentState; }
+    auto& state() { return mBase.mCurrentState; }
 
-    bool isEnd() { return mBase.isEnd; }
+    bool isEnd() const { return mBase.isEnd; }
 
     private:
     template <size_t I, size_t N>
@@ -115,9 +115,9 @@ struct StrictlyUpperCombinationsPolicy {
         }
     }
 
-    auto state() { return mBase.mCurrentState; }
+    auto& state() { return mBase.mCurrentState; }
 
-    bool isEnd() { return mBase.isEnd; }
+    bool isEnd() const { return mBase.isEnd; }
 
     private:
     // TODO: Is it better setRanges return boolean instead of using in/out parameter?

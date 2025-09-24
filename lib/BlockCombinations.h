@@ -78,18 +78,16 @@ struct BlockCombinations {
 
     void addOne()
     {
-        /* Case where we have to change buckets */
-        if (mCombinationsPolicy.isEnd()) {
-            ++mCurrent;
-            if (mCurrent != mEnd) {
-                setCombinations(std::make_index_sequence<sizeof...(TIters)>{}, mCurrent);
-            }
+        if (mCombinationsPolicy.isEnd() && mCurrent != mEnd) {
+            setCombinations(std::make_index_sequence<sizeof...(TIters)>{}, mCurrent);
         } else {
             mCombinationsPolicy.addOne();
+            if (mCombinationsPolicy.isEnd())
+                ++mCurrent;
         }
     }
 
-    auto state() { return mCombinationsPolicy.state(); }
+    auto& state() { return mCombinationsPolicy.state(); }
 
     template <typename TIter>
     auto createRanges(const GroupedData<TIter>& data, BucketIterType current)

@@ -11,6 +11,7 @@ class BlockFullCombinationsTest : public ::testing::Test
 
     protected:
     const dataType buckets{0.0, 0.25, 0.5, 0.75, 1.0};
+    const dataType buckets2{0.0, 1.0};
 
     struct testCallable {
         auto operator()(double const& a) const { return a; }
@@ -21,12 +22,20 @@ class BlockFullCombinationsTest : public ::testing::Test
     dataType v2{0.15, 0.30, 0.45, 0.6, 0.75, 0.90};
     dataType v3{0.33, 0.44, 0.55, 0.66, 0.77, 0.88, 0.99};
 
+    dataType v4{0.33, 0.66, 0.99};
+    dataType v5{0.25, 0.5, 0.75};
+
     BucketPolicy<testCallable> bp = BucketPolicy(std::make_tuple(callable), {buckets}, false);
+    BucketPolicy<testCallable> bp2 = BucketPolicy(std::make_tuple(callable), {buckets2}, false);
 
     Ranges<dataType::iterator> r1{v1.begin(), v1.end()};
     Ranges<dataType::iterator> r2{v2.begin(), v2.end()};
     Ranges<dataType::iterator> r3{v3.begin(), v3.end()};
+    Ranges<dataType::iterator> r4{v4.begin(), v4.end()};
+    Ranges<dataType::iterator> r5{v5.begin(), v5.end()};
+
     std::tuple<decltype(r1), decltype(r2), decltype(r3)> tuple = std::make_tuple(r1, r2, r3);
+    std::tuple<decltype(r4), decltype(r5)> tuple2 = std::make_tuple(r4, r5);
 
     std::vector<int> expectedBucketsNums{2, 3, 4};
 };
@@ -103,7 +112,13 @@ TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
     }
 }
 
-TEST_F(BlockFullCombinationsTest, simpleIterationOverCombinations)
+TEST_F(BlockFullCombinationsTest, simpleIterationSize)
 {
-    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
+    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp2, tuple2);
+    int k = 0;
+    for (const auto& combination : blockFull) {
+        std::get<0>(combination);
+        k++;
+    }
+    ASSERT_EQ(k, 9);
 }
