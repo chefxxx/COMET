@@ -8,7 +8,7 @@
 #include "Combinations.h"
 
 template <
-    typename TBucketPolicy, typename TCombinationsPolicy, typename TCombinationsType,
+    typename TBucketPolicy, typename TCombinationsPolicy, typename TCombinations,
     typename... TIters>
 struct BlockCombinations {
     using BucketIterType = std::unordered_set<int>::const_iterator;
@@ -32,15 +32,40 @@ struct BlockCombinations {
         setCombinations(std::make_index_sequence<sizeof...(TIters)>{}, mCurrent);
     }
 
-    auto data() { return mGroupedData; }
+    auto& data() { return mGroupedData; }
 
-    struct BlockIterator
-    {
+    struct BlockIterator {
+        BlockCombinations& mBlock;
+        explicit BlockIterator(BlockCombinations& blockCombinations) : mBlock(blockCombinations) {}
+
         BlockIterator& operator++()
         {
-            if (mCurrent != mEnd) {}
+            if (mBlock.mCurrent != mBlock.mEnd)
+                mBlock.addOne();
+            return *this;
         }
+        BlockIterator operator++(int)
+        {
+            BlockIterator tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+        TCombinations& operator*() { return mBlock.state(); }
     };
+
+    struct BlockSentinel {
+    };
+    BlockIterator begin() { return BlockIterator(*this); }
+    BlockSentinel end() { return BlockSentinel{}; }
+
+    friend bool operator!=(const BlockIterator& it, const BlockSentinel&)
+    {
+        return !it.mBlock.isEnd();
+    }
+
+    friend bool operator!=(const BlockSentinel& s, const BlockIterator& it) { return it != s; }
+
+    friend bool operator==(const BlockIterator& it, const BlockSentinel& s) { return !(it != s); }
 
     private:
     std::tuple<GroupedData<TIters>...> mGroupedData;
@@ -48,6 +73,8 @@ struct BlockCombinations {
     TBucketPolicy mBucketPolicy;
     BucketIterType mCurrent;
     BucketIterType mEnd;
+
+    bool isEnd() const { return mCombinationsPolicy.isEnd() && mCurrent == mEnd; }
 
     void addOne()
     {
@@ -61,6 +88,8 @@ struct BlockCombinations {
             mCombinationsPolicy.addOne();
         }
     }
+
+    auto state() { return mCombinationsPolicy.state(); }
 
     template <typename TIter>
     auto createRanges(const GroupedData<TIter>& data, BucketIterType current)
@@ -91,6 +120,5 @@ auto makeBlockCombinations(
         bucketPolicy, PolicyType{}, ranges
     );
 }
-
 
 #endif  // BLOCKCOMBINATINOS_H

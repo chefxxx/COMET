@@ -34,9 +34,9 @@ class BlockFullCombinationsTest : public ::testing::Test
 TEST_F(BlockFullCombinationsTest, groupedDataSizesAreCorrect)
 {
     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
-    auto data0 = std::get<0>(blockFull.data());
-    auto data1 = std::get<1>(blockFull.data());
-    auto data2 = std::get<2>(blockFull.data());
+    auto data0     = std::get<0>(blockFull.data());
+    auto data1     = std::get<1>(blockFull.data());
+    auto data2     = std::get<2>(blockFull.data());
 
     ASSERT_EQ(data0.size(), expectedBucketsNums.size());
     ASSERT_EQ(data1.size(), expectedBucketsNums.size());
@@ -46,9 +46,9 @@ TEST_F(BlockFullCombinationsTest, groupedDataSizesAreCorrect)
 TEST_F(BlockFullCombinationsTest, groupedDataBucketsNumbersAreCorrect)
 {
     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
-    auto data0 = std::get<0>(blockFull.data());
-    auto data1 = std::get<1>(blockFull.data());
-    auto data2 = std::get<2>(blockFull.data());
+    auto data0     = std::get<0>(blockFull.data());
+    auto data1     = std::get<1>(blockFull.data());
+    auto data2     = std::get<2>(blockFull.data());
 
     for (const auto& bn : expectedBucketsNums) {
         ASSERT_EQ(data0.contains(bn), true);
@@ -60,9 +60,9 @@ TEST_F(BlockFullCombinationsTest, groupedDataBucketsNumbersAreCorrect)
 TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
 {
     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
-    auto data0 = std::get<0>(blockFull.data());
-    auto data1 = std::get<1>(blockFull.data());
-    auto data2 = std::get<2>(blockFull.data());
+    auto data0     = std::get<0>(blockFull.data());
+    auto data1     = std::get<1>(blockFull.data());
+    auto data2     = std::get<2>(blockFull.data());
 
     const std::vector expectedB02{0.25, 0.35, 0.45};
     const std::vector expectedB03{0.55, 0.65};
@@ -88,9 +88,9 @@ TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
         const auto& bucket1 = data1.at(id);
         const auto& bucket2 = data2.at(id);
         const auto& arr     = expectedBuckets[k++];
-        auto exp0    = arr[0];
-        auto exp1    = arr[1];
-        auto exp2    = arr[2];
+        auto exp0           = arr[0];
+        auto exp1           = arr[1];
+        auto exp2           = arr[2];
         for (size_t i = 0; i < bucket0.size(); ++i) {
             ASSERT_EQ(exp0[i], *bucket0[i]);
         }
