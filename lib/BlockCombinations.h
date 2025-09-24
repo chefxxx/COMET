@@ -5,7 +5,6 @@
 #ifndef BLOCKCOMBINATINOS_H
 #define BLOCKCOMBINATINOS_H
 
-
 #include "Combinations.h"
 
 template <
@@ -33,6 +32,23 @@ struct BlockCombinations {
         setCombinations(std::make_index_sequence<sizeof...(TIters)>{}, mCurrent);
     }
 
+    auto data() { return mGroupedData; }
+
+    struct BlockIterator
+    {
+        BlockIterator& operator++()
+        {
+            if (mCurrent != mEnd) {}
+        }
+    };
+
+    private:
+    std::tuple<GroupedData<TIters>...> mGroupedData;
+    TCombinationsPolicy mCombinationsPolicy;
+    TBucketPolicy mBucketPolicy;
+    BucketIterType mCurrent;
+    BucketIterType mEnd;
+
     void addOne()
     {
         /* Case where we have to change buckets */
@@ -41,18 +57,10 @@ struct BlockCombinations {
             if (mCurrent != mEnd) {
                 setCombinations(std::make_index_sequence<sizeof...(TIters)>{}, mCurrent);
             }
-        }
-        else {
+        } else {
             mCombinationsPolicy.addOne();
         }
     }
-
-    private:
-    std::tuple<GroupedData<TIters>...> mGroupedData;
-    TCombinationsPolicy mCombinationsPolicy;
-    TBucketPolicy mBucketPolicy;
-    BucketIterType mCurrent;
-    BucketIterType mEnd;
 
     template <typename TIter>
     auto createRanges(const GroupedData<TIter>& data, BucketIterType current)
@@ -71,22 +79,18 @@ struct BlockCombinations {
     }
 };
 
-template <typename TBucketPolicy, typename... TIters>
-struct BlockFullCombinations {
+template <
+    template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename... TIters>
+auto makeBlockCombinations(
+    const TBucketPolicy& bucketPolicy, const std::tuple<Ranges<TIters>...>& ranges
+)
+{
     using CombinationsType = std::tuple<typename std::vector<TIters>::iterator...>;
-    using PolicyType       = FullCombinationsPolicy<typename std::vector<TIters>::iterator...>;
-    PolicyType mCombinationsPolicy{};
+    using PolicyType       = TCombinationsPolicy<typename std::vector<TIters>::iterator...>;
+    return BlockCombinations<TBucketPolicy, PolicyType, CombinationsType, TIters...>(
+        bucketPolicy, PolicyType{}, ranges
+    );
+}
 
-    BlockFullCombinations(
-        const TBucketPolicy& bucketPolicy, const std::tuple<Ranges<TIters>...>& ranges
-    )
-        : mBase(bucketPolicy, mCombinationsPolicy, ranges)
-    {
-    }
-
-    BlockCombinations<TBucketPolicy, PolicyType, CombinationsType, TIters...> mBase;
-
-    auto data() { return mBase.mGroupedData; }
-};
 
 #endif  // BLOCKCOMBINATINOS_H

@@ -33,7 +33,7 @@ class BlockFullCombinationsTest : public ::testing::Test
 
 TEST_F(BlockFullCombinationsTest, groupedDataSizesAreCorrect)
 {
-    BlockFullCombinations blockFull{bp, tuple};
+    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
     auto data0 = std::get<0>(blockFull.data());
     auto data1 = std::get<1>(blockFull.data());
     auto data2 = std::get<2>(blockFull.data());
@@ -45,7 +45,7 @@ TEST_F(BlockFullCombinationsTest, groupedDataSizesAreCorrect)
 
 TEST_F(BlockFullCombinationsTest, groupedDataBucketsNumbersAreCorrect)
 {
-    BlockFullCombinations blockFull{bp, tuple};
+    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
     auto data0 = std::get<0>(blockFull.data());
     auto data1 = std::get<1>(blockFull.data());
     auto data2 = std::get<2>(blockFull.data());
@@ -59,7 +59,7 @@ TEST_F(BlockFullCombinationsTest, groupedDataBucketsNumbersAreCorrect)
 
 TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
 {
-    BlockFullCombinations blockFull{bp, tuple};
+    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
     auto data0 = std::get<0>(blockFull.data());
     auto data1 = std::get<1>(blockFull.data());
     auto data2 = std::get<2>(blockFull.data());
@@ -84,10 +84,10 @@ TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
 
     int k = 0;
     for (const auto& id : expectedBucketsNums) {
-        auto bucket0 = data0.at(id);
-        auto bucket1 = data1.at(id);
-        auto bucket2 = data2.at(id);
-        auto arr     = expectedBuckets[k++];
+        const auto& bucket0 = data0.at(id);
+        const auto& bucket1 = data1.at(id);
+        const auto& bucket2 = data2.at(id);
+        const auto& arr     = expectedBuckets[k++];
         auto exp0    = arr[0];
         auto exp1    = arr[1];
         auto exp2    = arr[2];
@@ -105,6 +105,5 @@ TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
 
 TEST_F(BlockFullCombinationsTest, simpleIterationOverCombinations)
 {
-    BlockFullCombinations blockFull{bp, tuple};
-
+    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
 }

@@ -27,10 +27,7 @@ struct GroupedData {
 
     const std::vector<TIter>& at(IterType iter) const { return buckets.at(*iter); }
     const std::vector<TIter>& at(const int bucketNo) const { return buckets.at(bucketNo); }
-    [[nodiscard]] size_t size() const
-    {
-        return bucketsNumbers.size();
-    }
+    [[nodiscard]] size_t size() const { return bucketsNumbers.size(); }
     void insert(int bucketNo, TIter iter)
     {
         buckets[bucketNo].push_back(iter);
