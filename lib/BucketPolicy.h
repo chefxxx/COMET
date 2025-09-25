@@ -49,7 +49,7 @@ struct BucketPolicy final {
 
     template <typename TElement>
         requires is_function_bucketable_on_doubles<TElement, TCallables...>
-    [[nodiscard]] int getBucket(TElement const &element)
+    [[nodiscard]] int getBucket(TElement const &element) const
     {
         auto values  = getValues(element);
         auto indices = getUpperIndicesForTuple(values);
@@ -65,13 +65,13 @@ struct BucketPolicy final {
     }
 
     template <typename TElement>
-    [[nodiscard]] auto getValues(TElement const &element)
+    [[nodiscard]] auto getValues(TElement const &element) const
     {
         return std::make_tuple(std::get<TCallables>(mCallables)(element)...);
     }
 
     template <typename... Types>
-    [[nodiscard]] auto getUpperIndicesForTuple(std::tuple<Types...> const &values)
+    [[nodiscard]] auto getUpperIndicesForTuple(std::tuple<Types...> const &values) const
     {
         return [&]<std::size_t... I>(std::index_sequence<I...>) {
             return std::make_tuple(
@@ -81,7 +81,7 @@ struct BucketPolicy final {
     }
 
     template <typename... TIndices>
-    [[nodiscard]] int calculateBucketAtIndices(std::tuple<TIndices...> const &indices)
+    [[nodiscard]] int calculateBucketAtIndices(std::tuple<TIndices...> const &indices) const
     {
         constexpr auto N = sizeof...(TIndices);
         auto indexSeq    = std::make_index_sequence<N - 1>();
