@@ -32,14 +32,6 @@ struct CombinationsProducer {
         );
     }
 
-    void addOne()
-    {
-        if (!isEnd)
-            mCombinationsPolicy.addOne(
-                mCurrentState, mCurrentIndexNumbers, mEndIndexNumbers, isEnd
-            );
-    }
-
     [[nodiscard]] bool finished() const { return isEnd; }
 
     struct CombinationsIterator {
@@ -96,6 +88,14 @@ struct CombinationsProducer {
     TCombinationsPolicy mCombinationsPolicy;
     std::array<int64_t, sizeof...(TIters)> mEndIndexNumbers;
     std::array<int64_t, sizeof...(TIters)> mCurrentIndexNumbers;
+
+    void addOne()
+    {
+        if (!isEnd)
+            mCombinationsPolicy.addOne(
+                mCurrentState, mCurrentIndexNumbers, mEndIndexNumbers, isEnd
+            );
+    }
 };
 
 template <size_t I, typename TIter, typename TCombinationsType>
