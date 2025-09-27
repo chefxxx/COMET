@@ -11,6 +11,7 @@ template <
     typename TBucketPolicy, typename TCombinationsPolicy, typename TCombinations,
     typename... TIters>
 struct BlockCombinations {
+
     using BucketIterType = std::set<int>::const_iterator;
 
     BlockCombinations(
@@ -35,36 +36,57 @@ struct BlockCombinations {
     auto& data() { return mGroupedData; }
 
     struct BlockIterator {
-        BlockCombinations& mBlock;
-        explicit BlockIterator(BlockCombinations& blockCombinations) : mBlock(blockCombinations) {}
+        using iterator_category = std::forward_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        // using value_type = std::tuple<typename TIters::value_type...>;
+        // using pointer =
+        // using reference
+
+        BucketIterType mIter;
+        BlockCombinations mBlockCombinations;
+        explicit BlockIterator(const BucketIterType iter, BlockCombinations& blockCombinations)
+            : mIter(iter), mBlockCombinations(blockCombinations)
+        {
+        }
 
         BlockIterator& operator++()
         {
-            mBlock.addOne();
+            mBlockCombinations.addOne();
+            ++mIter;
             return *this;
         }
+
         BlockIterator operator++(int)
         {
-            BlockIterator tmp = *this;
+            BlockIterator copy = *this;
             ++(*this);
-            return tmp;
+            return copy;
         }
-        TCombinations& operator*() { return mBlock.state(); }
+
+        friend bool operator==(const BlockIterator& lhs, const BlockIterator& rhs)
+        {
+            return lhs.mIter == rhs.mIter;
+        }
+        friend bool operator!=(const BlockIterator& lhs, const BlockIterator& rhs)
+        {
+            return !(lhs.mIter == rhs.mIter);
+        }
     };
 
-    struct BlockSentinel {
-    };
-    BlockIterator begin() { return BlockIterator(*this); }
-    BlockSentinel end() { return BlockSentinel{}; }
-
-    friend bool operator!=(const BlockIterator& it, const BlockSentinel&)
-    {
-        return !it.mBlock.isEnd();
-    }
-
-    friend bool operator!=(const BlockSentinel& s, const BlockIterator& it) { return it != s; }
-
-    friend bool operator==(const BlockIterator& it, const BlockSentinel& s) { return !(it != s); }
+    // struct BlockSentinel {
+    // };
+    // BlockIterator begin() { return BlockIterator(*this); }
+    // BlockSentinel end() { return BlockSentinel{}; }
+    //
+    // friend bool operator!=(const BlockIterator& it, const BlockSentinel&)
+    // {
+    //     return !it.mBlock.isEnd();
+    // }
+    //
+    // friend bool operator!=(const BlockSentinel& s, const BlockIterator& it) { return it != s; }
+    //
+    // friend bool operator==(const BlockIterator& it, const BlockSentinel& s) { return !(it != s);
+    // }
 
     private:
     std::tuple<GroupedData<TIters>...> mGroupedData;
