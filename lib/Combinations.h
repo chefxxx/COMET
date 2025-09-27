@@ -49,12 +49,14 @@ struct CombinationsProducer {
             );
     }
 
+    [[nodiscard]] bool finished() const { return isEnd; }
+
     struct CombinationsIterator {
         using iterator_category = std::input_iterator_tag;
         using difference_type   = std::ptrdiff_t;
         using value_type        = CombinationsType;
-        using pointer           = CombinationsType*;
-        using reference         = CombinationsType&;
+        using pointer           = const CombinationsType*;
+        using reference         = const CombinationsType&;
 
         CombinationsType* mPtr;
         CombinationsProducer* mProducer;
@@ -72,16 +74,13 @@ struct CombinationsProducer {
             mPtr = &mProducer->mCurrentState;
             return *this;
         }
-
         CombinationsIterator operator++(int)
         {
             CombinationsIterator copy = *this;
             ++(*this);
             return copy;
         }
-
         reference operator*() const { return *mPtr; }
-
         pointer operator->() { return mPtr; }
 
         friend bool operator==(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
@@ -89,7 +88,6 @@ struct CombinationsProducer {
             if (lhs.mProducer->isEnd && rhs.mProducer->isEnd) return true;
             return lhs.mProducer == rhs.mProducer && lhs.mPtr == rhs.mPtr;
         }
-
         friend bool operator!=(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
         {
             return !(lhs == rhs);
