@@ -26,7 +26,9 @@ struct CombinationsProducer {
     template <size_t I, typename TIter>
     void setDataHelper(Ranges<TIter>& range)
     {
+        std::get<I>(mBeginState)   = range.mBegin;
         std::get<I>(mCurrentState) = range.mBegin;
+        std::get<I>(mEndState)     = range.mEnd;
         mEndIndexNumbers[I]        = std::distance(range.mBegin, range.mEnd);
         mCurrentIndexNumbers[I]    = 0;
     }
@@ -41,15 +43,72 @@ struct CombinationsProducer {
 
     void addOne()
     {
-        mCombinationsPolicy.addOne(mCurrentState, mCurrentIndexNumbers, mEndIndexNumbers, isEnd);
+        if (!isEnd)
+            mCombinationsPolicy.addOne(
+                mCurrentState, mCurrentIndexNumbers, mEndIndexNumbers, isEnd
+            );
     }
+
+    struct CombinationsIterator {
+        using iterator_category = std::forward_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = CombinationsType;
+        using pointer           = CombinationsType*;
+        using reference         = CombinationsType&;
+
+        CombinationsType* mPtr;
+        CombinationsProducer* mProducer;
+        CombinationsIterator() = default;
+        explicit CombinationsIterator(CombinationsType* state, CombinationsProducer* producer)
+            : mPtr(state), mProducer(producer)
+        {
+        }
+        CombinationsIterator(const CombinationsIterator&)            = default;
+        CombinationsIterator& operator=(const CombinationsIterator&) = default;
+
+        CombinationsIterator& operator++()
+        {
+            mProducer->addOne();
+            mPtr = &mProducer->mCurrentState;
+            return *this;
+        }
+
+        CombinationsIterator operator++(int)
+        {
+            CombinationsIterator copy = *this;
+            ++(*this);
+            return copy;
+        }
+
+        reference operator*() const { return *mPtr; }
+
+        pointer operator->() { return mPtr; }
+
+        friend bool operator==(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
+        {
+            if (lhs.mProducer->isEnd && rhs.mProducer->isEnd) return true;
+            return lhs.mProducer == rhs.mProducer && lhs.mPtr == rhs.mPtr;
+        }
+
+        friend bool operator!=(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
+        {
+            return !(lhs == rhs);
+        }
+    };
+
+    static_assert(std::forward_iterator<CombinationsIterator>);
+
+    CombinationsIterator begin() { return CombinationsIterator(&mBeginState, this); }
+    CombinationsIterator end() { return CombinationsIterator(&mEndState, this); }
 
     private:
     bool isEnd = false;
     CombinationsType mCurrentState;
+    CombinationsType mEndState;
+    CombinationsType mBeginState;
     TCombinationsPolicy mCombinationsPolicy;
     std::array<int64_t, sizeof...(TIters)> mEndIndexNumbers;
-    std::array<int64_t, sizeof...(TIters)> mCurrentIndexNumbers{};
+    std::array<int64_t, sizeof...(TIters)> mCurrentIndexNumbers;
 };
 
 template <typename... TIters>
@@ -85,7 +144,7 @@ struct FullCombinationsPolicy {
             ++std::get<ind>(currentState);
             if (currentPointersIndex != endIndexNumbers[ind]) {
                 [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-                    (resetState<I, Is, N>(), ...);
+                    (resetState<I, Is, N>(currentState, currentIndexNumbers), ...);
                 }(std::make_index_sequence<I>());
                 wasModified = false;
             }
