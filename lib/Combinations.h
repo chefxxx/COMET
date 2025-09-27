@@ -20,25 +20,18 @@ struct CombinationsProducer {
     )
         : mCombinationsPolicy(combinationsPolicy)
     {
-        setData(ranges);
-    }
-
-    template <size_t I, typename TIter>
-    void setDataHelper(Ranges<TIter>& range)
-    {
-        std::get<I>(mBeginState)   = range.mBegin;
-        std::get<I>(mCurrentState) = range.mBegin;
-        std::get<I>(mSentinel)     = range.mEnd;
-        mEndIndexNumbers[I]        = std::distance(range.mBegin, range.mEnd);
-        mCurrentIndexNumbers[I]    = 0;
+        mCombinationsPolicy.setData(
+            ranges, mBeginState, mCurrentState, mSentinel, mEndIndexNumbers, mCurrentIndexNumbers,
+            isEnd
+        );
     }
 
     void setData(std::tuple<Ranges<TIters>...>& ranges)
     {
-        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-            (setDataHelper<Is>(std::get<Is>(ranges)), ...);
-            isEnd = ((mEndIndexNumbers[Is] == 0) || ...);
-        }(std::make_index_sequence<sizeof...(TIters)>{});
+        mCombinationsPolicy.setData(
+            ranges, mBeginState, mCurrentState, mSentinel, mEndIndexNumbers, mCurrentIndexNumbers,
+            isEnd
+        );
     }
 
     void addOne()
@@ -85,7 +78,8 @@ struct CombinationsProducer {
 
         friend bool operator==(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
         {
-            if (lhs.mProducer->isEnd && rhs.mProducer->isEnd) return true;
+            if (lhs.mProducer->isEnd && rhs.mProducer->isEnd)
+                return true;
             return lhs.mProducer == rhs.mProducer && lhs.mPtr == rhs.mPtr;
         }
         friend bool operator!=(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
@@ -107,9 +101,40 @@ struct CombinationsProducer {
     std::array<int64_t, sizeof...(TIters)> mCurrentIndexNumbers;
 };
 
+template <size_t I, typename TIter, typename TCombinationsType>
+void setDataHelper(
+    Ranges<TIter>& range, TCombinationsType& beginState, TCombinationsType& currentState,
+    TCombinationsType& sentinel, int64_t& endIndexNumbers, int64_t& currentIndexNumber
+)
+{
+    std::get<I>(beginState)   = range.mBegin;
+    std::get<I>(currentState) = range.mBegin;
+    std::get<I>(sentinel)     = range.mEnd;
+    endIndexNumbers           = std::distance(range.mBegin, range.mEnd);
+    currentIndexNumber        = 0;
+}
+
 template <typename... TIters>
 struct FullCombinationsPolicy {
     FullCombinationsPolicy() = default;
+    using CombinationsType   = std::tuple<TIters...>;
+
+    void setData(
+        std::tuple<Ranges<TIters>...>& ranges, CombinationsType& beginState,
+        CombinationsType& currentState, CombinationsType& sentinel,
+        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers, bool& isEnd
+    )
+    {
+        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+            (setDataHelper<Is>(
+                 std::get<Is>(ranges), beginState, currentState, sentinel, endIndexNumbers[Is],
+                 currentIndexNumbers[Is]
+             ),
+             ...);
+            isEnd = ((endIndexNumbers[Is] == 0) || ...);
+        }(std::make_index_sequence<sizeof...(TIters)>{});
+    }
 
     void addOne(
         std::tuple<TIters...>& currentState,

@@ -217,8 +217,7 @@ TEST(AddOneFullTest, fourVectorsDifferentSizes)
     };
 
     int i = 0;
-    for (const auto& [elem0, elem1, elem2, elem3] : combinationsProducer)
-    {
+    for (const auto& [elem0, elem1, elem2, elem3] : combinationsProducer) {
         auto currentValues = expected[i++];
         ASSERT_TRUE(*elem0 == std::get<0>(currentValues));
         ASSERT_TRUE(*elem1 == std::get<1>(currentValues));
@@ -226,7 +225,6 @@ TEST(AddOneFullTest, fourVectorsDifferentSizes)
         ASSERT_TRUE(*elem3 == std::get<3>(currentValues));
     }
 }
-
 
 TEST(AddOneFullTest, OneRangeIsEmpty)
 {
@@ -238,7 +236,7 @@ TEST(AddOneFullTest, OneRangeIsEmpty)
     Ranges r2 = {v2.begin(), v2.end()};
     Ranges r3 = {v3.begin(), v3.end()};
 
-    auto tuple = std::make_tuple(r1, r2, r3);
+    auto tuple                      = std::make_tuple(r1, r2, r3);
     const auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(tuple);
     ASSERT_TRUE(combinationsProducer.finished());
 }
