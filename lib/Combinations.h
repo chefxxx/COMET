@@ -54,7 +54,7 @@ struct FullCombinationsPolicy {
 
     auto& state() { return mBase.mCurrentState; }
 
-    bool isEnd() const { return mBase.isEnd; }
+    [[nodiscard]] bool isEnd() const { return mBase.isEnd; }
 
     private:
     template <size_t I, size_t N>
@@ -79,7 +79,6 @@ struct FullCombinationsPolicy {
     template <size_t I, size_t J, size_t N>
     void resetState()
     {
-        // Clang format makes it look very strange
         constexpr auto ind = N - I + J;
         std::get<ind>(mBase.mCurrentState) -= mBase.mCurrentIndexNumbers[ind];
         mBase.mCurrentIndexNumbers[ind] = 0;
@@ -117,7 +116,7 @@ struct StrictlyUpperCombinationsPolicy {
 
     auto& state() { return mBase.mCurrentState; }
 
-    bool isEnd() const { return mBase.isEnd; }
+    [[nodiscard]] bool isEnd() const { return mBase.isEnd; }
 
     private:
     // TODO: Is it better setRanges return boolean instead of using in/out parameter?

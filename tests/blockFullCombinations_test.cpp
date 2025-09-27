@@ -155,11 +155,7 @@ TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
     };
 
     int k = 0;
-    for (auto& combination : blockFull) {
-        auto& elem0 = std::get<0>(combination);
-        auto& elem1 = std::get<1>(combination);
-        auto& elem2 = std::get<2>(combination);
-        assert(k < 34);
+    for (auto& [elem0, elem1, elem2] : blockFull) {
         auto& expected            = arr[k++];
         const std::string message = "At iteration " + std::to_string(k) + "\n";
         ASSERT_EQ(**elem0, std::get<0>(expected)) << message;
