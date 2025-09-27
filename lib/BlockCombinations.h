@@ -11,7 +11,6 @@ template <
     typename TBucketPolicy, typename TCombinationsPolicy, typename TCombinations,
     typename... TIters>
 struct BlockCombinations {
-
     using BucketIterType = std::set<int>::const_iterator;
 
     BlockCombinations(

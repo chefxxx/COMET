@@ -20,10 +20,13 @@ TEST(AddOneFullTest, twoVectorsSameSize)
     // Why does it compile with tuple created before and not without
     // auto combinationPolicy = FullCombinationsPolicy({r1, r2}); ??? It is interesting
     // Answer: to make it work we should add forwarding
-    using combinationsType =
-        FullCombinationsPolicy<std::vector<int>::iterator, std::vector<char>::iterator>;
-    combinationsType combinationPolicy{};
-    combinationPolicy.setData(tuple);
+
+    // using combinationsType =
+    //     FullCombinationsPolicy<std::vector<int>::iterator, std::vector<char>::iterator>;
+    // combinationsType combinationPolicy{};
+    // combinationPolicy.setData(tuple);
+
+    auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(tuple);
 
     const std::vector<std::tuple<int, char>> expected = {
         {1, 'a'},

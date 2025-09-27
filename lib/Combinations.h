@@ -8,10 +8,20 @@
 #include <tuple>
 #include "Helpers.h"
 
-template <typename... TIters>
-struct CombinationsPolicyBase {
-    using CombinationsType   = std::tuple<TIters...>;
-    CombinationsPolicyBase() = default;
+template <typename TCombinationsPolicy, typename... TIters>
+struct CombinationsProducer {
+    using CombinationsType = std::tuple<TIters...>;
+    explicit CombinationsProducer(TCombinationsPolicy combinationsPolicy)
+        : mCombinationsPolicy(combinationsPolicy)
+    {
+    }
+    explicit CombinationsProducer(
+        TCombinationsPolicy combinationsPolicy, std::tuple<Ranges<TIters>...>& ranges
+    )
+        : mCombinationsPolicy(combinationsPolicy)
+    {
+        setData(ranges);
+    }
 
     template <size_t I, typename TIter>
     void setDataHelper(Ranges<TIter>& range)
@@ -29,42 +39,51 @@ struct CombinationsPolicyBase {
         }(std::make_index_sequence<sizeof...(TIters)>());
     }
 
-    CombinationsType mCurrentState;
-    std::array<int64_t, sizeof...(TIters)> mCurrentIndexNumbers{};
-    std::array<int64_t, sizeof...(TIters)> mEndIndexNumbers;
+    void addOne()
+    {
+        mCombinationsPolicy.addOne(mCurrentState, mCurrentIndexNumbers, mEndIndexNumbers, isEnd);
+    }
+
+    private:
     bool isEnd = false;
+    CombinationsType mCurrentState;
+    TCombinationsPolicy mCombinationsPolicy;
+    std::array<int64_t, sizeof...(TIters)> mEndIndexNumbers;
+    std::array<int64_t, sizeof...(TIters)> mCurrentIndexNumbers{};
 };
 
 template <typename... TIters>
 struct FullCombinationsPolicy {
-    CombinationsPolicyBase<TIters...> mBase;
-    FullCombinationsPolicy() : mBase() {}
+    FullCombinationsPolicy() = default;
 
-    void addOne()
+    void addOne(
+        std::tuple<TIters...>& currentState,
+        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers, bool& isEnd
+    )
     {
         constexpr size_t N = sizeof...(TIters);
         bool wasModified   = true;
         [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-            (addOneFun<Is, N>(wasModified), ...);
+            (addOneHelper<Is, N>(wasModified, currentState, currentIndexNumbers, endIndexNumbers),
+             ...);
         }(std::make_index_sequence<N>());
-        mBase.isEnd = wasModified;
+        isEnd = wasModified;
     }
-
-    void setData(std::tuple<Ranges<TIters>...>& ranges) { mBase.setData(ranges); }
-
-    auto& state() { return mBase.mCurrentState; }
-
-    [[nodiscard]] bool isEnd() const { return mBase.isEnd; }
 
     private:
     template <size_t I, size_t N>
-    void addOneFun(bool& wasModified)
+    void addOneHelper(
+        bool& wasModified, std::tuple<TIters...>& currentState,
+        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers
+    )
     {
         if (wasModified) {
             constexpr auto ind           = N - I - 1;
-            int64_t currentPointersIndex = ++mBase.mCurrentIndexNumbers[ind];
-            ++std::get<ind>(mBase.mCurrentState);
-            if (currentPointersIndex != mBase.mEndIndexNumbers[ind]) {
+            int64_t currentPointersIndex = ++currentIndexNumbers[ind];
+            ++std::get<ind>(currentState);
+            if (currentPointersIndex != endIndexNumbers[ind]) {
                 [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
                     (resetState<I, Is, N>(), ...);
                 }(std::make_index_sequence<I>());
@@ -77,91 +96,102 @@ struct FullCombinationsPolicy {
     // I - which position from the right side is considered
     // J - loop iterator, which pointer is set to 0 from the N - I to right position
     template <size_t I, size_t J, size_t N>
-    void resetState()
+    void resetState(
+        std::tuple<TIters...>& currentState,
+        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers
+    )
     {
         constexpr auto ind = N - I + J;
-        std::get<ind>(mBase.mCurrentState) -= mBase.mCurrentIndexNumbers[ind];
-        mBase.mCurrentIndexNumbers[ind] = 0;
+        std::get<ind>(currentState) -= currentIndexNumbers[ind];
+        currentIndexNumbers[ind] = 0;
     }
 };
 
-template <typename... TIters>
-struct StrictlyUpperCombinationsPolicy {
-    CombinationsPolicyBase<TIters...> mBase;
-    StrictlyUpperCombinationsPolicy() : mBase() {}
+// template <typename... TIters>
+// struct StrictlyUpperCombinationsPolicy {
+//
+//     void addOne()
+//     {
+//         constexpr size_t N = sizeof...(TIters);
+//         bool wasModified   = true;
+//         [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+//             (addOneFun<Is, N>(wasModified), ...);
+//         }(std::make_index_sequence<N>());
+//         mBase.isEnd = wasModified;
+//     }
+//
+//     void setData(std::tuple<Ranges<TIters>...>& ranges)
+//     {
+//         mBase.setData(ranges);
+//
+//         // Set ranges here have the same logic as a loop into addOneFun with setting new
+//         // pointers for right side positions.
+//         constexpr auto N = sizeof...(TIters);
+//         if (!mBase.isEnd) {
+//             bool shouldEnd = true;
+//             setRanges<N - 1, N>(shouldEnd);
+//             mBase.isEnd = !shouldEnd;
+//         }
+//     }
+//
+//     private:
+//     // TODO: Is it better setRanges return boolean instead of using in/out parameter?
+//     template <size_t I, size_t N>
+//     void addOneFun(bool& wasModified)
+//     {
+//         if (wasModified) {
+//             constexpr auto ind           = N - I - 1;
+//             int64_t currentPointersIndex = ++mBase.mCurrentIndexNumbers[ind];
+//             ++std::get<ind>(mBase.mCurrentState);
+//             if (currentPointersIndex != mBase.mEndIndexNumbers[ind]) {
+//                 bool wasChanged = true;
+//                 setRanges<I, N>(wasChanged);
+//                 wasModified = !wasChanged;
+//             }
+//         }
+//     }
+//
+//     template <size_t I, size_t N>
+//     void setRanges(bool& wasChanged)
+//     {
+//         [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+//             (resetState<I, Is, N>(wasChanged), ...);
+//         }(std::make_index_sequence<I>());
+//     }
+//
+//     // Here there are changes from the Full version. The pointers must be set not to 0, but to
+//     // Position + 1 from the nearest left pointer.
+//     // N - number of data sources
+//     // I - which position from the right side is considered
+//     // J - loop iterator, which pointer is set to 0 from the N - I to right position
+//     template <size_t I, size_t J, size_t N>
+//     void resetState(bool& wasChanged)
+//     {
+//         if (wasChanged) {
+//             constexpr auto ind = N - I + J;
+//             int64_t tmpInd     = mBase.mCurrentIndexNumbers[ind - 1] + 1;
+//             if (tmpInd < mBase.mEndIndexNumbers[ind]) {
+//                 std::get<ind>(mBase.mCurrentState) += tmpInd - mBase.mCurrentIndexNumbers[ind];
+//                 mBase.mCurrentIndexNumbers[ind] = tmpInd;
+//             } else {
+//                 wasChanged = false;
+//             }
+//         }
+//     }
+// };
 
-    void addOne()
-    {
-        constexpr size_t N = sizeof...(TIters);
-        bool wasModified   = true;
-        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-            (addOneFun<Is, N>(wasModified), ...);
-        }(std::make_index_sequence<N>());
-        mBase.isEnd = wasModified;
-    }
+template <template <typename...> class TCombinationsPolicy, typename... TIters>
+auto makeCombinations()
+{
+    using CombinationsPolicy = TCombinationsPolicy<TIters...>;
+    return CombinationsProducer<CombinationsPolicy, TIters...>(CombinationsPolicy{});
+}
 
-    void setData(std::tuple<Ranges<TIters>...>& ranges)
-    {
-        mBase.setData(ranges);
-
-        // Set ranges here have the same logic as a loop into addOneFun with setting new
-        // pointers for right side positions.
-        constexpr auto N = sizeof...(TIters);
-        if (!mBase.isEnd) {
-            bool shouldEnd = true;
-            setRanges<N - 1, N>(shouldEnd);
-            mBase.isEnd = !shouldEnd;
-        }
-    }
-
-    auto& state() { return mBase.mCurrentState; }
-
-    [[nodiscard]] bool isEnd() const { return mBase.isEnd; }
-
-    private:
-    // TODO: Is it better setRanges return boolean instead of using in/out parameter?
-    template <size_t I, size_t N>
-    void addOneFun(bool& wasModified)
-    {
-        if (wasModified) {
-            constexpr auto ind           = N - I - 1;
-            int64_t currentPointersIndex = ++mBase.mCurrentIndexNumbers[ind];
-            ++std::get<ind>(mBase.mCurrentState);
-            if (currentPointersIndex != mBase.mEndIndexNumbers[ind]) {
-                bool wasChanged = true;
-                setRanges<I, N>(wasChanged);
-                wasModified = !wasChanged;
-            }
-        }
-    }
-
-    template <size_t I, size_t N>
-    void setRanges(bool& wasChanged)
-    {
-        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-            (resetState<I, Is, N>(wasChanged), ...);
-        }(std::make_index_sequence<I>());
-    }
-
-    // Here there are changes from the Full version. The pointers must be set not to 0, but to
-    // Position + 1 from the nearest left pointer.
-    // N - number of data sources
-    // I - which position from the right side is considered
-    // J - loop iterator, which pointer is set to 0 from the N - I to right position
-    template <size_t I, size_t J, size_t N>
-    void resetState(bool& wasChanged)
-    {
-        if (wasChanged) {
-            constexpr auto ind = N - I + J;
-            int64_t tmpInd     = mBase.mCurrentIndexNumbers[ind - 1] + 1;
-            if (tmpInd < mBase.mEndIndexNumbers[ind]) {
-                std::get<ind>(mBase.mCurrentState) += tmpInd - mBase.mCurrentIndexNumbers[ind];
-                mBase.mCurrentIndexNumbers[ind] = tmpInd;
-            } else {
-                wasChanged = false;
-            }
-        }
-    }
-};
+template <template <typename...> class TCombinationsPolicy, typename... TIters>
+auto makeCombinations(std::tuple<Ranges<TIters>...>& ranges)
+{
+    using CombinationsPolicy = TCombinationsPolicy<TIters...>;
+    return CombinationsProducer(CombinationsPolicy{}, ranges);
+}
 
 #endif  // COMBINATIONS_H
