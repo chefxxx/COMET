@@ -28,7 +28,7 @@ struct CombinationsProducer {
     {
         std::get<I>(mBeginState)   = range.mBegin;
         std::get<I>(mCurrentState) = range.mBegin;
-        std::get<I>(mEndState)     = range.mEnd;
+        std::get<I>(mSentinel)     = range.mEnd;
         mEndIndexNumbers[I]        = std::distance(range.mBegin, range.mEnd);
         mCurrentIndexNumbers[I]    = 0;
     }
@@ -38,7 +38,7 @@ struct CombinationsProducer {
         [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
             (setDataHelper<Is>(std::get<Is>(ranges)), ...);
             isEnd = ((mEndIndexNumbers[Is] == 0) || ...);
-        }(std::make_index_sequence<sizeof...(TIters)>());
+        }(std::make_index_sequence<sizeof...(TIters)>{});
     }
 
     void addOne()
@@ -50,7 +50,7 @@ struct CombinationsProducer {
     }
 
     struct CombinationsIterator {
-        using iterator_category = std::forward_iterator_tag;
+        using iterator_category = std::input_iterator_tag;
         using difference_type   = std::ptrdiff_t;
         using value_type        = CombinationsType;
         using pointer           = CombinationsType*;
@@ -96,15 +96,13 @@ struct CombinationsProducer {
         }
     };
 
-    static_assert(std::forward_iterator<CombinationsIterator>);
-
     CombinationsIterator begin() { return CombinationsIterator(&mBeginState, this); }
-    CombinationsIterator end() { return CombinationsIterator(&mEndState, this); }
+    CombinationsIterator end() { return CombinationsIterator(&mSentinel, this); }
 
     private:
     bool isEnd = false;
     CombinationsType mCurrentState;
-    CombinationsType mEndState;
+    CombinationsType mSentinel;
     CombinationsType mBeginState;
     TCombinationsPolicy mCombinationsPolicy;
     std::array<int64_t, sizeof...(TIters)> mEndIndexNumbers;

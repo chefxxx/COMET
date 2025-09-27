@@ -64,15 +64,6 @@ TEST(AddOneFullTest, twoVectorsSameSize)
         {8, 'e'}
     };
 
-    // for (int i = 0; !combinationPolicy.mBase.isEnd; combinationPolicy.addOne(), i++) {
-    //     auto current_val1 = *std::get<0>(combinationPolicy.mBase.mCurrentState);
-    //     auto current_val2 = *std::get<1>(combinationPolicy.mBase.mCurrentState);
-    //
-    //     std::cout << current_val1 << " " << current_val2 << std::endl;
-    //     ASSERT_TRUE(current_val1 == std::get<0>(expected[i]));
-    //     ASSERT_TRUE(current_val2 == std::get<1>(expected[i]));
-    // }
-
     int i = 0;
     for (const auto& [elem0, elem1] : combinationsProducer) {
         auto expectedCombination = expectedValues[i++];
