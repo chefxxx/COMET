@@ -25,29 +25,29 @@ template <typename TIter>
 struct GroupedData {
     using IterType = std::set<int>::const_iterator;
 
-    const std::vector<TIter>& at(IterType iter) const { return buckets.at(*iter); }
-    const std::vector<TIter>& at(const int bucketNo) const { return buckets.at(bucketNo); }
-    [[nodiscard]] size_t size() const { return bucketsNumbers.size(); }
+    const std::vector<TIter>& at(IterType iter) const { return mBuckets.at(*iter); }
+    const std::vector<TIter>& at(const int bucketNo) const { return mBuckets.at(bucketNo); }
+    [[nodiscard]] size_t size() const { return mBucketsNumbers.size(); }
     void insert(int bucketNo, TIter iter)
     {
-        buckets[bucketNo].push_back(iter);
-        bucketsNumbers.insert(bucketNo);
+        mBuckets[bucketNo].push_back(iter);
+        mBucketsNumbers.insert(bucketNo);
     }
     [[nodiscard]] IterType erase(IterType iter)
     {
-        buckets.erase(*iter);
-        return bucketsNumbers.erase(iter);
+        mBuckets.erase(*iter);
+        return mBucketsNumbers.erase(iter);
     }
     [[nodiscard]] bool contains(const int bucketNo) const
     {
-        return bucketsNumbers.contains(bucketNo);
+        return mBucketsNumbers.contains(bucketNo);
     }
-    [[nodiscard]] IterType begin() const { return bucketsNumbers.begin(); }
-    [[nodiscard]] IterType end() const { return bucketsNumbers.end(); }
+    [[nodiscard]] IterType begin() const { return mBucketsNumbers.begin(); }
+    [[nodiscard]] IterType end() const { return mBucketsNumbers.end(); }
 
     private:
-    std::unordered_map<int, std::vector<TIter>> buckets;
-    std::set<int> bucketsNumbers;
+    std::unordered_map<int, std::vector<TIter>> mBuckets;
+    std::set<int> mBucketsNumbers;
 };
 
 // TODO: think where we need copies and where we want forward values
@@ -94,8 +94,8 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
     return resultData;
 }
 
-template <typename TIter0, typename TIterI>
-void syncHelper(GroupedData<TIter0>& firstData, const GroupedData<TIterI>& comparedData)
+template <typename TIter1, typename TIter2>
+void syncHelper(GroupedData<TIter1>& firstData, const GroupedData<TIter2>& comparedData)
 {
     for (auto it = firstData.begin(); it != firstData.end();) {
         if (!comparedData.contains(*it)) {

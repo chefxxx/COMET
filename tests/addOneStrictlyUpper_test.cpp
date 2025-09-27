@@ -84,7 +84,7 @@ TEST(AddOneStrictlyUpper, OneRangeIsLessThanItCanBe)
     Ranges r2 = {v2.begin(), v2.end()};
     Ranges r3 = {v3.begin(), v3.end()};
 
-    auto tuple = std::make_tuple(r1, r2, r3);
+    auto tuple                      = std::make_tuple(r1, r2, r3);
     const auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(tuple);
 
     ASSERT_TRUE(combinationsProducer.finished());
@@ -100,7 +100,7 @@ TEST(AddOneStrictlyUpper, ClassicExampleTest)
     Ranges r2 = {v2.begin(), v2.end()};
     Ranges r3 = {v3.begin(), v3.end()};
 
-    auto tuple = std::make_tuple(r1, r2, r3);
+    auto tuple                = std::make_tuple(r1, r2, r3);
     auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(tuple);
 
     const std::vector<std::tuple<int, int, int>> expected = {

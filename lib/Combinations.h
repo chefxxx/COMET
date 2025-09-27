@@ -21,16 +21,14 @@ struct CombinationsProducer {
         : mCombinationsPolicy(combinationsPolicy)
     {
         mCombinationsPolicy.setData(
-            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers,
-            isEnd
+            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, isEnd
         );
     }
 
     void setData(std::tuple<Ranges<TIters>...>& ranges)
     {
         mCombinationsPolicy.setData(
-            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers,
-            isEnd
+            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, isEnd
         );
     }
 
@@ -102,8 +100,8 @@ struct CombinationsProducer {
 
 template <size_t I, typename TIter, typename TCombinationsType>
 void setDataHelper(
-    Ranges<TIter>& range, TCombinationsType& currentState,
-    TCombinationsType& sentinel, int64_t& currentIndexNumber, int64_t& endIndexNumber
+    Ranges<TIter>& range, TCombinationsType& currentState, TCombinationsType& sentinel,
+    int64_t& currentIndexNumber, int64_t& endIndexNumber
 )
 {
     std::get<I>(currentState) = range.mBegin;
@@ -114,9 +112,8 @@ void setDataHelper(
 
 template <typename TCombinationsType, typename... TIters>
 void setDataPolicies(
-    std::tuple<Ranges<TIters>...>& ranges,
-    TCombinationsType& currentState, TCombinationsType& sentinel,
-    std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
+    std::tuple<Ranges<TIters>...>& ranges, TCombinationsType& currentState,
+    TCombinationsType& sentinel, std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
     std::array<int64_t, sizeof...(TIters)>& endIndexNumbers, bool& isEnd
 )
 {
@@ -136,11 +133,9 @@ struct FullCombinationsPolicy {
     using CombinationsType   = std::tuple<TIters...>;
 
     void setData(
-        std::tuple<Ranges<TIters>...>& ranges,
-        CombinationsType& currentState, CombinationsType& sentinel,
-        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
-        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers,
-        bool& isEnd
+        std::tuple<Ranges<TIters>...>& ranges, CombinationsType& currentState,
+        CombinationsType& sentinel, std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers, bool& isEnd
     )
     {
         setDataPolicies(
@@ -213,16 +208,15 @@ struct StrictlyUpperCombinationsPolicy {
         constexpr size_t N = sizeof...(TIters);
         bool wasModified   = true;
         [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-            (addOneFun<Is, N>(wasModified, currentState, currentIndexNumbers, endIndexNumbers),
+            (addOneHelper<Is, N>(wasModified, currentState, currentIndexNumbers, endIndexNumbers),
              ...);
         }(std::make_index_sequence<N>());
         isEnd = wasModified;
     }
 
     void setData(
-        std::tuple<Ranges<TIters>...>& ranges,
-        CombinationsType& currentState, CombinationsType& sentinel,
-        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
+        std::tuple<Ranges<TIters>...>& ranges, CombinationsType& currentState,
+        CombinationsType& sentinel, std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
         std::array<int64_t, sizeof...(TIters)>& endIndexNumbers, bool& isEnd
     )
     {
@@ -243,7 +237,7 @@ struct StrictlyUpperCombinationsPolicy {
     private:
     // TODO: Is it better setRanges return boolean instead of using in/out parameter?
     template <size_t I, size_t N>
-    void addOneFun(
+    void addOneHelper(
         bool& wasModified, std::tuple<TIters...>& currentState,
         std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
         std::array<int64_t, sizeof...(TIters)>& endIndexNumbers
