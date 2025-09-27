@@ -114,6 +114,24 @@ void setDataHelper(
     currentIndexNumber        = 0;
 }
 
+template <typename TCombinationsType, typename... TIters>
+void setDataPolicies(
+    std::tuple<Ranges<TIters>...>& ranges, TCombinationsType& beginState,
+    TCombinationsType& currentState, TCombinationsType& sentinel,
+    std::array<int64_t, sizeof...(TIters)>& endIndexNumbers,
+    std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers, bool& isEnd
+)
+{
+    [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+        (setDataHelper<Is>(
+             std::get<Is>(ranges), beginState, currentState, sentinel, endIndexNumbers[Is],
+             currentIndexNumbers[Is]
+         ),
+         ...);
+        isEnd = ((endIndexNumbers[Is] == 0) || ...);
+    }(std::make_index_sequence<sizeof...(TIters)>{});
+}
+
 template <typename... TIters>
 struct FullCombinationsPolicy {
     FullCombinationsPolicy() = default;
@@ -126,14 +144,9 @@ struct FullCombinationsPolicy {
         std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers, bool& isEnd
     )
     {
-        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-            (setDataHelper<Is>(
-                 std::get<Is>(ranges), beginState, currentState, sentinel, endIndexNumbers[Is],
-                 currentIndexNumbers[Is]
-             ),
-             ...);
-            isEnd = ((endIndexNumbers[Is] == 0) || ...);
-        }(std::make_index_sequence<sizeof...(TIters)>{});
+        setDataPolicies(
+            ranges, beginState, currentState, sentinel, endIndexNumbers, currentIndexNumbers, isEnd
+        );
     }
 
     void addOne(
