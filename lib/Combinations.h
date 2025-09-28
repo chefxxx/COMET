@@ -31,6 +31,12 @@ struct CombinationsProducer {
             ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, isEnd
         );
     }
+    void setData(std::tuple<Ranges<typename std::vector<TIters>::const_iterator>...>& ranges)
+    {
+        mCombinationsPolicy.setData(
+            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, isEnd
+        );
+    }
 
     [[nodiscard]] bool finished() const { return isEnd; }
 

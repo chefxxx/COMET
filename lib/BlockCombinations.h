@@ -10,10 +10,12 @@
 template <
     typename TBucketPolicy, typename TCombinationsPolicy, typename TCombinations,
     typename... TIters>
-struct BlockCombinations {
-    using BucketIterType = std::set<int>::const_iterator;
-
-    BlockCombinations(
+struct BlockCombinationsProducer {
+    using BucketIterType           = std::set<int>::const_iterator;
+    using CombinationsType         = std::tuple<TIters...>;
+    using CombinationsProducerType = CombinationsProducer<TCombinationsPolicy, TIters...>;
+    using CombinationsIterType     = CombinationsProducerType::CombinationsIterator;
+    BlockCombinationsProducer(
         const TBucketPolicy& bucketPolicy, const TCombinationsPolicy& combinationsPolicy,
         const std::tuple<Ranges<TIters>...>& ranges
     )
@@ -23,35 +25,54 @@ struct BlockCombinations {
                   return groupData(r.mBegin, r.mEnd, bucketPolicy);
               }
           )),
-          mCombinationsPolicy(combinationsPolicy),
+          mCombinationsProducer(combinationsPolicy),
           mBucketPolicy(bucketPolicy)
     {
         syncBuckets(mGroupedData);
         mCurrent = std::get<0>(mGroupedData).begin();
         mEnd     = std::get<0>(mGroupedData).end();
         setCombinations(std::make_index_sequence<sizeof...(TIters)>{}, mCurrent);
+        mCombinationsIterator = mCombinationsProducer.begin();
+        mCombinationsEnd      = mCombinationsProducer.end();
     }
 
     auto& data() { return mGroupedData; }
 
     struct BlockIterator {
-        using iterator_category = std::forward_iterator_tag;
+        using iterator_category = std::input_iterator_tag;
         using difference_type   = std::ptrdiff_t;
-        // using value_type = std::tuple<typename TIters::value_type...>;
-        // using pointer =
-        // using reference
+        using value_type        = CombinationsType;
+        using pointer           = const CombinationsType*;
+        using reference         = const CombinationsType&;
 
-        BucketIterType mIter;
-        BlockCombinations mBlockCombinations;
-        explicit BlockIterator(const BucketIterType iter, BlockCombinations& blockCombinations)
-            : mIter(iter), mBlockCombinations(blockCombinations)
+        BlockCombinationsProducer* mBlockCombinations;
+        CombinationsIterType iterator;
+        CombinationsType mData;
+        explicit BlockIterator(
+            BlockCombinationsProducer* blockCombinations, CombinationsIterType iterator
+        )
+            : mBlockCombinations(blockCombinations), iterator(iterator)
         {
+            if (iterator != mBlockCombinations->mCombinationsEnd)
+                mData = std::apply(
+                    [&](auto&&... pointer) {
+                        return std::make_tuple((*pointer)...);
+                    },
+                    *(this->iterator)
+                );
         }
 
         BlockIterator& operator++()
         {
-            mBlockCombinations.addOne();
-            ++mIter;
+            mBlockCombinations->addOne();
+            iterator = mBlockCombinations->mCombinationsIterator;
+            if (iterator != mBlockCombinations->mCombinationsEnd)
+                mData = std::apply(
+                    [&](auto&&... pointer) {
+                        return std::make_tuple((*pointer)...);
+                    },
+                    *iterator
+                );
             return *this;
         }
 
@@ -62,58 +83,54 @@ struct BlockCombinations {
             return copy;
         }
 
+        reference operator*() const { return mData; }
+        pointer operator->() const { return &mData; }
+
         friend bool operator==(const BlockIterator& lhs, const BlockIterator& rhs)
         {
-            return lhs.mIter == rhs.mIter;
+            return lhs.mBlockCombinations == rhs.mBlockCombinations && lhs.iterator == rhs.iterator;
         }
         friend bool operator!=(const BlockIterator& lhs, const BlockIterator& rhs)
         {
-            return !(lhs.mIter == rhs.mIter);
+            return !(lhs == rhs);
         }
     };
 
-    // struct BlockSentinel {
-    // };
-    // BlockIterator begin() { return BlockIterator(*this); }
-    // BlockSentinel end() { return BlockSentinel{}; }
-    //
-    // friend bool operator!=(const BlockIterator& it, const BlockSentinel&)
-    // {
-    //     return !it.mBlock.isEnd();
-    // }
-    //
-    // friend bool operator!=(const BlockSentinel& s, const BlockIterator& it) { return it != s; }
-    //
-    // friend bool operator==(const BlockIterator& it, const BlockSentinel& s) { return !(it != s);
-    // }
+    BlockIterator begin() { return BlockIterator(this, mCombinationsIterator); }
+    BlockIterator end() { return BlockIterator(this, mCombinationsEnd); }
 
     private:
     std::tuple<GroupedData<TIters>...> mGroupedData;
-    TCombinationsPolicy mCombinationsPolicy;
+    CombinationsProducerType mCombinationsProducer;
+    CombinationsIterType mCombinationsIterator;
+    CombinationsIterType mCombinationsEnd;
     TBucketPolicy mBucketPolicy;
     BucketIterType mCurrent;
     BucketIterType mEnd;
 
-    [[nodiscard]] bool isEnd() const { return mCombinationsPolicy.isEnd() && mCurrent == mEnd; }
+    [[nodiscard]] bool isEnd() const
+    {
+        return mCombinationsProducer.finished() && mCurrent == mEnd;
+    }
 
     void addOne()
     {
-        mCombinationsPolicy.addOne();
-        if (mCombinationsPolicy.isEnd()) {
+        ++mCombinationsIterator;
+        if (mCombinationsIterator == mCombinationsEnd) {
             ++mCurrent;
             if (mCurrent != mEnd) {
                 setCombinations(std::make_index_sequence<sizeof...(TIters)>{}, mCurrent);
+                mCombinationsIterator = mCombinationsProducer.begin();
+                mCombinationsEnd      = mCombinationsProducer.end();
             }
         }
     }
-
-    auto& state() { return mCombinationsPolicy.state(); }
 
     template <typename TIter>
     auto createRanges(const GroupedData<TIter>& data, BucketIterType current)
     {
         const std::vector<TIter>& bucket = data.at(current);
-        using IterType                   = typename std::vector<TIter>::const_iterator;
+        using IterType                   = std::vector<TIter>::const_iterator;
         return Ranges<IterType>(bucket.begin(), bucket.end());
     }
 
@@ -123,7 +140,7 @@ struct BlockCombinations {
         auto bucketsRanges = tuple_transform(mGroupedData, [&](auto&& data) {
             return createRanges(data, current);
         });
-        mCombinationsPolicy.setData(bucketsRanges);
+        mCombinationsProducer.setData(bucketsRanges);
     }
 };
 
@@ -135,7 +152,7 @@ auto makeBlockCombinations(
 {
     using CombinationsType = std::tuple<typename std::vector<TIters>::const_iterator...>;
     using PolicyType       = TCombinationsPolicy<typename std::vector<TIters>::const_iterator...>;
-    return BlockCombinations<TBucketPolicy, PolicyType, CombinationsType, TIters...>(
+    return BlockCombinationsProducer<TBucketPolicy, PolicyType, CombinationsType, TIters...>(
         bucketPolicy, PolicyType{}, ranges
     );
 }
