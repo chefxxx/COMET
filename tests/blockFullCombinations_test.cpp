@@ -31,7 +31,8 @@ class BlockFullCombinationsTest : public ::testing::Test
 
     BucketPolicy<testCallable> bp  = BucketPolicy(std::make_tuple(callable), {buckets}, false);
     BucketPolicy<testCallable> bp2 = BucketPolicy(std::make_tuple(callable), {buckets2}, false);
-    BucketPolicy<testCallable> benchmarkBp = BucketPolicy(std::make_tuple(callable), {bucketsBenchmark}, false);
+    BucketPolicy<testCallable> benchmarkBp =
+        BucketPolicy(std::make_tuple(callable), {bucketsBenchmark}, false);
 
     Ranges<dataType::iterator> r1{v1.begin(), v1.end()};
     Ranges<dataType::iterator> r2{v2.begin(), v2.end()};
