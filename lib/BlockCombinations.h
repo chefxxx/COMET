@@ -41,38 +41,23 @@ struct BlockCombinationsProducer {
     struct BlockIterator {
         using iterator_category = std::input_iterator_tag;
         using difference_type   = std::ptrdiff_t;
-        using value_type        = CombinationsType;
-        using pointer           = const CombinationsType*;
-        using reference         = const CombinationsType&;
+        using value_type        = TCombinations;
+        using pointer           = const TCombinations*;
+        using reference         = const TCombinations&;
 
         BlockCombinationsProducer* mBlockCombinations;
         CombinationsIterType iterator;
-        CombinationsType mData;
         explicit BlockIterator(
             BlockCombinationsProducer* blockCombinations, CombinationsIterType iterator
         )
             : mBlockCombinations(blockCombinations), iterator(iterator)
         {
-            if (iterator != mBlockCombinations->mCombinationsEnd)
-                mData = std::apply(
-                    [&](auto&&... pointer) {
-                        return std::make_tuple((*pointer)...);
-                    },
-                    *(this->iterator)
-                );
         }
 
         BlockIterator& operator++()
         {
             mBlockCombinations->addOne();
             iterator = mBlockCombinations->mCombinationsIterator;
-            if (iterator != mBlockCombinations->mCombinationsEnd)
-                mData = std::apply(
-                    [&](auto&&... pointer) {
-                        return std::make_tuple((*pointer)...);
-                    },
-                    *iterator
-                );
             return *this;
         }
 
@@ -83,8 +68,8 @@ struct BlockCombinationsProducer {
             return copy;
         }
 
-        reference operator*() const { return mData; }
-        pointer operator->() const { return &mData; }
+        reference operator*() const { return *iterator; }
+        pointer operator->() const { return &(*iterator); }
 
         friend bool operator==(const BlockIterator& lhs, const BlockIterator& rhs)
         {

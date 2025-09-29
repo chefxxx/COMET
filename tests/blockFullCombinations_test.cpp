@@ -3,6 +3,9 @@
 //
 
 #include <gtest/gtest.h>
+
+#include <random>
+
 #include "BlockCombinations.h"
 
 class BlockFullCombinationsTest : public ::testing::Test
@@ -12,6 +15,7 @@ class BlockFullCombinationsTest : public ::testing::Test
     protected:
     const dataType buckets{0.0, 0.25, 0.5, 0.75, 1.0};
     const dataType buckets2{0.0, 1.0};
+    const dataType bucketsBenchmark{-1.0, 1.0};
 
     struct testCallable {
         auto operator()(double const& a) const { return a; }
@@ -27,6 +31,7 @@ class BlockFullCombinationsTest : public ::testing::Test
 
     BucketPolicy<testCallable> bp  = BucketPolicy(std::make_tuple(callable), {buckets}, false);
     BucketPolicy<testCallable> bp2 = BucketPolicy(std::make_tuple(callable), {buckets2}, false);
+    BucketPolicy<testCallable> benchmarkBp = BucketPolicy(std::make_tuple(callable), {bucketsBenchmark}, false);
 
     Ranges<dataType::iterator> r1{v1.begin(), v1.end()};
     Ranges<dataType::iterator> r2{v2.begin(), v2.end()};
@@ -132,8 +137,8 @@ TEST_F(BlockFullCombinationsTest, simpleIterationElementsAreCorrect)
         // auto& elem0    = std::get<0>(combination);
         // auto& elem1    = std::get<1>(combination);
         auto& expected = arr[k++];
-        ASSERT_EQ(*elem0, std::get<0>(expected));
-        ASSERT_EQ(*elem1, std::get<1>(expected));
+        ASSERT_EQ(**elem0, std::get<0>(expected));
+        ASSERT_EQ(**elem1, std::get<1>(expected));
     }
 }
 
@@ -158,8 +163,35 @@ TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
     for (auto& [elem0, elem1, elem2] : blockFull) {
         auto& expected            = arr[k++];
         const std::string message = "At iteration " + std::to_string(k) + "\n";
-        ASSERT_EQ(*elem0, std::get<0>(expected)) << message;
-        ASSERT_EQ(*elem1, std::get<1>(expected)) << message;
-        ASSERT_EQ(*elem2, std::get<2>(expected)) << message;
+        ASSERT_EQ(**elem0, std::get<0>(expected)) << message;
+        ASSERT_EQ(**elem1, std::get<1>(expected)) << message;
+        ASSERT_EQ(**elem2, std::get<2>(expected)) << message;
     }
 }
+#if 0
+TEST_F(BlockFullCombinationsTest, benchmark)
+{
+    double lowerBound = -1;
+    double upperBound = 1;
+    std::uniform_real_distribution<double> unif(lowerBound, upperBound);
+    std::default_random_engine re;
+    std::array<double, 10009> arr1 = {};
+    std::array<double, 10000> arr2 = {};
+    for (int i = 0; i < 10000; ++i) {
+        arr1[i] = unif(re);
+        arr2[i] = unif(re);
+    }
+    Ranges<std::array<double, 100>::iterator> ranges1{arr1.begin(), arr1.end()};
+    Ranges<std::array<double, 100>::iterator> ranges2{arr2.begin(), arr2.end()};
+    auto tupleArg = std::make_tuple(ranges1, ranges2);
+    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(benchmarkBp, tupleArg);
+    auto start     = std::chrono::high_resolution_clock::now();
+    for (auto& [elem0, elem1] : blockFull) {
+        auto el0 = **elem0;
+        auto el1 = **elem1;
+    }
+    auto stop     = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    std::cout << duration.count() << " microseconds" << std::endl;
+}
+#endif
