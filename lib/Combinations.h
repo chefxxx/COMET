@@ -78,8 +78,8 @@ struct CombinationsProducer {
         }
     };
 
-    CombinationsIterator begin() { return CombinationsIterator(&mCurrentState, this); }
-    CombinationsIterator end() { return CombinationsIterator(&mSentinel, this); }
+    [[nodiscard]] CombinationsIterator begin() { return CombinationsIterator(&mCurrentState, this); }
+    [[nodiscard]] CombinationsIterator end() { return CombinationsIterator(&mSentinel, this); }
 
     private:
     bool isEnd = false;

@@ -17,7 +17,7 @@ struct BlockCombinations {
         const TBucketPolicy& bucketPolicy, const TCombinationsPolicy& combinationsPolicy,
         const std::tuple<Ranges<TIters>...>& ranges
     )
-        : mGroupedData(tuple_transform(
+        : mGroupedData(tupleTransform(
               ranges,
               [&](auto&& r) {
                   return groupData(r.mBegin, r.mEnd, bucketPolicy);
@@ -120,7 +120,7 @@ struct BlockCombinations {
     template <std::size_t... Is>
     void setCombinations(const std::index_sequence<Is...>&, BucketIterType current)
     {
-        auto bucketsRanges = tuple_transform(mGroupedData, [&](auto&& data) {
+        auto bucketsRanges = tupleTransform(mGroupedData, [&](auto&& data) {
             return createRanges(data, current);
         });
         mCombinationsPolicy.setData(bucketsRanges);

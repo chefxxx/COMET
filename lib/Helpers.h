@@ -5,8 +5,8 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
-#include <iterator>
 #include <set>
+#include <iterator>
 #include <unordered_map>
 #include "BucketPolicy.h"
 
@@ -27,23 +27,28 @@ struct GroupedData {
 
     const std::vector<TIter>& at(IterType iter) const { return mBuckets.at(*iter); }
     const std::vector<TIter>& at(const int bucketNo) const { return mBuckets.at(bucketNo); }
-    [[nodiscard]] size_t size() const { return mBucketsNumbers.size(); }
+
+    size_t size() const { return mBucketsNumbers.size(); }
+
     void insert(int bucketNo, TIter iter)
     {
         mBuckets[bucketNo].push_back(iter);
         mBucketsNumbers.insert(bucketNo);
     }
+
     [[nodiscard]] IterType erase(IterType iter)
     {
         mBuckets.erase(*iter);
         return mBucketsNumbers.erase(iter);
     }
-    [[nodiscard]] bool contains(const int bucketNo) const
+
+    bool contains(const int bucketNo) const
     {
         return mBucketsNumbers.contains(bucketNo);
     }
-    [[nodiscard]] IterType begin() const { return mBucketsNumbers.begin(); }
-    [[nodiscard]] IterType end() const { return mBucketsNumbers.end(); }
+
+    IterType begin() const { return mBucketsNumbers.begin(); }
+    IterType end() const { return mBucketsNumbers.end(); }
 
     private:
     std::unordered_map<int, std::vector<TIter>> mBuckets;
@@ -59,7 +64,7 @@ struct Ranges {
 };
 
 template <typename... Ts, typename F>
-auto tuple_transform(const std::tuple<Ts...>& tuple, F&& f)
+auto tupleTransform(const std::tuple<Ts...>& tuple, F&& f)
 {
     return std::apply(
         [&](auto&&... elem) {
