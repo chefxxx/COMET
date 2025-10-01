@@ -32,13 +32,6 @@ struct CombinationsProducer {
         );
     }
 
-    // void setData(std::tuple<Ranges<typename std::vector<TIters>::const_iterator>...>& ranges)
-    // {
-    //     mCombinationsPolicy.setData(
-    //         ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, mIsEnd
-    //     );
-    // }
-
     [[nodiscard]] bool isEnd() const { return mIsEnd; }
 
     struct CombinationsIterator {
@@ -72,13 +65,13 @@ struct CombinationsProducer {
             return copy;
         }
         reference operator*() const { return *mCombinationsPtr; }
-        pointer operator->() { return mCombinationsPtr; }
+        pointer operator->() const { return mCombinationsPtr; }
 
         friend bool operator==(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
         {
             if (lhs.mProducerPtr->mIsEnd && rhs.mProducerPtr->mIsEnd)
                 return true;
-            return &lhs.mProducerPtr == &rhs.mProducerPtr && lhs.mCombinationsPtr == rhs.mCombinationsPtr;
+            return lhs.mProducerPtr == rhs.mProducerPtr && lhs.mCombinationsPtr == rhs.mCombinationsPtr;
         }
         friend bool operator!=(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
         {

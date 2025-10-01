@@ -91,11 +91,6 @@ struct BlockCombinationsProducer {
     BucketIterType mCurrent;
     BucketIterType mEnd;
 
-    [[nodiscard]] bool isEnd() const
-    {
-        return mCombinationsProducer.finished() && mCurrent == mEnd;
-    }
-
     void addOne()
     {
         ++mCombinationsIterator;
@@ -113,7 +108,7 @@ struct BlockCombinationsProducer {
     auto createRanges(const GroupedData<TIter>& data, BucketIterType current)
     {
         const std::vector<TIter>& bucket = data.at(current);
-        using IterType                   = std::vector<TIter>::const_iterator;
+        using IterType                   = typename std::vector<TIter>::const_iterator;
         return Ranges<IterType>(bucket.begin(), bucket.end());
     }
 

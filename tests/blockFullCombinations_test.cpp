@@ -135,8 +135,6 @@ TEST_F(BlockFullCombinationsTest, simpleIterationElementsAreCorrect)
     int k          = 0;
     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp2, tuple2);
     for (auto& [elem0, elem1] : blockFull) {
-        // auto& elem0    = std::get<0>(combination);
-        // auto& elem1    = std::get<1>(combination);
         auto& expected = arr[k++];
         ASSERT_EQ(**elem0, std::get<0>(expected));
         ASSERT_EQ(**elem1, std::get<1>(expected));
