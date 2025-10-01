@@ -7,16 +7,14 @@
 
 #include "Combinations.h"
 
-template <
-    typename TBucketPolicy, typename TCombinationsPolicy, typename TCombinations,
-    typename... TIters>
+template <typename TBucketPolicy, typename TCombinationsProducer, typename... TIters>
 struct BlockCombinationsProducer {
     using BucketIterType           = std::set<int>::const_iterator;
-    using CombinationsType         = std::tuple<TIters...>;
-    using CombinationsProducerType = CombinationsProducer<TCombinationsPolicy, TIters...>;
-    using CombinationsIterType     = CombinationsProducerType::CombinationsIterator;
+    using CombinationsType         = typename TCombinationsProducer::CombinationsType;
+    using CombinationsIterType     = typename TCombinationsProducer::CombinationsIterator;
+
     BlockCombinationsProducer(
-        const TBucketPolicy& bucketPolicy, const TCombinationsPolicy& combinationsPolicy,
+        const TBucketPolicy& bucketPolicy, const TCombinationsProducer& combinationsPolicy,
         const std::tuple<Ranges<TIters>...>& ranges
     )
         : mGroupedData(tupleTransform(
@@ -41,9 +39,9 @@ struct BlockCombinationsProducer {
     struct BlockIterator {
         using iterator_category = std::input_iterator_tag;
         using difference_type   = std::ptrdiff_t;
-        using value_type        = TCombinations;
-        using pointer           = const TCombinations*;
-        using reference         = const TCombinations&;
+        using value_type        = CombinationsType;
+        using pointer           = const CombinationsType*;
+        using reference         = const CombinationsType&;
 
         BlockCombinationsProducer* mBlockCombinations;
         CombinationsIterType iterator;
@@ -86,7 +84,7 @@ struct BlockCombinationsProducer {
 
     private:
     std::tuple<GroupedData<TIters>...> mGroupedData;
-    CombinationsProducerType mCombinationsProducer;
+    TCombinationsProducer mCombinationsProducer;
     CombinationsIterType mCombinationsIterator;
     CombinationsIterType mCombinationsEnd;
     TBucketPolicy mBucketPolicy;
@@ -135,10 +133,9 @@ auto makeBlockCombinations(
     const TBucketPolicy& bucketPolicy, const std::tuple<Ranges<TIters>...>& ranges
 )
 {
-    using CombinationsType = std::tuple<typename std::vector<TIters>::const_iterator...>;
-    using PolicyType       = TCombinationsPolicy<typename std::vector<TIters>::const_iterator...>;
-    return BlockCombinationsProducer<TBucketPolicy, PolicyType, CombinationsType, TIters...>(
-        bucketPolicy, PolicyType{}, ranges
+    auto combinationsProducer = makeCombinations<TCombinationsPolicy, typename std::vector<TIters>::const_iterator...>();
+    return BlockCombinationsProducer<TBucketPolicy, decltype(combinationsProducer), TIters...>(
+        bucketPolicy, combinationsProducer, ranges
     );
 }
 

@@ -31,12 +31,13 @@ struct CombinationsProducer {
             ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, mIsEnd
         );
     }
-    void setData(std::tuple<Ranges<typename std::vector<TIters>::const_iterator>...>& ranges)
-    {
-        mCombinationsPolicy.setData(
-            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, mIsEnd
-        );
-    }
+
+    // void setData(std::tuple<Ranges<typename std::vector<TIters>::const_iterator>...>& ranges)
+    // {
+    //     mCombinationsPolicy.setData(
+    //         ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, mIsEnd
+    //     );
+    // }
 
     [[nodiscard]] bool isEnd() const { return mIsEnd; }
 
@@ -47,10 +48,11 @@ struct CombinationsProducer {
         using pointer           = const CombinationsType*;
         using reference         = const CombinationsType&;
 
-        std::shared_ptr<CombinationsType> mCombinationsPtr;
-        std::shared_ptr<CombinationsProducer> mProducerPtr;
+        CombinationsType* mCombinationsPtr;
+        CombinationsProducer* mProducerPtr;
         CombinationsIterator() = default;
-        explicit CombinationsIterator(std::shared_ptr<CombinationsType> state, CombinationsProducer* producer)
+        explicit CombinationsIterator(CombinationsType* state, CombinationsProducer* producer
+        )
             : mCombinationsPtr(state), mProducerPtr(producer)
         {
         }
@@ -60,7 +62,7 @@ struct CombinationsProducer {
         CombinationsIterator& operator++()
         {
             mProducerPtr->addOne();
-            mCombinationsPtr = std::make_shared<CombinationsType>(mProducerPtr->mCurrentState);
+            mCombinationsPtr = &mProducerPtr->mCurrentState;
             return *this;
         }
         CombinationsIterator operator++(int)
@@ -76,7 +78,7 @@ struct CombinationsProducer {
         {
             if (lhs.mProducerPtr->mIsEnd && rhs.mProducerPtr->mIsEnd)
                 return true;
-            return lhs.mProducerPtr == rhs.mProducerPtr && lhs.mCombinationsPtr == rhs.mCombinationsPtr;
+            return &lhs.mProducerPtr == &rhs.mProducerPtr && lhs.mCombinationsPtr == rhs.mCombinationsPtr;
         }
         friend bool operator!=(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
         {
@@ -84,8 +86,14 @@ struct CombinationsProducer {
         }
     };
 
-    [[nodiscard]] CombinationsIterator begin() { return CombinationsIterator(std::make_shared<CombinationsType>(mCurrentState), this); }
-    [[nodiscard]] CombinationsIterator end() { return CombinationsIterator(std::make_shared<CombinationsType>(mSentinel), this); }
+    [[nodiscard]] CombinationsIterator begin()
+    {
+        return CombinationsIterator(&mCurrentState, this);
+    }
+    [[nodiscard]] CombinationsIterator end()
+    {
+        return CombinationsIterator(&mSentinel, this);
+    }
 
     private:
     bool mIsEnd = false;
