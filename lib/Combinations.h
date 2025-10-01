@@ -21,24 +21,24 @@ struct CombinationsProducer {
         : mCombinationsPolicy(combinationsPolicy)
     {
         mCombinationsPolicy.setData(
-            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, isEnd
+            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, mIsEnd
         );
     }
 
     void setData(std::tuple<Ranges<TIters>...>& ranges)
     {
         mCombinationsPolicy.setData(
-            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, isEnd
+            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, mIsEnd
         );
     }
     void setData(std::tuple<Ranges<typename std::vector<TIters>::const_iterator>...>& ranges)
     {
         mCombinationsPolicy.setData(
-            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, isEnd
+            ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, mIsEnd
         );
     }
 
-    [[nodiscard]] bool finished() const { return isEnd; }
+    [[nodiscard]] bool finished() const { return mIsEnd; }
 
     struct CombinationsIterator {
         using iterator_category = std::input_iterator_tag;
@@ -88,7 +88,7 @@ struct CombinationsProducer {
     [[nodiscard]] CombinationsIterator end() { return CombinationsIterator(&mSentinel, this); }
 
     private:
-    bool isEnd = false;
+    bool mIsEnd = false;
     CombinationsType mSentinel;
     CombinationsType mCurrentState;
     TCombinationsPolicy mCombinationsPolicy;
@@ -97,9 +97,9 @@ struct CombinationsProducer {
 
     void addOne()
     {
-        if (!isEnd)
+        if (!mIsEnd)
             mCombinationsPolicy.addOne(
-                mCurrentState, mCurrentIndexNumbers, mEndIndexNumbers, isEnd
+                mCurrentState, mCurrentIndexNumbers, mEndIndexNumbers, mIsEnd
             );
     }
 };
