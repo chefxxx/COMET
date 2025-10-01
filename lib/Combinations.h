@@ -50,7 +50,7 @@ struct CombinationsProducer {
         std::shared_ptr<CombinationsType> mCombinationsPtr;
         std::shared_ptr<CombinationsProducer> mProducerPtr;
         CombinationsIterator() = default;
-        explicit CombinationsIterator(CombinationsType* state, CombinationsProducer* producer)
+        explicit CombinationsIterator(std::shared_ptr<CombinationsType> state, CombinationsProducer* producer)
             : mCombinationsPtr(state), mProducerPtr(producer)
         {
         }
@@ -84,8 +84,8 @@ struct CombinationsProducer {
         }
     };
 
-    [[nodiscard]] CombinationsIterator begin() { return CombinationsIterator(&mCurrentState, this); }
-    [[nodiscard]] CombinationsIterator end() { return CombinationsIterator(&mSentinel, this); }
+    [[nodiscard]] CombinationsIterator begin() { return CombinationsIterator(std::make_shared<CombinationsType>(mCurrentState), this); }
+    [[nodiscard]] CombinationsIterator end() { return CombinationsIterator(std::make_shared<CombinationsType>(mSentinel), this); }
 
     private:
     bool mIsEnd = false;
