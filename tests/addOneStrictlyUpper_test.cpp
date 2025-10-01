@@ -87,7 +87,7 @@ TEST(AddOneStrictlyUpper, OneRangeIsLessThanItCanBe)
     auto tuple                      = std::make_tuple(r1, r2, r3);
     const auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(tuple);
 
-    ASSERT_TRUE(combinationsProducer.finished());
+    ASSERT_TRUE(combinationsProducer.isEnd());
 }
 
 TEST(AddOneStrictlyUpper, ClassicExampleTest)

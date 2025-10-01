@@ -38,7 +38,7 @@ struct CombinationsProducer {
         );
     }
 
-    [[nodiscard]] bool finished() const { return mIsEnd; }
+    [[nodiscard]] bool isEnd() const { return mIsEnd; }
 
     struct CombinationsIterator {
         using iterator_category = std::input_iterator_tag;
@@ -47,11 +47,11 @@ struct CombinationsProducer {
         using pointer           = const CombinationsType*;
         using reference         = const CombinationsType&;
 
-        CombinationsType* mPtr;
-        CombinationsProducer* mProducer;
+        std::shared_ptr<CombinationsType> mCombinationsPtr;
+        std::shared_ptr<CombinationsProducer> mProducerPtr;
         CombinationsIterator() = default;
         explicit CombinationsIterator(CombinationsType* state, CombinationsProducer* producer)
-            : mPtr(state), mProducer(producer)
+            : mCombinationsPtr(state), mProducerPtr(producer)
         {
         }
         CombinationsIterator(const CombinationsIterator&)            = default;
@@ -59,8 +59,8 @@ struct CombinationsProducer {
 
         CombinationsIterator& operator++()
         {
-            mProducer->addOne();
-            mPtr = &mProducer->mCurrentState;
+            mProducerPtr->addOne();
+            mCombinationsPtr = std::make_shared<CombinationsType>(mProducerPtr->mCurrentState);
             return *this;
         }
         CombinationsIterator operator++(int)
@@ -69,14 +69,14 @@ struct CombinationsProducer {
             ++(*this);
             return copy;
         }
-        reference operator*() const { return *mPtr; }
-        pointer operator->() { return mPtr; }
+        reference operator*() const { return *mCombinationsPtr; }
+        pointer operator->() { return mCombinationsPtr; }
 
         friend bool operator==(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
         {
-            if (lhs.mProducer->isEnd && rhs.mProducer->isEnd)
+            if (lhs.mProducerPtr->mIsEnd && rhs.mProducerPtr->mIsEnd)
                 return true;
-            return lhs.mProducer == rhs.mProducer && lhs.mPtr == rhs.mPtr;
+            return lhs.mProducerPtr == rhs.mProducerPtr && lhs.mCombinationsPtr == rhs.mCombinationsPtr;
         }
         friend bool operator!=(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
         {

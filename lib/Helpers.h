@@ -28,7 +28,7 @@ struct GroupedData {
     const std::vector<TIter>& at(IterType iter) const { return mBuckets.at(*iter); }
     const std::vector<TIter>& at(const int bucketNo) const { return mBuckets.at(bucketNo); }
 
-    size_t size() const { return mBucketsNumbers.size(); }
+    [[nodiscard]] size_t size() const { return mBucketsNumbers.size(); }
 
     void insert(int bucketNo, TIter iter)
     {
@@ -42,13 +42,13 @@ struct GroupedData {
         return mBucketsNumbers.erase(iter);
     }
 
-    bool contains(const int bucketNo) const
+    [[nodiscard]] bool contains(const int bucketNo) const
     {
         return mBucketsNumbers.contains(bucketNo);
     }
 
-    IterType begin() const { return mBucketsNumbers.begin(); }
-    IterType end() const { return mBucketsNumbers.end(); }
+    [[nodiscard]] IterType begin() const { return mBucketsNumbers.begin(); }
+    [[nodiscard]] IterType end() const { return mBucketsNumbers.end(); }
 
     private:
     std::unordered_map<int, std::vector<TIter>> mBuckets;
