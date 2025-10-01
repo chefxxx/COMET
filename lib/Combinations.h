@@ -44,8 +44,7 @@ struct CombinationsProducer {
         CombinationsType* mCombinationsPtr;
         CombinationsProducer* mProducerPtr;
         CombinationsIterator() = default;
-        explicit CombinationsIterator(CombinationsType* state, CombinationsProducer* producer
-        )
+        explicit CombinationsIterator(CombinationsType* state, CombinationsProducer* producer)
             : mCombinationsPtr(state), mProducerPtr(producer)
         {
         }
@@ -71,7 +70,8 @@ struct CombinationsProducer {
         {
             if (lhs.mProducerPtr->mIsEnd && rhs.mProducerPtr->mIsEnd)
                 return true;
-            return lhs.mProducerPtr == rhs.mProducerPtr && lhs.mCombinationsPtr == rhs.mCombinationsPtr;
+            return lhs.mProducerPtr == rhs.mProducerPtr &&
+                   lhs.mCombinationsPtr == rhs.mCombinationsPtr;
         }
         friend bool operator!=(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
         {
@@ -83,10 +83,7 @@ struct CombinationsProducer {
     {
         return CombinationsIterator(&mCurrentState, this);
     }
-    [[nodiscard]] CombinationsIterator end()
-    {
-        return CombinationsIterator(&mSentinel, this);
-    }
+    [[nodiscard]] CombinationsIterator end() { return CombinationsIterator(&mSentinel, this); }
 
     private:
     bool mIsEnd = false;

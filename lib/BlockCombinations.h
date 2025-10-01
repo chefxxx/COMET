@@ -9,9 +9,9 @@
 
 template <typename TBucketPolicy, typename TCombinationsProducer, typename... TIters>
 struct BlockCombinationsProducer {
-    using BucketIterType           = std::set<int>::const_iterator;
-    using CombinationsType         = typename TCombinationsProducer::CombinationsType;
-    using CombinationsIterType     = typename TCombinationsProducer::CombinationsIterator;
+    using BucketIterType       = std::set<int>::const_iterator;
+    using CombinationsType     = typename TCombinationsProducer::CombinationsType;
+    using CombinationsIterType = typename TCombinationsProducer::CombinationsIterator;
 
     BlockCombinationsProducer(
         const TBucketPolicy& bucketPolicy, const TCombinationsProducer& combinationsPolicy,
@@ -128,7 +128,8 @@ auto makeBlockCombinations(
     const TBucketPolicy& bucketPolicy, const std::tuple<Ranges<TIters>...>& ranges
 )
 {
-    auto combinationsProducer = makeCombinations<TCombinationsPolicy, typename std::vector<TIters>::const_iterator...>();
+    auto combinationsProducer =
+        makeCombinations<TCombinationsPolicy, typename std::vector<TIters>::const_iterator...>();
     return BlockCombinationsProducer<TBucketPolicy, decltype(combinationsProducer), TIters...>(
         bucketPolicy, combinationsProducer, ranges
     );
