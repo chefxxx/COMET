@@ -5,12 +5,10 @@
 #include <gtest/gtest.h>
 #include "Combinations.h"
 
-namespace addOneFullIndex
-{
 TEST(AddOneFullTest, twoVectorsSameSize)
 {
-    std::vector<int> v1  = {1, 2, 3, 4, 5, 6, 7, 8};
-    std::vector<char> v2 = {'a', 'b', 'c', 'd', 'e'};
+    std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
+    std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
 
     Ranges r1 = {v1.begin(), v1.end()};
     Ranges r2 = {v2.begin(), v2.end()};
@@ -20,9 +18,10 @@ TEST(AddOneFullTest, twoVectorsSameSize)
     // Why does it compile with tuple created before and not without
     // auto combinationPolicy = FullCombinationsPolicy({r1, r2}); ??? It is interesting
     // Answer: to make it work we should add forwarding
-    auto combinationPolicy = FullCombinationsPolicy(tuple);
-    // That's what I do not like - to obtain isEnd I should use mBase
-    std::vector<std::tuple<int, char>> expected = {
+
+    auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(tuple);
+
+    const std::vector<std::tuple<int, char>> expectedValues = {
         {1, 'a'},
         {1, 'b'},
         {1, 'c'},
@@ -64,21 +63,20 @@ TEST(AddOneFullTest, twoVectorsSameSize)
         {8, 'd'},
         {8, 'e'}
     };
-    for (int i = 0; !combinationPolicy.mBase.isEnd; combinationPolicy.addOne(), i++) {
-        auto current_val1 = *std::get<0>(combinationPolicy.mBase.mCurrentState);
-        auto current_val2 = *std::get<1>(combinationPolicy.mBase.mCurrentState);
 
-        std::cout << current_val1 << " " << current_val2 << std::endl;
-        ASSERT_TRUE(current_val1 == std::get<0>(expected[i]));
-        ASSERT_TRUE(current_val2 == std::get<1>(expected[i]));
+    int i = 0;
+    for (const auto& [elem0, elem1] : combinationsProducer) {
+        auto expectedCombination = expectedValues[i++];
+        ASSERT_EQ(*elem0, std::get<0>(expectedCombination));
+        ASSERT_EQ(*elem1, std::get<1>(expectedCombination));
     }
 }
 
 TEST(AddOneFullTest, fourVectorsDifferentSizes)
 {
-    std::vector<int> v1         = {1, 2, 3};
-    std::vector<char> v2        = {'a', 'b', 'c', 'd', 'e'};
-    std::vector<char> v3        = {'=', '#', '$', '!'};
+    std::vector v1              = {1, 2, 3};
+    std::vector v2              = {'a', 'b', 'c', 'd', 'e'};
+    std::vector v3              = {'=', '#', '$', '!'};
     std::vector<std::string> v4 = {"Michał", "Mati"};
 
     Ranges r1 = {v1.begin(), v1.end()};
@@ -88,7 +86,7 @@ TEST(AddOneFullTest, fourVectorsDifferentSizes)
 
     auto tuple = std::make_tuple(r1, r2, r3, r4);
 
-    auto combinationPolicy = FullCombinationsPolicy(tuple);
+    auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(tuple);
 
     std::vector<std::tuple<int, char, char, std::string>> expected = {
   // Combinations starting with 1
@@ -218,36 +216,27 @@ TEST(AddOneFullTest, fourVectorsDifferentSizes)
         {3, 'e', '!',    "Mati"}
     };
 
-    for (int i = 0; !combinationPolicy.mBase.isEnd; combinationPolicy.addOne(), i++) {
-        auto current_val1 = *std::get<0>(combinationPolicy.mBase.mCurrentState);
-        auto current_val2 = *std::get<1>(combinationPolicy.mBase.mCurrentState);
-        auto current_val3 = *std::get<2>(combinationPolicy.mBase.mCurrentState);
-        auto current_val4 = *std::get<3>(combinationPolicy.mBase.mCurrentState);
-
-        std::cout << current_val1 << " " << current_val2 << " " << current_val3 << " "
-                  << current_val4 << std::endl;
-        ASSERT_TRUE(current_val1 == std::get<0>(expected[i]));
-        ASSERT_TRUE(current_val2 == std::get<1>(expected[i]));
-        ASSERT_TRUE(current_val3 == std::get<2>(expected[i]));
-        ASSERT_TRUE(current_val4 == std::get<3>(expected[i]));
+    int i = 0;
+    for (const auto& [elem0, elem1, elem2, elem3] : combinationsProducer) {
+        auto currentValues = expected[i++];
+        ASSERT_TRUE(*elem0 == std::get<0>(currentValues));
+        ASSERT_TRUE(*elem1 == std::get<1>(currentValues));
+        ASSERT_TRUE(*elem2 == std::get<2>(currentValues));
+        ASSERT_TRUE(*elem3 == std::get<3>(currentValues));
     }
 }
 
 TEST(AddOneFullTest, OneRangeIsEmpty)
 {
-    std::vector<int> v1  = {1, 2, 3};
+    std::vector v1       = {1, 2, 3};
     std::vector<char> v2 = {};
-    std::vector<char> v3 = {'a', 'b', 'c', 'd'};
+    std::vector v3       = {'a', 'b', 'c', 'd'};
 
     Ranges r1 = {v1.begin(), v1.end()};
     Ranges r2 = {v2.begin(), v2.end()};
     Ranges r3 = {v3.begin(), v3.end()};
 
-    auto tuple = std::make_tuple(r1, r2, r3);
-
-    auto combinationPolicy = FullCombinationsPolicy(tuple);
-
-    ASSERT_TRUE(combinationPolicy.mBase.isEnd);
+    auto tuple                      = std::make_tuple(r1, r2, r3);
+    const auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(tuple);
+    ASSERT_TRUE(combinationsProducer.isEnd());
 }
-
-}  // namespace addOneFullIndex
