@@ -6,49 +6,120 @@
 #define HELPERS_H
 
 #include <iterator>
+#include <set>
 #include <unordered_map>
 #include "BucketPolicy.h"
 
 template <typename TBucketPolicy, typename TIter>
 concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
-    { policy.getBucket(*iter) } -> std::same_as<int>;
-    { policy.getMaximalBucketCount() } -> std::integral;
+    {
+        policy.getBucket(*iter)
+    } -> std::same_as<int>;
+    {
+        policy.getMaximalBucketCount()
+    } -> std::same_as<int>;
     policy.getValues(*iter);
 };
 
 template <typename TIter>
-struct BucketIdx {
-    BucketIdx(const int dataIdx, TIter iter, const int bucketIdx)
-        : mBucketIdx(bucketIdx), mDataIdx(dataIdx), mIter(iter)
+struct GroupedData {
+    using IterType = std::set<int>::const_iterator;
+
+    const std::vector<TIter>& at(IterType iter) const { return mBuckets.at(*iter); }
+    const std::vector<TIter>& at(const int bucketNo) const { return mBuckets.at(bucketNo); }
+
+    [[nodiscard]] size_t size() const { return mBucketsNumbers.size(); }
+
+    void insert(int bucketNo, TIter iter)
     {
+        mBuckets[bucketNo].push_back(iter);
+        mBucketsNumbers.insert(bucketNo);
     }
 
-    int mBucketIdx;
-    int mDataIdx;
-    TIter mIter;
+    [[nodiscard]] IterType erase(IterType iter)
+    {
+        mBuckets.erase(*iter);
+        return mBucketsNumbers.erase(iter);
+    }
+
+    [[nodiscard]] bool contains(const int bucketNo) const
+    {
+        return mBucketsNumbers.contains(bucketNo);
+    }
+
+    [[nodiscard]] IterType begin() const { return mBucketsNumbers.begin(); }
+    [[nodiscard]] IterType end() const { return mBucketsNumbers.end(); }
+
+    private:
+    std::unordered_map<int, std::vector<TIter>> mBuckets;
+    std::set<int> mBucketsNumbers;
 };
 
-template <typename TIter, typename TBucketPolicy>
+// TODO: think where we need copies and where we want forward values
+template <typename TIter>
+struct Ranges {
+    Ranges(TIter begin, TIter end) : mBegin(begin), mEnd(end) {}
+    TIter mBegin;
+    TIter mEnd;
+};
+
+template <typename... Ts, typename F>
+auto tupleTransform(const std::tuple<Ts...>& tuple, F&& f)
+{
+    return std::apply(
+        [&](auto&&... elem) {
+            return std::make_tuple(f(elem)...);
+        },
+        tuple
+    );
+}
+
+template <std::forward_iterator TIter, typename TBucketPolicy>
     requires is_bucket_policy<TBucketPolicy, TIter>
 [[nodiscard]] auto groupData(
     TIter start, TIter end, TBucketPolicy bucketPolicy, const std::size_t minCatSize = 1
 )
 {
-    int dataIdx        = 0;
-    const int maxCount = bucketPolicy.getMaximalBucketCount();
-    std::unordered_map<int, std::vector<BucketIdx<TIter>>> buckets;
+    GroupedData<TIter> resultData;
     for (auto it = start; it != end; ++it) {
-        const auto bucketNumber = bucketPolicy.getBucket(*it);
-        buckets[bucketNumber].emplace_back(dataIdx++, it, bucketNumber);
+        const int bucketNumber = bucketPolicy.getBucket(*it);
+        resultData.insert(bucketNumber, it);
     }
 
-    std::vector<BucketIdx<TIter>> resultData;
-    for (int i = 0; i < maxCount; ++i) {
-        if (buckets.contains(i) && buckets[i].size() >= minCatSize) {
-            resultData.insert(resultData.end(), buckets.at(i).begin(), buckets.at(i).end());
+    // We need this second loop,
+    // bc in the one above we do not know when we hit last element in bucket.
+    for (auto it = resultData.begin(); it != resultData.end();) {
+        if (resultData.at(it).size() < minCatSize) {
+            it = resultData.erase(it);
+        } else {
+            ++it;
         }
     }
+
     return resultData;
+}
+
+template <typename TIter1, typename TIter2>
+void syncHelper(GroupedData<TIter1>& firstData, const GroupedData<TIter2>& comparedData)
+{
+    for (auto it = firstData.begin(); it != firstData.end();) {
+        if (!comparedData.contains(*it)) {
+            it = firstData.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+template <typename... TIters>
+void syncBuckets(std::tuple<GroupedData<TIters>...>& groupedData)
+{
+    constexpr size_t N = sizeof...(TIters);
+    auto& firstData    = std::get<0>(groupedData);
+    [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+        (syncHelper(firstData, std::get<Is>(groupedData)), ...);
+        (syncHelper(std::get<Is>(groupedData), firstData), ...);
+    }(std::make_index_sequence<N>());
 }
 
 #endif  // HELPERS_H

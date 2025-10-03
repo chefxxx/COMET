@@ -14,7 +14,9 @@
 
 template <typename T1, typename T2>
 concept is_less_comparable = requires(T1 t, T2 u) {
-    { t < u } -> std::same_as<bool>;
+    {
+        t < u
+    } -> std::same_as<bool>;
 };
 
 template <typename TElement, typename... TCallables>
@@ -47,7 +49,7 @@ struct BucketPolicy final {
 
     template <typename TElement>
         requires is_function_bucketable_on_doubles<TElement, TCallables...>
-    [[nodiscard]] int getBucket(TElement const &element)
+    [[nodiscard]] int getBucket(TElement const &element) const
     {
         auto values  = getValues(element);
         auto indices = getUpperIndicesForTuple(values);

@@ -40,6 +40,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
                 -Wall
                 -Wextra
                 -pedantic
+                -Werror
         )
         target_link_options(${LIB_NAME} INTERFACE
                 -fsanitize=undefined
@@ -69,8 +70,9 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         )
     elseif (BUILD_TYPE_UPPER STREQUAL "RELEASE")
         target_compile_options(${LIB_NAME} INTERFACE -O3;-march=native;-funroll-loops)
-        message(FATAL_ERROR "UNKNOWN BUILD TYPE: ${BUILD_TYPE_UPPER}")
-    endif()
+    else()
+        message(FATAL_ERROR "Unknown build type: ${BUILD_TYPE_UPPER}")
+    endif ()
 
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel" OR CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM")
     message(FATAL_ERROR "Intel compiler is not supported...")
@@ -84,5 +86,5 @@ endif()
 #                                   Load tests                                   #
 # ------------------------------------------------------------------------------ #
 
-#enable_testing()
-#add_subdirectory(tests)
+enable_testing()
+add_subdirectory(tests)
