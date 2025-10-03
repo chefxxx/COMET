@@ -40,8 +40,8 @@ struct BlockCombinationsProducer {
         using iterator_category = std::input_iterator_tag;
         using difference_type   = std::ptrdiff_t;
         using value_type        = CombinationsType;
-        using pointer           = const CombinationsType*;
-        using reference         = const CombinationsType&;
+        using pointer           = CombinationsType*;
+        using reference         = CombinationsType&;
 
         BlockCombinationsProducer* mBlockCombinations;
         CombinationsIterType iterator;
