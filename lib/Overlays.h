@@ -3,7 +3,7 @@
 //
 
 // clang-format off
-#ifdef O2_OVERLAY
+//#ifdef O2_OVERLAY
 
 #ifndef O2OVERLAYS_H
 #define O2OVERLAYS_H
@@ -28,12 +28,12 @@ struct myCallable {
 };
 
 template <typename... Types>
-struct ColumnBinningPolicy {
+struct ColumnBinningPolicy2 {
     using BucketType = BucketPolicy<myCallable<Types>...>;
 
     BucketType myBucket;
 
-    ColumnBinningPolicy(
+    ColumnBinningPolicy2(
         std::array<std::vector<double>, sizeof...(Types)> bins, bool ignoreOverflows
     )
         : myBucket(std::make_tuple(myCallable<Types>()...), bins, ignoreOverflows)
@@ -63,18 +63,23 @@ struct ColumnBinningPolicy {
         auto bucket  = myBucket.calculateBucketAtIndices(indices);
         return bucket;
     }
+
+    int getMaximalBucketCount()
+    {
+	return myBucket.getMaximalBucketCount();
+    }
 };
 
 template <typename, typename...>
-struct FlexibleBinningPolicy;
+struct FlexibleBinningPolicy2;
 
 template <typename... Types, typename... TCallables>
-struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
+struct FlexibleBinningPolicy2<std::tuple<TCallables...>, Types...> {
     using BucketType = BucketPolicy<myCallable<Types>...>;
 
     BucketType myBucket;
 
-    FlexibleBinningPolicy(
+    FlexibleBinningPolicy2(
         std::tuple<TCallables...> const &callables, std::array<std::vector<double>, sizeof...(Types)> bins, bool ignoreOverflows
     )
         : myBucket(std::tuple_cat(callables, std::make_tuple(myCallable<Types>()...)), bins, ignoreOverflows)
@@ -110,4 +115,4 @@ struct FlexibleBinningPolicy<std::tuple<TCallables...>, Types...> {
 }  // namespace o2::framework
 
 #endif  // O2OVERLAYS_H
-#endif
+//#endif
