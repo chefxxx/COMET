@@ -67,7 +67,7 @@ struct BlockCombinationsProducer {
         }
 
         reference operator*() const { return *iterator; }
-        pointer operator->() const { return &(*iterator); }
+        pointer operator->() const { return iterator; }
 
         friend bool operator==(const BlockIterator& lhs, const BlockIterator& rhs)
         {
@@ -105,7 +105,7 @@ struct BlockCombinationsProducer {
     }
 
     template <typename TIter>
-    auto createRanges(const GroupedData<TIter>& data, BucketIterType current)
+    auto createRanges(const GroupedData<TIter>& data, const BucketIterType current)
     {
         const std::vector<TIter>& bucket = data.at(current);
         using IterType                   = typename std::vector<TIter>::const_iterator;
@@ -113,7 +113,7 @@ struct BlockCombinationsProducer {
     }
 
     template <std::size_t... Is>
-    void setCombinations(const std::index_sequence<Is...>&, BucketIterType current)
+    void setCombinations(const std::index_sequence<Is...>&, const BucketIterType current)
     {
         auto bucketsRanges = tupleTransform(mGroupedData, [&](auto&& data) {
             return createRanges(data, current);
