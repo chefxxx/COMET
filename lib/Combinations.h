@@ -8,7 +8,7 @@
 #include <tuple>
 #include "Helpers.h"
 
-template <typename TCombinationsPolicy, typename... TIters>
+template <typename TCombinationsPolicy, std::forward_iterator... TIters>
 struct CombinationsProducer {
     using CombinationsType = typename TCombinationsPolicy::CombinationsType;
     explicit CombinationsProducer(TCombinationsPolicy combinationsPolicy)
@@ -102,7 +102,7 @@ struct CombinationsProducer {
     }
 };
 
-template <size_t I, typename TIter, typename TCombinationsType>
+template <size_t I, std::forward_iterator TIter, typename TCombinationsType>
 void setDataHelper(
     Ranges<TIter>& range, TCombinationsType& currentState, TCombinationsType& sentinel,
     int64_t& currentIndexNumber, int64_t& endIndexNumber
@@ -114,7 +114,7 @@ void setDataHelper(
     endIndexNumber            = std::distance(range.mBegin, range.mEnd);
 }
 
-template <typename TCombinationsType, typename... TIters>
+template <typename TCombinationsType, std::forward_iterator... TIters>
 void setDataPolicies(
     std::tuple<Ranges<TIters>...>& ranges, TCombinationsType& currentState,
     TCombinationsType& sentinel, std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
@@ -131,7 +131,7 @@ void setDataPolicies(
     }(std::make_index_sequence<sizeof...(TIters)>{});
 }
 
-template <typename... TIters>
+template <std::forward_iterator... TIters>
 struct FullCombinationsPolicy {
     FullCombinationsPolicy() = default;
     using CombinationsType   = std::tuple<TIters...>;
@@ -198,7 +198,7 @@ struct FullCombinationsPolicy {
     }
 };
 
-template <typename... TIters>
+template <std::forward_iterator... TIters>
 struct StrictlyUpperCombinationsPolicy {
     using CombinationsType            = std::tuple<TIters...>;
     StrictlyUpperCombinationsPolicy() = default;
@@ -239,7 +239,6 @@ struct StrictlyUpperCombinationsPolicy {
     }
 
     private:
-    // TODO: Is it better setRanges return boolean instead of using in/out parameter?
     template <size_t I, size_t N>
     void addOneHelper(
         bool& wasModified, std::tuple<TIters...>& currentState,
@@ -297,14 +296,14 @@ struct StrictlyUpperCombinationsPolicy {
     }
 };
 
-template <template <typename...> class TCombinationsPolicy, typename... TIters>
+template <template <typename...> class TCombinationsPolicy, std::forward_iterator... TIters>
 auto makeCombinations()
 {
     using CombinationsPolicy = TCombinationsPolicy<TIters...>;
     return CombinationsProducer<CombinationsPolicy, TIters...>(CombinationsPolicy{});
 }
 
-template <template <typename...> class TCombinationsPolicy, typename... TIters>
+template <template <typename...> class TCombinationsPolicy, std::forward_iterator... TIters>
 auto makeCombinations(std::tuple<Ranges<TIters>...>& ranges)
 {
     using CombinationsPolicy = TCombinationsPolicy<TIters...>;

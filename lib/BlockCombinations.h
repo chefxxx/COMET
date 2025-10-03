@@ -7,7 +7,7 @@
 
 #include "Combinations.h"
 
-template <typename TBucketPolicy, typename TCombinationsProducer, typename... TIters>
+template <typename TBucketPolicy, typename TCombinationsProducer, std::forward_iterator... TIters>
 struct BlockCombinationsProducer {
     using BucketIterType       = std::set<int>::const_iterator;
     using CombinationsType     = typename TCombinationsProducer::CombinationsType;
@@ -104,7 +104,7 @@ struct BlockCombinationsProducer {
         }
     }
 
-    template <typename TIter>
+    template <std::forward_iterator TIter>
     auto createRanges(const GroupedBuckets<TIter>& data, const BucketIterType current)
     {
         const std::vector<TIter>& bucket = data.at(current);
@@ -123,7 +123,7 @@ struct BlockCombinationsProducer {
 };
 
 template <
-    template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename... TIters>
+    template <typename...> class TCombinationsPolicy, typename TBucketPolicy, std::forward_iterator... TIters>
 auto makeBlockCombinations(
     const TBucketPolicy& bucketPolicy, const std::tuple<Ranges<TIters>...>& ranges
 )

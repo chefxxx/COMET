@@ -10,18 +10,7 @@
 #include <unordered_map>
 #include "BucketPolicy.h"
 
-template <typename TBucketPolicy, typename TIter>
-concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
-    {
-        policy.getBucket(*iter)
-    } -> std::same_as<int>;
-    {
-        policy.getMaximalBucketCount()
-    } -> std::same_as<int>;
-    policy.getValues(*iter);
-};
-
-template <typename TIter>
+template <std::forward_iterator TIter>
 struct GroupedBuckets {
     using IterType = std::set<int>::const_iterator;
 
@@ -55,8 +44,7 @@ struct GroupedBuckets {
     std::set<int> mBucketsNumbers;
 };
 
-// TODO: think where we need copies and where we want forward values
-template <typename TIter>
+template <std::forward_iterator TIter>
 struct Ranges {
     Ranges(TIter begin, TIter end) : mBegin(begin), mEnd(end) {}
     TIter mBegin;
@@ -98,7 +86,7 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
     return resultData;
 }
 
-template <typename TIter1, typename TIter2>
+template <std::forward_iterator TIter1, std::forward_iterator TIter2>
 void syncHelper(GroupedBuckets<TIter1>& firstData, const GroupedBuckets<TIter2>& comparedData)
 {
     for (auto it = firstData.begin(); it != firstData.end();) {
@@ -110,7 +98,7 @@ void syncHelper(GroupedBuckets<TIter1>& firstData, const GroupedBuckets<TIter2>&
     }
 }
 
-template <typename... TIters>
+template <std::forward_iterator... TIters>
 void syncBuckets(std::tuple<GroupedBuckets<TIters>...>& groupedData)
 {
     constexpr size_t N = sizeof...(TIters);

@@ -27,6 +27,17 @@ concept is_function_bucketable_on_doubles =
     is_function_callable_on_element<TElement, TCallables...> &&
     (std::is_convertible_v<std::invoke_result_t<TCallables, TElement>, double> && ...);
 
+template <typename TBucketPolicy, typename TIter>
+concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
+    {
+        policy.getBucket(*iter)
+    } -> std::same_as<int>;
+    {
+        policy.getMaximalBucketCount()
+    } -> std::same_as<int>;
+    policy.getValues(*iter);
+};
+
 template <typename T1, typename T2>
     requires is_less_comparable<T1, T2>
 int findIndex(std::vector<T1> const &data, T2 const &value, const bool ignoreOverflows)
@@ -97,15 +108,6 @@ struct BucketPolicy final {
     }
 
     private:
-    /*                  --- TEST SECTION ---                    */
-    FRIEND_TEST(BinarySearchTest, oneElementVector_indexOne);
-    FRIEND_TEST(GetUpperIndicesForTupleTest, fiveRangesInEachDimensionWithOverflows);
-    FRIEND_TEST(GetUpperIndicesForTupleTest, fiveRangesInEachDimensionWithoutOverflows);
-    FRIEND_TEST(GetUpperIndicesForTupleTest, sevenAndFiveRangesWithOverflows);
-    FRIEND_TEST(GetUpperIndicesForTupleTest, manyDimensionsWithOverflows);
-    FRIEND_TEST(CalculateBucketAtIndicesTest, fiveRangesInTwoDimensionsWithout);
-    FRIEND_TEST(GetBucketTest, manyDimensionsWithOverflow);
-    /*                  ---              ---                    */
 
     template <typename... Types>
     bool checkUnderOverflows(std::tuple<Types...> arg) const
