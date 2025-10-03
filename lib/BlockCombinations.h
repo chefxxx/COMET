@@ -123,7 +123,8 @@ struct BlockCombinationsProducer {
 };
 
 template <
-    template <typename...> class TCombinationsPolicy, typename TBucketPolicy, std::forward_iterator... TIters>
+    template <typename...> class TCombinationsPolicy, typename TBucketPolicy,
+    std::forward_iterator... TIters>
 auto makeBlockCombinations(
     const TBucketPolicy& bucketPolicy, const std::tuple<Ranges<TIters>...>& ranges
 )

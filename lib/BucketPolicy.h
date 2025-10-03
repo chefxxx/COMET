@@ -108,7 +108,6 @@ struct BucketPolicy final {
     }
 
     private:
-
     template <typename... Types>
     bool checkUnderOverflows(std::tuple<Types...> arg) const
     {
