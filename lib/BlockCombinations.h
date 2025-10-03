@@ -83,7 +83,7 @@ struct BlockCombinationsProducer {
     BlockIterator end() { return BlockIterator(this, mCombinationsEnd); }
 
     private:
-    std::tuple<GroupedData<TIters>...> mGroupedData;
+    std::tuple<GroupedBuckets<TIters>...> mGroupedData;
     TCombinationsProducer mCombinationsProducer;
     CombinationsIterType mCombinationsIterator;
     CombinationsIterType mCombinationsEnd;
@@ -105,7 +105,7 @@ struct BlockCombinationsProducer {
     }
 
     template <typename TIter>
-    auto createRanges(const GroupedData<TIter>& data, const BucketIterType current)
+    auto createRanges(const GroupedBuckets<TIter>& data, const BucketIterType current)
     {
         const std::vector<TIter>& bucket = data.at(current);
         using IterType                   = typename std::vector<TIter>::const_iterator;

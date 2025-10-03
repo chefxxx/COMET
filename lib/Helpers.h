@@ -22,7 +22,7 @@ concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
 };
 
 template <typename TIter>
-struct GroupedData {
+struct GroupedBuckets {
     using IterType = std::set<int>::const_iterator;
 
     const std::vector<TIter>& at(IterType iter) const { return mBuckets.at(*iter); }
@@ -80,7 +80,7 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
     TIter start, TIter end, TBucketPolicy bucketPolicy, const std::size_t minCatSize = 1
 )
 {
-    GroupedData<TIter> resultData;
+    GroupedBuckets<TIter> resultData;
     for (auto it = start; it != end; ++it) {
         const int bucketNumber = bucketPolicy.getBucket(*it);
         resultData.insert(bucketNumber, it);
@@ -95,12 +95,11 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
             ++it;
         }
     }
-
     return resultData;
 }
 
 template <typename TIter1, typename TIter2>
-void syncHelper(GroupedData<TIter1>& firstData, const GroupedData<TIter2>& comparedData)
+void syncHelper(GroupedBuckets<TIter1>& firstData, const GroupedBuckets<TIter2>& comparedData)
 {
     for (auto it = firstData.begin(); it != firstData.end();) {
         if (!comparedData.contains(*it)) {
@@ -112,7 +111,7 @@ void syncHelper(GroupedData<TIter1>& firstData, const GroupedData<TIter2>& compa
 }
 
 template <typename... TIters>
-void syncBuckets(std::tuple<GroupedData<TIters>...>& groupedData)
+void syncBuckets(std::tuple<GroupedBuckets<TIters>...>& groupedData)
 {
     constexpr size_t N = sizeof...(TIters);
     auto& firstData    = std::get<0>(groupedData);
