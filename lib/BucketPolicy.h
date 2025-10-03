@@ -8,14 +8,15 @@
 #include <gtest/gtest_prod.h>
 #include <algorithm>
 #include <array>
-#include <iterator>
 #include <tuple>
-#include <unordered_map>
+#include <type_traits>
 #include <vector>
 
-template <typename T>
-concept is_less_comparable = requires(T t, T u) {
-    { t < u } -> std::same_as<bool>;
+template <typename T1, typename T2>
+concept is_less_comparable = requires(T1 t, T2 u) {
+    {
+        t < u
+    } -> std::same_as<bool>;
 };
 
 template <typename TElement, typename... TCallables>
@@ -26,9 +27,9 @@ concept is_function_bucketable_on_doubles =
     is_function_callable_on_element<TElement, TCallables...> &&
     (std::is_convertible_v<std::invoke_result_t<TCallables, TElement>, double> && ...);
 
-template <typename T>
-    requires is_less_comparable<T>
-int findIndex(std::vector<T> const &data, T const &value, const bool ignoreOverflows)
+template <typename T1, typename T2>
+    requires is_less_comparable<T1, T2>
+int findIndex(std::vector<T1> const &data, T2 const &value, const bool ignoreOverflows)
 {
     const auto tmp =
         static_cast<int>(distance(data.begin(), std::upper_bound(data.begin(), data.end(), value)));
@@ -48,7 +49,7 @@ struct BucketPolicy final {
 
     template <typename TElement>
         requires is_function_bucketable_on_doubles<TElement, TCallables...>
-    [[nodiscard]] int getBucket(TElement const &element)
+    [[nodiscard]] int getBucket(TElement const &element) const
     {
         auto values  = getValues(element);
         auto indices = getUpperIndicesForTuple(values);
@@ -64,13 +65,13 @@ struct BucketPolicy final {
     }
 
     template <typename TElement>
-    [[nodiscard]] auto getValues(TElement const &element)
+    [[nodiscard]] auto getValues(TElement const &element) const
     {
         return std::make_tuple(std::get<TCallables>(mCallables)(element)...);
     }
 
     template <typename... Types>
-    [[nodiscard]] auto getUpperIndicesForTuple(std::tuple<Types...> const &values)
+    [[nodiscard]] auto getUpperIndicesForTuple(std::tuple<Types...> const &values) const
     {
         return [&]<std::size_t... I>(std::index_sequence<I...>) {
             return std::make_tuple(
@@ -80,7 +81,7 @@ struct BucketPolicy final {
     }
 
     template <typename... TIndices>
-    [[nodiscard]] int calculateBucketAtIndices(std::tuple<TIndices...> const &indices)
+    [[nodiscard]] int calculateBucketAtIndices(std::tuple<TIndices...> const &indices) const
     {
         constexpr auto N = sizeof...(TIndices);
         auto indexSeq    = std::make_index_sequence<N - 1>();
