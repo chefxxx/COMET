@@ -310,4 +310,12 @@ auto makeCombinations(std::tuple<Ranges<TIters>...>& ranges)
     return CombinationsProducer(CombinationsPolicy{}, ranges);
 }
 
+template <template <typename...> class TCombinationsPolicy, typename... TInputs>
+auto makeCombinations(TInputs... inputs)
+{
+    auto tupleRanges = std::make_tuple(createRangeFromData(inputs)...);
+    using CombinationsPolicy = TCombinationsPolicy<TInputs...>;
+    return CombinationsProducer(CombinationsPolicy{}, tupleRanges);
+}
+
 #endif  // COMBINATIONS_H

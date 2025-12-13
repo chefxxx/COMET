@@ -51,8 +51,8 @@ struct Ranges {
     TIter mEnd;
 };
 
-template <typename... Ts, typename F>
-auto tupleTransform(const std::tuple<Ts...>& tuple, F&& f)
+template <typename... Types, typename Func>
+auto tupleTransform(const std::tuple<Types...>& tuple, Func&& f)
 {
     return std::apply(
         [&](auto&&... elem) {
@@ -60,6 +60,12 @@ auto tupleTransform(const std::tuple<Ts...>& tuple, F&& f)
         },
         tuple
     );
+}
+
+template <typename Type>
+Ranges<typename Type::const_iterator> createRangeFromData(const Type& container)
+{
+    return Ranges(container.begin(), container.end());
 }
 
 template <std::forward_iterator TIter, typename TBucketPolicy>
