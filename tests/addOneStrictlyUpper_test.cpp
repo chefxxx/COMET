@@ -7,17 +7,12 @@
 
 TEST(AddOneStrictlyFirst, twoVectorsSameSize)
 {
-    std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
-    std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
+    const std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
+    const std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
 
-    Ranges r1 = {v1.begin(), v1.end()};
-    Ranges r2 = {v2.begin(), v2.end()};
+    auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(v1, v2);
 
-    auto tuple = std::make_tuple(r1, r2);
-
-    auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(tuple);
-
-    std::vector<std::tuple<int, char>> expected = {
+    const std::vector<std::tuple<int, char>> expected = {
         {1, 'b'},
         {1, 'c'},
         {1, 'd'},
@@ -31,13 +26,14 @@ TEST(AddOneStrictlyFirst, twoVectorsSameSize)
     };
 
     int i = 0;
-    for (const auto& [elem0, elem1] : combinationsProducer) {
+    for (const auto &[elem0, elem1] : combinationsProducer) {
         auto currValue = expected[i++];
         ASSERT_EQ(*elem0, std::get<0>(currValue));
         ASSERT_EQ(*elem1, std::get<1>(currValue));
     }
+
     /* this loop does not even execute, because we have input iterator */
-    for (const auto& [elem0, elem1] : combinationsProducer) {
+    for (const auto &[elem0, elem1] : combinationsProducer) {
         auto currValue = expected[i++];
         ASSERT_EQ(*elem0, std::get<0>(currValue));
         ASSERT_EQ(*elem1, std::get<1>(currValue));
@@ -46,17 +42,11 @@ TEST(AddOneStrictlyFirst, twoVectorsSameSize)
 
 TEST(AddOneStrictlyFirst, threeVectorsDifferentSize)
 {
-    std::vector v1 = {1, 2, 3};
-    std::vector v2 = {'#', '@', '$', '%', '*'};
-    std::vector v3 = {'a', 'b', 'c', 'd'};
+    const std::vector v1 = {1, 2, 3};
+    const std::vector v2 = {'#', '@', '$', '%', '*'};
+    const std::vector v3 = {'a', 'b', 'c', 'd'};
 
-    Ranges r1 = {v1.begin(), v1.end()};
-    Ranges r2 = {v2.begin(), v2.end()};
-    Ranges r3 = {v3.begin(), v3.end()};
-
-    auto tuple = std::make_tuple(r1, r2, r3);
-
-    auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(tuple);
+    auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(v1, v2, v3);
 
     const std::vector<std::tuple<int, char, char>> expected = {
         {1, '@', 'c'},
@@ -66,7 +56,7 @@ TEST(AddOneStrictlyFirst, threeVectorsDifferentSize)
     };
 
     int i = 0;
-    for (const auto& [elem0, elem1, elem2] : combinationsProducer) {
+    for (const auto &[elem0, elem1, elem2] : combinationsProducer) {
         auto currValues = expected[i++];
         ASSERT_EQ(*elem0, std::get<0>(currValues));
         ASSERT_EQ(*elem1, std::get<1>(currValues));
@@ -76,32 +66,22 @@ TEST(AddOneStrictlyFirst, threeVectorsDifferentSize)
 
 TEST(AddOneStrictlyUpper, OneRangeIsLessThanItCanBe)
 {
-    std::vector v1 = {1, 2, 3};
-    std::vector v2 = {'#'};
-    std::vector v3 = {'a', 'b', 'c', 'd'};
+    const std::vector v1 = {1, 2, 3};
+    const std::vector v2 = {'#'};
+    const std::vector v3 = {'a', 'b', 'c', 'd'};
 
-    Ranges r1 = {v1.begin(), v1.end()};
-    Ranges r2 = {v2.begin(), v2.end()};
-    Ranges r3 = {v3.begin(), v3.end()};
-
-    auto tuple                      = std::make_tuple(r1, r2, r3);
-    const auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(tuple);
+    const auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(v1, v2, v3);
 
     ASSERT_TRUE(combinationsProducer.isEnd());
 }
 
 TEST(AddOneStrictlyUpper, ClassicExampleTest)
 {
-    std::vector v1 = {0, 1, 2, 3, 4};
-    std::vector v2 = {0, 1, 2, 3, 4};
-    std::vector v3 = {0, 1, 2, 3, 4};
+    const std::vector v1 = {0, 1, 2, 3, 4};
+    const std::vector v2 = {0, 1, 2, 3, 4};
+    const std::vector v3 = {0, 1, 2, 3, 4};
 
-    Ranges r1 = {v1.begin(), v1.end()};
-    Ranges r2 = {v2.begin(), v2.end()};
-    Ranges r3 = {v3.begin(), v3.end()};
-
-    auto tuple                = std::make_tuple(r1, r2, r3);
-    auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(tuple);
+    auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(v1, v2, v3);
 
     const std::vector<std::tuple<int, int, int>> expected = {
         {0, 1, 2},
@@ -117,7 +97,7 @@ TEST(AddOneStrictlyUpper, ClassicExampleTest)
     };
 
     int i = 0;
-    for (const auto& [elem0, elem1, elem2] : combinationsProducer) {
+    for (const auto &[elem0, elem1, elem2] : combinationsProducer) {
         auto currValues = expected[i++];
 
         ASSERT_EQ(*elem0, std::get<0>(currValues));

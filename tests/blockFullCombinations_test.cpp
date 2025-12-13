@@ -18,7 +18,7 @@ class BlockFullCombinationsTest : public ::testing::Test
     const dataType bucketsBenchmark{-1.0, 1.0};
 
     struct testCallable {
-        auto operator()(double const& a) const { return a; }
+        auto operator()(double const &a) const { return a; }
     };
     testCallable callable;
 
@@ -65,7 +65,7 @@ TEST_F(BlockFullCombinationsTest, groupedDataBucketsNumbersAreCorrect)
     auto data1     = std::get<1>(blockFull.data());
     auto data2     = std::get<2>(blockFull.data());
 
-    for (const auto& bn : expectedBucketsNums) {
+    for (const auto &bn : expectedBucketsNums) {
         ASSERT_EQ(data0.contains(bn), true);
         ASSERT_EQ(data1.contains(bn), true);
         ASSERT_EQ(data2.contains(bn), true);
@@ -98,11 +98,11 @@ TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
     };
 
     int k = 0;
-    for (const auto& id : expectedBucketsNums) {
-        const auto& bucket0 = data0.at(id);
-        const auto& bucket1 = data1.at(id);
-        const auto& bucket2 = data2.at(id);
-        const auto& arr     = expectedBuckets[k++];
+    for (const auto &id : expectedBucketsNums) {
+        const auto &bucket0 = data0.at(id);
+        const auto &bucket1 = data1.at(id);
+        const auto &bucket2 = data2.at(id);
+        const auto &arr     = expectedBuckets[k++];
         auto exp0           = arr[0];
         auto exp1           = arr[1];
         auto exp2           = arr[2];
@@ -134,8 +134,8 @@ TEST_F(BlockFullCombinationsTest, simpleIterationElementsAreCorrect)
 
     int k          = 0;
     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp2, tuple2);
-    for (auto& [elem0, elem1] : blockFull) {
-        auto& expected = arr[k++];
+    for (auto &[elem0, elem1] : blockFull) {
+        auto &expected = arr[k++];
         ASSERT_EQ(**elem0, std::get<0>(expected));
         ASSERT_EQ(**elem1, std::get<1>(expected));
     }
@@ -146,10 +146,10 @@ TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
     const std::array<std::tuple<double, double, double>, 34> arr = {
         {
-         {0.25, 0.3, 0.33}, {0.25, 0.3, 0.44}, {0.25, 0.45, 0.33}, {0.25, 0.45, 0.44},
-         {0.35, 0.3, 0.33}, {0.35, 0.3, 0.44}, {0.35, 0.45, 0.33}, {0.35, 0.45, 0.44},
-         {0.45, 0.3, 0.33}, {0.45, 0.3, 0.44}, {0.45, 0.45, 0.33}, {0.45, 0.45, 0.44},
-         {0.55, 0.6, 0.55}, {0.55, 0.6, 0.66}, {0.65, 0.6, 0.55}, {0.65, 0.6, 0.66},
+         {0.25, 0.3, 0.33},  {0.25, 0.3, 0.44},  {0.25, 0.45, 0.33}, {0.25, 0.45, 0.44},
+         {0.35, 0.3, 0.33},  {0.35, 0.3, 0.44},  {0.35, 0.45, 0.33}, {0.35, 0.45, 0.44},
+         {0.45, 0.3, 0.33},  {0.45, 0.3, 0.44},  {0.45, 0.45, 0.33}, {0.45, 0.45, 0.44},
+         {0.55, 0.6, 0.55},  {0.55, 0.6, 0.66},  {0.65, 0.6, 0.55},  {0.65, 0.6, 0.66},
          {0.75, 0.75, 0.77}, {0.75, 0.75, 0.88}, {0.75, 0.75, 0.99}, {0.75, 0.90, 0.77},
          {0.75, 0.90, 0.88}, {0.75, 0.90, 0.99}, {0.85, 0.75, 0.77}, {0.85, 0.75, 0.88},
          {0.85, 0.75, 0.99}, {0.85, 0.90, 0.77}, {0.85, 0.90, 0.88}, {0.85, 0.90, 0.99},
@@ -159,8 +159,8 @@ TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
     };
 
     int k = 0;
-    for (const auto& [elem0, elem1, elem2] : blockFull) {
-        auto& expected            = arr[k++];
+    for (const auto &[elem0, elem1, elem2] : blockFull) {
+        auto &expected            = arr[k++];
         const std::string message = "At iteration " + std::to_string(k) + "\n";
         ASSERT_EQ(**elem0, std::get<0>(expected)) << message;
         ASSERT_EQ(**elem1, std::get<1>(expected)) << message;

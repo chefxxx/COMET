@@ -14,12 +14,12 @@ struct BlockCombinationsProducer {
     using CombinationsIterType = typename TCombinationsProducer::CombinationsIterator;
 
     BlockCombinationsProducer(
-        const TBucketPolicy& bucketPolicy, const TCombinationsProducer& combinationsPolicy,
-        const std::tuple<Ranges<TIters>...>& ranges
+        const TBucketPolicy &bucketPolicy, const TCombinationsProducer &combinationsPolicy,
+        const std::tuple<Ranges<TIters>...> &ranges
     )
         : mGroupedData(tupleTransform(
               ranges,
-              [&](auto&& r) {
+              [&](auto &&r) {
                   return groupData(r.mBegin, r.mEnd, bucketPolicy);
               }
           )),
@@ -34,25 +34,25 @@ struct BlockCombinationsProducer {
         mCombinationsEnd      = mCombinationsProducer.end();
     }
 
-    auto& data() { return mGroupedData; }
+    auto &data() { return mGroupedData; }
 
     struct BlockIterator {
         using iterator_category = std::input_iterator_tag;
         using difference_type   = std::ptrdiff_t;
         using value_type        = CombinationsType;
-        using pointer           = CombinationsType*;
-        using reference         = CombinationsType&;
+        using pointer           = CombinationsType *;
+        using reference         = CombinationsType &;
 
-        BlockCombinationsProducer* mBlockCombinations;
+        BlockCombinationsProducer *mBlockCombinations;
         CombinationsIterType iterator;
         explicit BlockIterator(
-            BlockCombinationsProducer* blockCombinations, CombinationsIterType iterator
+            BlockCombinationsProducer *blockCombinations, CombinationsIterType iterator
         )
             : mBlockCombinations(blockCombinations), iterator(iterator)
         {
         }
 
-        BlockIterator& operator++()
+        BlockIterator &operator++()
         {
             mBlockCombinations->addOne();
             iterator = mBlockCombinations->mCombinationsIterator;
@@ -69,11 +69,11 @@ struct BlockCombinationsProducer {
         reference operator*() const { return *iterator; }
         pointer operator->() const { return iterator; }
 
-        friend bool operator==(const BlockIterator& lhs, const BlockIterator& rhs)
+        friend bool operator==(const BlockIterator &lhs, const BlockIterator &rhs)
         {
             return lhs.mBlockCombinations == rhs.mBlockCombinations && lhs.iterator == rhs.iterator;
         }
-        friend bool operator!=(const BlockIterator& lhs, const BlockIterator& rhs)
+        friend bool operator!=(const BlockIterator &lhs, const BlockIterator &rhs)
         {
             return !(lhs == rhs);
         }
@@ -105,17 +105,17 @@ struct BlockCombinationsProducer {
     }
 
     template <std::forward_iterator TIter>
-    auto createRanges(const GroupedBuckets<TIter>& data, const BucketIterType current)
+    auto createRanges(const GroupedBuckets<TIter> &data, const BucketIterType current)
     {
-        const std::vector<TIter>& bucket = data.at(current);
+        const std::vector<TIter> &bucket = data.at(current);
         using IterType                   = typename std::vector<TIter>::const_iterator;
         return Ranges<IterType>(bucket.begin(), bucket.end());
     }
 
     template <std::size_t... Is>
-    void setCombinations(const std::index_sequence<Is...>&, const BucketIterType current)
+    void setCombinations(const std::index_sequence<Is...> &, const BucketIterType current)
     {
-        auto bucketsRanges = tupleTransform(mGroupedData, [&](auto&& data) {
+        auto bucketsRanges = tupleTransform(mGroupedData, [&](auto &&data) {
             return createRanges(data, current);
         });
         mCombinationsProducer.setData(bucketsRanges);
@@ -126,7 +126,7 @@ template <
     template <typename...> class TCombinationsPolicy, typename TBucketPolicy,
     std::forward_iterator... TIters>
 auto makeBlockCombinations(
-    const TBucketPolicy& bucketPolicy, const std::tuple<Ranges<TIters>...>& ranges
+    const TBucketPolicy &bucketPolicy, const std::tuple<Ranges<TIters>...> &ranges
 )
 {
     auto combinationsProducer =

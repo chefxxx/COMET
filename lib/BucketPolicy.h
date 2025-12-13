@@ -14,9 +14,7 @@
 
 template <typename T1, typename T2>
 concept is_less_comparable = requires(T1 t, T2 u) {
-    {
-        t < u
-    } -> std::same_as<bool>;
+    { t < u } -> std::same_as<bool>;
 };
 
 template <typename TElement, typename... TCallables>
@@ -29,12 +27,8 @@ concept is_function_bucketable_on_doubles =
 
 template <typename TBucketPolicy, typename TIter>
 concept is_bucket_policy = requires(TBucketPolicy policy, TIter iter) {
-    {
-        policy.getBucket(*iter)
-    } -> std::same_as<int>;
-    {
-        policy.getMaximalBucketCount()
-    } -> std::same_as<int>;
+    { policy.getBucket(*iter) } -> std::same_as<int>;
+    { policy.getMaximalBucketCount() } -> std::same_as<int>;
     policy.getValues(*iter);
 };
 

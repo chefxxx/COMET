@@ -16,7 +16,7 @@ struct CombinationsProducer {
     {
     }
     explicit CombinationsProducer(
-        TCombinationsPolicy combinationsPolicy, std::tuple<Ranges<TIters>...>& ranges
+        TCombinationsPolicy combinationsPolicy, std::tuple<Ranges<TIters>...> &ranges
     )
         : mCombinationsPolicy(combinationsPolicy)
     {
@@ -25,7 +25,7 @@ struct CombinationsProducer {
         );
     }
 
-    void setData(std::tuple<Ranges<TIters>...>& ranges)
+    void setData(std::tuple<Ranges<TIters>...> &ranges)
     {
         mCombinationsPolicy.setData(
             ranges, mCurrentState, mSentinel, mCurrentIndexNumbers, mEndIndexNumbers, mIsEnd
@@ -38,20 +38,20 @@ struct CombinationsProducer {
         using iterator_category = std::input_iterator_tag;
         using difference_type   = std::ptrdiff_t;
         using value_type        = CombinationsType;
-        using pointer           = CombinationsType*;
-        using reference         = CombinationsType&;
+        using pointer           = CombinationsType *;
+        using reference         = CombinationsType &;
 
-        CombinationsType* mCombinationsPtr;
-        CombinationsProducer* mProducerPtr;
+        CombinationsType *mCombinationsPtr;
+        CombinationsProducer *mProducerPtr;
         CombinationsIterator() = default;
-        explicit CombinationsIterator(CombinationsType* state, CombinationsProducer* producer)
+        explicit CombinationsIterator(CombinationsType *state, CombinationsProducer *producer)
             : mCombinationsPtr(state), mProducerPtr(producer)
         {
         }
-        CombinationsIterator(const CombinationsIterator&)            = default;
-        CombinationsIterator& operator=(const CombinationsIterator&) = default;
+        CombinationsIterator(const CombinationsIterator &)            = default;
+        CombinationsIterator &operator=(const CombinationsIterator &) = default;
 
-        CombinationsIterator& operator++()
+        CombinationsIterator &operator++()
         {
             mProducerPtr->addOne();
             mCombinationsPtr = &mProducerPtr->mCurrentState;
@@ -66,14 +66,14 @@ struct CombinationsProducer {
         reference operator*() const { return *mCombinationsPtr; }
         pointer operator->() const { return mCombinationsPtr; }
 
-        friend bool operator==(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
+        friend bool operator==(const CombinationsIterator &lhs, const CombinationsIterator &rhs)
         {
             if (lhs.mProducerPtr->mIsEnd && rhs.mProducerPtr->mIsEnd)
                 return true;
             return lhs.mProducerPtr == rhs.mProducerPtr &&
                    lhs.mCombinationsPtr == rhs.mCombinationsPtr;
         }
-        friend bool operator!=(const CombinationsIterator& lhs, const CombinationsIterator& rhs)
+        friend bool operator!=(const CombinationsIterator &lhs, const CombinationsIterator &rhs)
         {
             return !(lhs == rhs);
         }
@@ -104,8 +104,8 @@ struct CombinationsProducer {
 
 template <size_t I, std::forward_iterator TIter, typename TCombinationsType>
 void setDataHelper(
-    Ranges<TIter>& range, TCombinationsType& currentState, TCombinationsType& sentinel,
-    int64_t& currentIndexNumber, int64_t& endIndexNumber
+    Ranges<TIter> &range, TCombinationsType &currentState, TCombinationsType &sentinel,
+    int64_t &currentIndexNumber, int64_t &endIndexNumber
 )
 {
     std::get<I>(currentState) = range.mBegin;
@@ -116,12 +116,12 @@ void setDataHelper(
 
 template <typename TCombinationsType, std::forward_iterator... TIters>
 void setDataPolicies(
-    std::tuple<Ranges<TIters>...>& ranges, TCombinationsType& currentState,
-    TCombinationsType& sentinel, std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
-    std::array<int64_t, sizeof...(TIters)>& endIndexNumbers, bool& isEnd
+    std::tuple<Ranges<TIters>...> &ranges, TCombinationsType &currentState,
+    TCombinationsType &sentinel, std::array<int64_t, sizeof...(TIters)> &currentIndexNumbers,
+    std::array<int64_t, sizeof...(TIters)> &endIndexNumbers, bool &isEnd
 )
 {
-    [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+    [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
         (setDataHelper<Is>(
              std::get<Is>(ranges), currentState, sentinel, currentIndexNumbers[Is],
              endIndexNumbers[Is]
@@ -137,9 +137,9 @@ struct FullCombinationsPolicy {
     using CombinationsType   = std::tuple<TIters...>;
 
     void setData(
-        std::tuple<Ranges<TIters>...>& ranges, CombinationsType& currentState,
-        CombinationsType& sentinel, std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
-        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers, bool& isEnd
+        std::tuple<Ranges<TIters>...> &ranges, CombinationsType &currentState,
+        CombinationsType &sentinel, std::array<int64_t, sizeof...(TIters)> &currentIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)> &endIndexNumbers, bool &isEnd
     )
     {
         setDataPolicies(
@@ -148,14 +148,14 @@ struct FullCombinationsPolicy {
     }
 
     void addOne(
-        std::tuple<TIters...>& currentState,
-        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
-        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers, bool& isEnd
+        std::tuple<TIters...> &currentState,
+        std::array<int64_t, sizeof...(TIters)> &currentIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)> &endIndexNumbers, bool &isEnd
     )
     {
         constexpr size_t N = sizeof...(TIters);
         bool wasModified   = true;
-        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+        [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
             (addOneHelper<Is, N>(wasModified, currentState, currentIndexNumbers, endIndexNumbers),
              ...);
         }(std::make_index_sequence<N>());
@@ -165,9 +165,9 @@ struct FullCombinationsPolicy {
     private:
     template <size_t I, size_t N>
     void addOneHelper(
-        bool& wasModified, std::tuple<TIters...>& currentState,
-        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
-        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers
+        bool &wasModified, std::tuple<TIters...> &currentState,
+        std::array<int64_t, sizeof...(TIters)> &currentIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)> &endIndexNumbers
     )
     {
         if (wasModified) {
@@ -175,7 +175,7 @@ struct FullCombinationsPolicy {
             int64_t currentPointersIndex = ++currentIndexNumbers[ind];
             ++std::get<ind>(currentState);
             if (currentPointersIndex != endIndexNumbers[ind]) {
-                [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+                [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
                     (resetState<I, Is, N>(currentState, currentIndexNumbers), ...);
                 }(std::make_index_sequence<I>());
                 wasModified = false;
@@ -188,8 +188,8 @@ struct FullCombinationsPolicy {
     // J - loop iterator, which pointer is set to 0 from the N - I to right position
     template <size_t I, size_t J, size_t N>
     void resetState(
-        std::tuple<TIters...>& currentState,
-        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers
+        std::tuple<TIters...> &currentState,
+        std::array<int64_t, sizeof...(TIters)> &currentIndexNumbers
     )
     {
         constexpr auto ind = N - I + J;
@@ -204,14 +204,14 @@ struct StrictlyUpperCombinationsPolicy {
     StrictlyUpperCombinationsPolicy() = default;
 
     void addOne(
-        std::tuple<TIters...>& currentState,
-        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
-        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers, bool& isEnd
+        std::tuple<TIters...> &currentState,
+        std::array<int64_t, sizeof...(TIters)> &currentIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)> &endIndexNumbers, bool &isEnd
     )
     {
         constexpr size_t N = sizeof...(TIters);
         bool wasModified   = true;
-        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+        [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
             (addOneHelper<Is, N>(wasModified, currentState, currentIndexNumbers, endIndexNumbers),
              ...);
         }(std::make_index_sequence<N>());
@@ -219,9 +219,9 @@ struct StrictlyUpperCombinationsPolicy {
     }
 
     void setData(
-        std::tuple<Ranges<TIters>...>& ranges, CombinationsType& currentState,
-        CombinationsType& sentinel, std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
-        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers, bool& isEnd
+        std::tuple<Ranges<TIters>...> &ranges, CombinationsType &currentState,
+        CombinationsType &sentinel, std::array<int64_t, sizeof...(TIters)> &currentIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)> &endIndexNumbers, bool &isEnd
     )
     {
         setDataPolicies(
@@ -241,9 +241,9 @@ struct StrictlyUpperCombinationsPolicy {
     private:
     template <size_t I, size_t N>
     void addOneHelper(
-        bool& wasModified, std::tuple<TIters...>& currentState,
-        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
-        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers
+        bool &wasModified, std::tuple<TIters...> &currentState,
+        std::array<int64_t, sizeof...(TIters)> &currentIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)> &endIndexNumbers
     )
     {
         if (wasModified) {
@@ -260,12 +260,12 @@ struct StrictlyUpperCombinationsPolicy {
 
     template <size_t I, size_t N>
     void setRanges(
-        bool& wasChanged, CombinationsType& currentState,
-        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
-        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers
+        bool &wasChanged, CombinationsType &currentState,
+        std::array<int64_t, sizeof...(TIters)> &currentIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)> &endIndexNumbers
     )
     {
-        [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+        [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
             (resetState<I, Is, N>(wasChanged, currentState, currentIndexNumbers, endIndexNumbers),
              ...);
         }(std::make_index_sequence<I>());
@@ -278,9 +278,9 @@ struct StrictlyUpperCombinationsPolicy {
     // J - loop iterator, which pointer is set to 0 from the N - I to right position
     template <size_t I, size_t J, size_t N>
     void resetState(
-        bool& wasChanged, CombinationsType& currentState,
-        std::array<int64_t, sizeof...(TIters)>& currentIndexNumbers,
-        std::array<int64_t, sizeof...(TIters)>& endIndexNumbers
+        bool &wasChanged, CombinationsType &currentState,
+        std::array<int64_t, sizeof...(TIters)> &currentIndexNumbers,
+        std::array<int64_t, sizeof...(TIters)> &endIndexNumbers
     )
     {
         if (wasChanged) {
@@ -304,17 +304,17 @@ auto makeCombinations()
 }
 
 template <template <typename...> class TCombinationsPolicy, std::forward_iterator... TIters>
-auto makeCombinations(std::tuple<Ranges<TIters>...>& ranges)
+auto makeCombinations(std::tuple<Ranges<TIters>...> &ranges)
 {
     using CombinationsPolicy = TCombinationsPolicy<TIters...>;
     return CombinationsProducer(CombinationsPolicy{}, ranges);
 }
 
 template <template <typename...> class TCombinationsPolicy, typename... TInputs>
-auto makeCombinations(TInputs... inputs)
+auto makeCombinations(const TInputs &...inputs)
 {
-    auto tupleRanges = std::make_tuple(createRangeFromData(inputs)...);
-    using CombinationsPolicy = TCombinationsPolicy<TInputs...>;
+    auto tupleRanges         = std::make_tuple(createRangeFromData(inputs)...);
+    using CombinationsPolicy = TCombinationsPolicy<typename TInputs::const_iterator...>;
     return CombinationsProducer(CombinationsPolicy{}, tupleRanges);
 }
 

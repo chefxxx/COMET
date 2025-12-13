@@ -14,8 +14,8 @@ template <std::forward_iterator TIter>
 struct GroupedBuckets {
     using IterType = std::set<int>::const_iterator;
 
-    const std::vector<TIter>& at(IterType iter) const { return mBuckets.at(*iter); }
-    const std::vector<TIter>& at(const int bucketNo) const { return mBuckets.at(bucketNo); }
+    const std::vector<TIter> &at(IterType iter) const { return mBuckets.at(*iter); }
+    const std::vector<TIter> &at(const int bucketNo) const { return mBuckets.at(bucketNo); }
 
     [[nodiscard]] size_t size() const { return mBucketsNumbers.size(); }
 
@@ -52,10 +52,10 @@ struct Ranges {
 };
 
 template <typename... Types, typename Func>
-auto tupleTransform(const std::tuple<Types...>& tuple, Func&& f)
+auto tupleTransform(const std::tuple<Types...> &tuple, Func &&f)
 {
     return std::apply(
-        [&](auto&&... elem) {
+        [&](auto &&...elem) {
             return std::make_tuple(f(elem)...);
         },
         tuple
@@ -63,7 +63,7 @@ auto tupleTransform(const std::tuple<Types...>& tuple, Func&& f)
 }
 
 template <typename Type>
-Ranges<typename Type::const_iterator> createRangeFromData(const Type& container)
+Ranges<typename Type::const_iterator> createRangeFromData(const Type &container)
 {
     return Ranges(container.begin(), container.end());
 }
@@ -93,7 +93,7 @@ template <std::forward_iterator TIter, typename TBucketPolicy>
 }
 
 template <std::forward_iterator TIter1, std::forward_iterator TIter2>
-void syncHelper(GroupedBuckets<TIter1>& firstData, const GroupedBuckets<TIter2>& comparedData)
+void syncHelper(GroupedBuckets<TIter1> &firstData, const GroupedBuckets<TIter2> &comparedData)
 {
     for (auto it = firstData.begin(); it != firstData.end();) {
         if (!comparedData.contains(*it)) {
@@ -105,11 +105,11 @@ void syncHelper(GroupedBuckets<TIter1>& firstData, const GroupedBuckets<TIter2>&
 }
 
 template <std::forward_iterator... TIters>
-void syncBuckets(std::tuple<GroupedBuckets<TIters>...>& groupedData)
+void syncBuckets(std::tuple<GroupedBuckets<TIters>...> &groupedData)
 {
     constexpr size_t N = sizeof...(TIters);
-    auto& firstData    = std::get<0>(groupedData);
-    [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+    auto &firstData    = std::get<0>(groupedData);
+    [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
         (syncHelper(firstData, std::get<Is>(groupedData)), ...);
         (syncHelper(std::get<Is>(groupedData), firstData), ...);
     }(std::make_index_sequence<N>());
