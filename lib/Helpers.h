@@ -44,12 +44,12 @@ struct GroupedBuckets {
     std::set<int> mBucketsNumbers;
 };
 
-template <std::forward_iterator TIter>
-struct Ranges {
-    Ranges(TIter begin, TIter end) : mBegin(begin), mEnd(end) {}
-    TIter mBegin;
-    TIter mEnd;
-};
+// template <std::forward_iterator TIter>
+// struct Ranges {
+//     Ranges(TIter begin, TIter end) : mBegin(begin), mEnd(end) {}
+//     TIter mBegin;
+//     TIter mEnd;
+// };
 
 template <typename... Types, typename Func>
 auto tupleTransform(const std::tuple<Types...> &tuple, Func &&f)
@@ -62,11 +62,11 @@ auto tupleTransform(const std::tuple<Types...> &tuple, Func &&f)
     );
 }
 
-template <typename Type>
-Ranges<typename Type::const_iterator> createRangeFromData(const Type &container)
-{
-    return Ranges(container.begin(), container.end());
-}
+// template <typename Type>
+// Ranges<typename Type::const_iterator> createRangeFromData(const Type &container)
+// {
+//     return Ranges(container.begin(), container.end());
+// }
 
 template <std::forward_iterator TIter, typename TBucketPolicy>
     requires is_bucket_policy<TBucketPolicy, TIter>
