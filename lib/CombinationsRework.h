@@ -24,9 +24,10 @@ class CombinationsProducer
     struct CombinationsIterator {
         using iterator_category = std::input_iterator_tag;
         using difference_type   = std::ptrdiff_t;
-        using value_type        = CombinationsType;
-        using pointer           = CombinationsType *;
-        using reference         = CombinationsType &;
+        using value_type        = std::tuple<typename TInputs::value_type...>;
+        using pointer           = void;
+        using reference         = std::tuple<
+                    typename std::iterator_traits<typename TInputs::const_iterator>::reference...>;
 
         CombinationsType *mCombinationsPtr;
         CombinationsProducer *mProducerPtr;
@@ -50,8 +51,16 @@ class CombinationsProducer
             ++(*this);
             return copy;
         }
-        reference operator*() const { return *mCombinationsPtr; }
-        pointer operator->() const { return mCombinationsPtr; }
+        // dereference each pointer in the current tuple
+        reference operator*() const
+        {
+            return std::apply(
+                [](auto &&...args) {
+                    return std::forward_as_tuple(*args...);
+                },
+                *mCombinationsPtr
+            );
+        }
 
         friend bool operator==(const CombinationsIterator &lhs, const CombinationsIterator &rhs)
         {
@@ -66,18 +75,16 @@ class CombinationsProducer
         }
     };
 
-    [[nodiscard]] CombinationsIterator begin()
-    {
-        return CombinationsIterator(&m_current, this);
-    }
+    [[nodiscard]] CombinationsIterator begin() { return CombinationsIterator(&m_current, this); }
     [[nodiscard]] CombinationsIterator end() { return CombinationsIterator(&m_sentinel, this); }
+    [[nodiscard]] bool isEnd() const { return m_isEnd; }
 
     protected:
     void addOneBaseImpl()
     {
         if (!m_isEnd) {
-            constexpr size_t N     = sizeof...(TInputs);
-            bool wasModified       = true;
+            constexpr size_t N = sizeof...(TInputs);
+            bool wasModified   = true;
             [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
                 (addOneHelper<Is, N>(wasModified), ...);
             }(std::make_index_sequence<N>());
