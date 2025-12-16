@@ -3,7 +3,12 @@
 //
 
 #include <gtest/gtest.h>
+
+#include <iomanip>
+
 #include "CombinationsRework.h"
+
+using DoubleMicros = std::chrono::duration<double, std::micro>;
 
 TEST(CompileTest, ifCompiles)
 {
@@ -64,15 +69,32 @@ TEST(AddOneFullTest, twoVectorsSameSize)
 
     int i = 0;
     for (const auto &[elem0, elem1] : combinationsProducer) {
-        auto expectedCombination = expectedValues[i++];
-        ASSERT_EQ(*elem0, std::get<0>(expectedCombination));
-        ASSERT_EQ(*elem1, std::get<1>(expectedCombination));
+        auto [ex0, ex1] = expectedValues[i];
+        ++i;
+        ASSERT_EQ(*elem0, ex0);
+        ASSERT_EQ(*elem1, ex1);
+    }
+}
+
+TEST(AddOneFullTest, performanceImplTest)
+
+{
+    constexpr size_t SIZE = 1e2;
+    std::vector<size_t> v1(SIZE);
+    std::vector<size_t> v2(SIZE);
+    for (size_t i = 0; i < SIZE; ++i) {
+        v1.push_back(i);
+        v2.push_back(i + 1);
     }
 
-    const std::vector a{1,2,3,44};
-    for (const auto &elem : a) {
-        std::cout << elem << '\n';
+    auto combinationsProducer = FullCombinationsProducer(v1, v2);
+    const auto start = std::chrono::high_resolution_clock::now();
+    for (const auto &[elem0, elem1] : combinationsProducer) {
+        std::cout << std::format("({}, {})", *elem0, *elem1) << std::endl;
     }
+    const auto stop = std::chrono::high_resolution_clock::now();
+    const DoubleMicros duration = stop - start;
+    std::cout << std::format("Time taken {} s\n", duration.count() / 1e6) ;
 }
 
 // TEST(AddOneFullTest, fourVectorsDifferentSizes)
