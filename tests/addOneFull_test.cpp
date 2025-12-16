@@ -68,6 +68,11 @@ TEST(AddOneFullTest, twoVectorsSameSize)
         ASSERT_EQ(*elem0, std::get<0>(expectedCombination));
         ASSERT_EQ(*elem1, std::get<1>(expectedCombination));
     }
+
+    const std::vector a{1,2,3,44};
+    for (const auto &elem : a) {
+        std::cout << elem << '\n';
+    }
 }
 
 // TEST(AddOneFullTest, fourVectorsDifferentSizes)
