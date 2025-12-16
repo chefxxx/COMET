@@ -156,7 +156,8 @@
 //         constexpr size_t N = sizeof...(TIters);
 //         bool wasModified   = true;
 //         [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
-//             (addOneHelper<Is, N>(wasModified, currentState, currentIndexNumbers, endIndexNumbers),
+//             (addOneHelper<Is, N>(wasModified, currentState, currentIndexNumbers,
+//             endIndexNumbers),
 //              ...);
 //         }(std::make_index_sequence<N>());
 //         isEnd = wasModified;
@@ -212,7 +213,8 @@
 //         constexpr size_t N = sizeof...(TIters);
 //         bool wasModified   = true;
 //         [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
-//             (addOneHelper<Is, N>(wasModified, currentState, currentIndexNumbers, endIndexNumbers),
+//             (addOneHelper<Is, N>(wasModified, currentState, currentIndexNumbers,
+//             endIndexNumbers),
 //              ...);
 //         }(std::make_index_sequence<N>());
 //         isEnd = wasModified;
@@ -266,7 +268,8 @@
 //     )
 //     {
 //         [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
-//             (resetState<I, Is, N>(wasChanged, currentState, currentIndexNumbers, endIndexNumbers),
+//             (resetState<I, Is, N>(wasChanged, currentState, currentIndexNumbers,
+//             endIndexNumbers),
 //              ...);
 //         }(std::make_index_sequence<I>());
 //     }

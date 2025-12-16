@@ -70,7 +70,8 @@
 //     const std::vector v2 = {'#'};
 //     const std::vector v3 = {'a', 'b', 'c', 'd'};
 //
-//     const auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(v1, v2, v3);
+//     const auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(v1, v2,
+//     v3);
 //
 //     ASSERT_TRUE(combinationsProducer.isEnd());
 // }

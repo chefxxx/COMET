@@ -7,69 +7,69 @@
 
 TEST(CompileTest, ifCompiles)
 {
-    const std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
-    const std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
+    const std::vector v1      = {1, 2, 3, 4, 5, 6, 7, 8};
+    const std::vector v2      = {'a', 'b', 'c', 'd', 'e'};
     auto combinationsProducer = FullCombinationsProducer(v1, v2);
 }
 
-// TEST(AddOneFullTest, twoVectorsSameSize)
-// {
-//     const std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
-//     const std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
-//
-//     auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(v1, v2);
-//
-//     const std::vector<std::tuple<int, char>> expectedValues = {
-//         {1, 'a'},
-//         {1, 'b'},
-//         {1, 'c'},
-//         {1, 'd'},
-//         {1, 'e'},
-//         {2, 'a'},
-//         {2, 'b'},
-//         {2, 'c'},
-//         {2, 'd'},
-//         {2, 'e'},
-//         {3, 'a'},
-//         {3, 'b'},
-//         {3, 'c'},
-//         {3, 'd'},
-//         {3, 'e'},
-//         {4, 'a'},
-//         {4, 'b'},
-//         {4, 'c'},
-//         {4, 'd'},
-//         {4, 'e'},
-//         {5, 'a'},
-//         {5, 'b'},
-//         {5, 'c'},
-//         {5, 'd'},
-//         {5, 'e'},
-//         {6, 'a'},
-//         {6, 'b'},
-//         {6, 'c'},
-//         {6, 'd'},
-//         {6, 'e'},
-//         {7, 'a'},
-//         {7, 'b'},
-//         {7, 'c'},
-//         {7, 'd'},
-//         {7, 'e'},
-//         {8, 'a'},
-//         {8, 'b'},
-//         {8, 'c'},
-//         {8, 'd'},
-//         {8, 'e'}
-//     };
-//
-//     int i = 0;
-//     for (const auto &[elem0, elem1] : combinationsProducer) {
-//         auto expectedCombination = expectedValues[i++];
-//         ASSERT_EQ(*elem0, std::get<0>(expectedCombination));
-//         ASSERT_EQ(*elem1, std::get<1>(expectedCombination));
-//     }
-// }
-//
+TEST(AddOneFullTest, twoVectorsSameSize)
+{
+    const std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
+    const std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
+
+    auto combinationsProducer = FullCombinationsProducer(v1, v2);
+
+    const std::vector<std::tuple<int, char>> expectedValues = {
+        {1, 'a'},
+        {1, 'b'},
+        {1, 'c'},
+        {1, 'd'},
+        {1, 'e'},
+        {2, 'a'},
+        {2, 'b'},
+        {2, 'c'},
+        {2, 'd'},
+        {2, 'e'},
+        {3, 'a'},
+        {3, 'b'},
+        {3, 'c'},
+        {3, 'd'},
+        {3, 'e'},
+        {4, 'a'},
+        {4, 'b'},
+        {4, 'c'},
+        {4, 'd'},
+        {4, 'e'},
+        {5, 'a'},
+        {5, 'b'},
+        {5, 'c'},
+        {5, 'd'},
+        {5, 'e'},
+        {6, 'a'},
+        {6, 'b'},
+        {6, 'c'},
+        {6, 'd'},
+        {6, 'e'},
+        {7, 'a'},
+        {7, 'b'},
+        {7, 'c'},
+        {7, 'd'},
+        {7, 'e'},
+        {8, 'a'},
+        {8, 'b'},
+        {8, 'c'},
+        {8, 'd'},
+        {8, 'e'}
+    };
+
+    int i = 0;
+    for (const auto &[elem0, elem1] : combinationsProducer) {
+        auto expectedCombination = expectedValues[i++];
+        ASSERT_EQ(*elem0, std::get<0>(expectedCombination));
+        ASSERT_EQ(*elem1, std::get<1>(expectedCombination));
+    }
+}
+
 // TEST(AddOneFullTest, fourVectorsDifferentSizes)
 // {
 //     const std::vector v1              = {1, 2, 3};

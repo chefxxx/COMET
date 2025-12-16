@@ -7,8 +7,8 @@
 //
 // #include "Combinations.h"
 //
-// template <typename TBucketPolicy, typename TCombinationsProducer, std::forward_iterator... TIters>
-// struct BlockCombinationsProducer {
+// template <typename TBucketPolicy, typename TCombinationsProducer, std::forward_iterator...
+// TIters> struct BlockCombinationsProducer {
 //     using BucketIterType       = std::set<int>::const_iterator;
 //     using CombinationsType     = typename TCombinationsProducer::CombinationsType;
 //     using CombinationsIterType = typename TCombinationsProducer::CombinationsIterator;
@@ -71,7 +71,8 @@
 //
 //         friend bool operator==(const BlockIterator &lhs, const BlockIterator &rhs)
 //         {
-//             return lhs.mBlockCombinations == rhs.mBlockCombinations && lhs.iterator == rhs.iterator;
+//             return lhs.mBlockCombinations == rhs.mBlockCombinations && lhs.iterator ==
+//             rhs.iterator;
 //         }
 //         friend bool operator!=(const BlockIterator &lhs, const BlockIterator &rhs)
 //         {
@@ -136,10 +137,11 @@
 //     );
 // }
 //
-// template <template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename... TInputs>
-// auto makeBlockCombinations(const TBucketPolicy &bucketPolicy, const TInputs &...inputs)
+// template <template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename...
+// TInputs> auto makeBlockCombinations(const TBucketPolicy &bucketPolicy, const TInputs &...inputs)
 // {
-//     auto combinationsProducer = makeCombinations<TCombinationsPolicy, typename std::vector<>::const_iterator...>();
+//     auto combinationsProducer = makeCombinations<TCombinationsPolicy, typename
+//     std::vector<>::const_iterator...>();
 // }
 //
 // #endif  // BLOCKCOMBINATINOS_H
