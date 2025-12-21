@@ -11,13 +11,6 @@
 
 using DoubleMicros = std::chrono::duration<double, std::micro>;
 
-TEST(CompileTest, ifCompiles)
-{
-    const std::vector v1      = {1, 2, 3, 4, 5, 6, 7, 8};
-    const std::vector v2      = {'a', 'b', 'c', 'd', 'e'};
-    auto combinationsProducer = FullCombinationsProducer(v1, v2);
-}
-
 TEST(AddOneFullTest, twoVectorsSameSize)
 {
     const std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
@@ -75,24 +68,6 @@ TEST(AddOneFullTest, twoVectorsSameSize)
         ASSERT_EQ(elem0, ex0);
         ASSERT_EQ(elem1, ex1);
     }
-}
-
-TEST(AddOneFullTest, performanceImplTest)
-
-{
-    constexpr size_t SIZE = 1e3;
-    std::vector<size_t> v1(SIZE);
-    std::vector<size_t> v2(SIZE);
-    std::iota(v1.begin(), v1.end(), 0);
-    std::iota(v2.begin(), v2.end(), 1);
-    auto combinationsProducer = FullCombinationsProducer(v1, v2);
-    const auto start          = std::chrono::high_resolution_clock::now();
-    for (const auto &[elem0, elem1] : combinationsProducer) {
-        std::cout << std::format("({}, {})", elem0, elem1) << std::endl;
-    }
-    const auto stop             = std::chrono::high_resolution_clock::now();
-    const DoubleMicros duration = stop - start;
-    std::cout << std::format("Time taken {} s\n", duration.count() / 1e6);
 }
 
 TEST(AddOneFullTest, fourVectorsDifferentSizes)
