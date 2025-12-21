@@ -92,13 +92,12 @@ class CombinationsProducer
         }
     }
 
-    template <size_t I, typename TInput>
-    void setDataHelper(const TInput &t_input)
+    void setDataBaseImpl(const TInputs &...t_inputs)
     {
-        std::get<I>(m_current)   = t_input.begin();
-        std::get<I>(m_sentinel)  = t_input.end();
-        m_currentIndexNumbers[I] = 0;
-        m_endIndexNumbers[I]     = std::distance(t_input.begin(), t_input.end());
+        [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
+            ((setDataHelper<Is>(t_inputs)), ...);
+            this->m_isEnd = ((this->m_endIndexNumbers[Is] == 0) || ...);
+        }(std::make_index_sequence<sizeof...(TInputs)>{});
     }
 
     bool m_isEnd = false;
@@ -108,6 +107,15 @@ class CombinationsProducer
     CombinationsType m_current;
 
     private:
+    template <size_t I, typename TInput>
+    void setDataHelper(const TInput &t_input)
+    {
+        std::get<I>(m_current)   = t_input.begin();
+        std::get<I>(m_sentinel)  = t_input.end();
+        m_currentIndexNumbers[I] = 0;
+        m_endIndexNumbers[I]     = std::distance(t_input.begin(), t_input.end());
+    }
+
     template <size_t I, size_t N>
     void addOneHelper(bool &t_wasModified)
     {
@@ -116,8 +124,7 @@ class CombinationsProducer
             int64_t currentPointersIndex = ++m_currentIndexNumbers[ind];
             ++std::get<ind>(m_current);
             if (currentPointersIndex != m_endIndexNumbers[ind]) {
-                static_cast<Derived *>(this)->template addOneImpl<I, N>();
-                t_wasModified = false;
+                static_cast<Derived *>(this)->template addOneImpl<I, N>(t_wasModified);
             }
         }
     }
@@ -130,22 +137,17 @@ class FullCombinationsProducer
     public:
     explicit FullCombinationsProducer(const TInputs &...t_inputs) { setDataDerived(t_inputs...); }
 
-    void setDataDerived(const TInputs &...t_inputs)
-    {
-        [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
-            ((this->template setDataHelper<Is>(t_inputs)), ...);
-            this->m_isEnd = ((this->m_endIndexNumbers[Is] == 0) || ...);
-        }(std::make_index_sequence<sizeof...(TInputs)>{});
-    }
+    void setDataDerived(const TInputs &...t_inputs) { this->setDataBaseImpl(t_inputs...); }
 
     void addOneDerived() { this->addOneBaseImpl(); }
 
     template <size_t I, size_t N>
-    void addOneImpl()
+    void addOneImpl(bool &t_conditional)
     {
         [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
             (resetState<I, Is, N>(), ...);
         }(std::make_index_sequence<I>());
+        t_conditional = false;
     }
 
     private:
@@ -165,6 +167,63 @@ template <typename... TInputs>
 class StrictlyUpperCombinationsProducer
     : public CombinationsProducer<StrictlyUpperCombinationsProducer<TInputs...>, TInputs...>
 {
+    public:
+    explicit StrictlyUpperCombinationsProducer(const TInputs &...t_inputs)
+    {
+        setDataDerived(t_inputs...);
+    }
+
+    void setDataDerived(const TInputs &...t_inputs)
+    {
+        this->setDataBaseImpl(t_inputs...);
+        // Set ranges here have the same logic as a loop into ... with setting new
+        // pointers for right side positions.
+        if (!this->m_isEnd) {
+            constexpr auto N = sizeof...(t_inputs);
+            bool shouldEnd   = true;
+            setRanges<N - 1, N>(shouldEnd);
+            this->m_isEnd = !shouldEnd;
+        }
+    }
+
+    void addOneDerived() { this->addOneBaseImpl(); }
+
+    template <size_t I, size_t N>
+    void addOneImpl(bool &t_wasModified)
+    {
+        bool wasChanged = true;
+        setRanges<I, N>(wasChanged);
+        t_wasModified = !wasChanged;
+    }
+
+    private:
+    template <size_t I, size_t N>
+    void setRanges(bool &t_condition)
+    {
+        [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
+            ((resetState<I, Is, N>(t_condition)), ...);
+        }(std::make_index_sequence<I>());
+    }
+
+    // Here there are changes from the Full version. The pointers must be set not to 0, but to
+    // Position + 1 from the nearest left pointer.
+    // N - number of data sources
+    // I - which position from the right side is considered
+    // J - loop iterator, which pointer is set to 0 from the N - I to right position
+    template <size_t I, size_t J, size_t N>
+    void resetState(bool &t_condition)
+    {
+        if (t_condition) {
+            constexpr auto ind = N - I + J;
+            int64_t tmpInd     = this->m_currentIndexNumbers[ind - 1] + 1;
+            if (tmpInd < this->m_endIndexNumbers[ind]) {
+                std::get<ind>(this->m_current) += tmpInd - this->m_currentIndexNumbers[ind];
+                this->m_currentIndexNumbers[ind] = tmpInd;
+            } else {
+                t_condition = false;
+            }
+        }
+    }
 };
 
 #endif  // COMBINATIONS_REWORK_H
