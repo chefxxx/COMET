@@ -33,32 +33,32 @@ class BlockFullCombinationsTest : public ::testing::Test
     std::vector<int> expectedBucketsNums{2, 3, 4};
 };
 
-TEST_F(BlockFullCombinationsTest, groupedDataSizesAreCorrect)
+// TEST_F(BlockFullCombinationsTest, groupedDataSizesAreCorrect)
+// {
+//     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, v1, v2, v3);
+//     const auto data0     = std::get<0>(blockFull.data());
+//     const auto data1     = std::get<1>(blockFull.data());
+//     const auto data2     = std::get<2>(blockFull.data());
+//
+//     ASSERT_EQ(data0.size(), expectedBucketsNums.size());
+//     ASSERT_EQ(data1.size(), expectedBucketsNums.size());
+//     ASSERT_EQ(data2.size(), expectedBucketsNums.size());
+// }
+
+TEST_F(BlockFullCombinationsTest, groupedDataBucketsNumbersAreCorrect)
 {
     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, v1, v2, v3);
-    const auto data0     = std::get<0>(blockFull.data());
-    const auto data1     = std::get<1>(blockFull.data());
-    const auto data2     = std::get<2>(blockFull.data());
+    const auto &data0     = std::get<0>(blockFull.data());
+    const auto &data1     = std::get<1>(blockFull.data());
+    const auto &data2     = std::get<2>(blockFull.data());
 
-    ASSERT_EQ(data0.size(), expectedBucketsNums.size());
-    ASSERT_EQ(data1.size(), expectedBucketsNums.size());
-    ASSERT_EQ(data2.size(), expectedBucketsNums.size());
+    for (const auto &bn : expectedBucketsNums) {
+        ASSERT_EQ(data0.contains(bn), true);
+        ASSERT_EQ(data1.contains(bn), true);
+        ASSERT_EQ(data2.contains(bn), true);
+    }
 }
 
-// TEST_F(BlockFullCombinationsTest, groupedDataBucketsNumbersAreCorrect)
-// {
-//     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
-//     auto data0     = std::get<0>(blockFull.data());
-//     auto data1     = std::get<1>(blockFull.data());
-//     auto data2     = std::get<2>(blockFull.data());
-//
-//     for (const auto &bn : expectedBucketsNums) {
-//         ASSERT_EQ(data0.contains(bn), true);
-//         ASSERT_EQ(data1.contains(bn), true);
-//         ASSERT_EQ(data2.contains(bn), true);
-//     }
-// }
-//
 // TEST_F(BlockFullCombinationsTest, bucketsContentsAreCorrect)
 // {
 //     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, tuple);
