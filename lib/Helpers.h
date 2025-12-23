@@ -12,48 +12,37 @@
 
 template <std::forward_iterator TIter>
 struct GroupedBuckets {
-    using IterType = std::set<int>::const_iterator;
+    using BucketIterType = std::set<int>::const_iterator;
 
-    const std::vector<TIter> &at(IterType iter) const { return mBuckets.at(*iter); }
-    const std::vector<TIter> &at(const int bucketNo) const { return mBuckets.at(bucketNo); }
+    const std::vector<TIter> &at(BucketIterType t_iter) const { return m_Buckets.at(*t_iter); }
+    const std::vector<TIter> &at(const int t_bucketNo) const { return m_Buckets.at(t_bucketNo); }
 
-    [[nodiscard]] size_t size() const { return mBucketsNumbers.size(); }
+    [[nodiscard]] size_t size() const { return m_BucketsNumbers.size(); }
 
-    void insert(int bucketNo, TIter iter)
+    void insert(int t_bucketNo, TIter t_iter)
     {
-        mBuckets[bucketNo].push_back(iter);
-        mBucketsNumbers.insert(bucketNo);
+        m_Buckets[t_bucketNo].push_back(t_iter);
+        m_BucketsNumbers.insert(t_bucketNo);
     }
 
-    [[nodiscard]] IterType erase(IterType iter)
+    [[nodiscard]] BucketIterType erase(BucketIterType t_iter)
     {
-        mBuckets.erase(*iter);
-        return mBucketsNumbers.erase(iter);
+        m_Buckets.erase(*t_iter);
+        return m_BucketsNumbers.erase(t_iter);
     }
 
-    [[nodiscard]] bool contains(const int bucketNo) const
+    [[nodiscard]] bool contains(const int t_bucketNo) const
     {
-        return mBucketsNumbers.contains(bucketNo);
+        return m_BucketsNumbers.contains(t_bucketNo);
     }
 
-    [[nodiscard]] IterType begin() const { return mBucketsNumbers.begin(); }
-    [[nodiscard]] IterType end() const { return mBucketsNumbers.end(); }
+    [[nodiscard]] BucketIterType begin() const { return m_BucketsNumbers.begin(); }
+    [[nodiscard]] BucketIterType end() const { return m_BucketsNumbers.end(); }
 
     private:
-    std::unordered_map<int, std::vector<TIter>> mBuckets;
-    std::set<int> mBucketsNumbers;
+    std::unordered_map<int, std::vector<TIter>> m_Buckets;
+    std::set<int> m_BucketsNumbers;
 };
-
-template <typename... Types, typename Func>
-auto tupleTransform(const std::tuple<Types...> &tuple, Func &&f)
-{
-    return std::apply(
-        [&](auto &&...elem) {
-            return std::make_tuple(f(elem)...);
-        },
-        tuple
-    );
-}
 
 template <std::forward_iterator TIter, typename TBucketPolicy>
     requires is_bucket_policy<TBucketPolicy, TIter>
@@ -100,6 +89,17 @@ void syncBuckets(std::tuple<GroupedBuckets<TIters>...> &groupedData)
         (syncHelper(firstData, std::get<Is>(groupedData)), ...);
         (syncHelper(std::get<Is>(groupedData), firstData), ...);
     }(std::make_index_sequence<N>());
+}
+
+template <typename... Types, typename Func>
+auto tupleTransform(const std::tuple<Types...> &tuple, Func &&f)
+{
+    return std::apply(
+        [&]<typename... InnerTypes>(InnerTypes &&...elem) {
+            return std::make_tuple(f(std::forward<InnerTypes>(elem))...);
+        },
+        tuple
+    );
 }
 
 #endif  // HELPERS_H

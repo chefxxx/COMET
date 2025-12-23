@@ -2,8 +2,10 @@
 // Created by mshamrai on 9/14/25.
 //
 
-#include <Combinations.h>
 #include <gtest/gtest.h>
+
+#include "Combinations.h"
+#include "Producers.h"
 
 TEST(AddOneStrictlyUpper, twoVectorsSameSize)
 {

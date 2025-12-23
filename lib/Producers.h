@@ -1,0 +1,130 @@
+//
+// Created by Mateusz Mikiciuk on 23/12/2025.
+//
+
+#ifndef PRODUCERS_H
+#define PRODUCERS_H
+
+#include <tuple>
+#include "Helpers.h"
+
+/**
+ * @brief This class just serves as an iterable wrapper around policies.
+ * @tparam TCombinationsPolicy policy object that defines behaviour of the iterator
+ */
+template <typename TCombinationsPolicy>
+struct CombinationsProducer {
+    // This constructor is used in makeCombinations func
+    explicit CombinationsProducer(TCombinationsPolicy policy) : m_policy(std::move(policy)) {}
+
+    struct CombinationsSentinel {
+    };
+
+    struct CombinationsIterator {
+        using iterator_category = std::input_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = typename TCombinationsPolicy::CombinationsValue;
+        using pointer           = void;
+        using reference         = typename TCombinationsPolicy::CombinationsReference;
+
+        CombinationsIterator() = default;
+        explicit CombinationsIterator(TCombinationsPolicy *t_policy) : m_policyPtr(t_policy) {}
+        CombinationsIterator(const CombinationsIterator &)            = default;
+        CombinationsIterator &operator=(const CombinationsIterator &) = default;
+
+        CombinationsIterator &operator++()
+        {
+            m_policyPtr->addOne();
+            return *this;
+        }
+        CombinationsIterator operator++(int)
+        {
+            CombinationsIterator copy = *this;
+            ++(*this);
+            return copy;
+        }
+        // dereference each pointer in the current tuple
+        reference operator*() const
+        {
+            return std::apply(
+                [](auto &&...args) {
+                    return std::forward_as_tuple(*args...);
+                },
+                m_policyPtr->current()
+            );
+        }
+
+        // Actually this is not needed directly by our lib,
+        // some third-party libs may need it.
+        // If both iterators point to the same policy,
+        // they are considered equal.
+        friend bool operator==(const CombinationsIterator &lhs, const CombinationsIterator &rhs)
+        {
+            return lhs.m_policyPtr == rhs.m_policyPtr;
+        }
+        // This is the version that actually is used in 'for' loops.
+        friend bool operator==(const CombinationsIterator &lhs, CombinationsSentinel)
+        {
+            return lhs.m_policyPtr->isEnd();
+        }
+
+        private:
+        TCombinationsPolicy *m_policyPtr = nullptr;
+    };
+
+    [[nodiscard]] CombinationsIterator begin() { return CombinationsIterator(&m_policy); }
+    [[nodiscard]] CombinationsSentinel end() { return CombinationsSentinel{}; }
+    [[nodiscard]] bool isEnd() const { return m_policy.isEnd(); }
+
+    private:
+    TCombinationsPolicy m_policy;
+};
+
+template <template <typename...> class TCombinationsPolicy, typename... TInputs>
+auto makeCombinations(const TInputs &...t_inputs)
+{
+    using PolicyType = TCombinationsPolicy<TInputs...>;
+    return CombinationsProducer<PolicyType>(PolicyType(t_inputs...));
+}
+
+// TODO: combinations policy used here must be templated with std::vector<Inputs::cons_iterator>...
+template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TInputs>
+struct BlockProducer {
+    // Here int* is just a placeholder for a type,
+    // because BucketIterType does not depend on the template parameter.
+    using BucketIterType  = GroupedBuckets<int*>::BucketIterType;
+    using GroupedDataType = std::tuple<GroupedBuckets<typename TInputs::const_iterator>...>;
+
+    explicit BlockProducer(const TBucketPolicy &t_bucketPolicy, TCombinationsPolicy t_combinationsPolicy, const TInputs &...t_inputs)
+    : m_bucketPolicy(t_bucketPolicy), m_combinationsPolicy(std::move(t_combinationsPolicy))
+    {
+        m_groupedData = tupleTransform(std::make_tuple(t_inputs...),
+            [&](auto &&t_input) {
+                return groupData(t_input.begin(), t_input.end(), m_bucketPolicy);
+            });
+    }
+
+    struct BlockSentinel {};
+    struct BlockIterator {
+
+        private:
+        BucketIterType m_current;
+        BucketIterType m_end;
+    };
+
+    auto &data() { return m_groupedData; }
+
+    private:
+    TBucketPolicy m_bucketPolicy;
+    GroupedDataType m_groupedData;
+    TCombinationsPolicy m_combinationsPolicy;
+};
+
+template <template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename... TInputs>
+auto makeBlockCombinations(const TBucketPolicy &t_bucketPolicy, const TInputs &...t_inputs)
+{
+    using PolicyType = TCombinationsPolicy<std::vector<typename TInputs::const_iterator>...>;
+    return BlockProducer<TBucketPolicy, PolicyType, TInputs...>(t_bucketPolicy, PolicyType{}, t_inputs...);
+}
+
+#endif //PRODUCERS_H

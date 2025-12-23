@@ -8,77 +8,11 @@
 #include <iterator>
 #include <tuple>
 
-/**
- * @brief This class just serves as an iterable wrapper around policies.
- * @tparam TCombinationsPolicy policy object that defines behaviour of the iterator
- */
-template <typename TCombinationsPolicy>
-struct CombinationsProducer {
-    // This constructor is used in makeCombinations func
-    explicit CombinationsProducer(TCombinationsPolicy policy) : m_policy(std::move(policy)) {}
-
-    struct CombinationsSentinel {
-    };
-
-    struct CombinationsIterator {
-        using iterator_category = std::input_iterator_tag;
-        using difference_type   = std::ptrdiff_t;
-        using value_type        = typename TCombinationsPolicy::CombinationsValue;
-        using pointer           = void;
-        using reference         = typename TCombinationsPolicy::CombinationsReference;
-
-        CombinationsIterator() = default;
-        explicit CombinationsIterator(TCombinationsPolicy *t_policy) : m_policyPtr(t_policy) {}
-        CombinationsIterator(const CombinationsIterator &)            = default;
-        CombinationsIterator &operator=(const CombinationsIterator &) = default;
-
-        CombinationsIterator &operator++()
-        {
-            m_policyPtr->addOne();
-            return *this;
-        }
-        CombinationsIterator operator++(int)
-        {
-            CombinationsIterator copy = *this;
-            ++(*this);
-            return copy;
-        }
-        // dereference each pointer in the current tuple
-        reference operator*() const
-        {
-            return std::apply(
-                [](auto &&...args) {
-                    return std::forward_as_tuple(*args...);
-                },
-                m_policyPtr->current()
-            );
-        }
-
-        // Actually this is not needed directly by our lib,
-        // some third-party libs may need it.
-        // If both iterators point to the same policy,
-        // they are considered equal.
-        friend bool operator==(const CombinationsIterator &lhs, const CombinationsIterator &rhs)
-        {
-            return lhs.m_policyPtr == rhs.m_policyPtr;
-        }
-        // This is the version that actually is used in 'for' loops.
-        friend bool operator==(const CombinationsIterator &lhs, CombinationsSentinel)
-        {
-            return lhs.m_policyPtr->isEnd();
-        }
-
-        private:
-        TCombinationsPolicy *m_policyPtr = nullptr;
-    };
-
-    [[nodiscard]] CombinationsIterator begin() { return CombinationsIterator(&m_policy); }
-    [[nodiscard]] CombinationsSentinel end() { return CombinationsSentinel{}; }
-    [[nodiscard]] bool isEnd() const { return m_policy.isEnd(); }
-
-    private:
-    TCombinationsPolicy m_policy;
-};
+// TODO: concepts restraining iterable containers and policies
+// template<typename T>
+// concept CombinableRange = std::ranges::forward_range<T> && requires(T t) {
+//     typename T::const_iterator;
+// };
 
 template <typename Derived, typename... TInputs>
 struct CombinationsPolicyBase {
@@ -147,6 +81,7 @@ class FullCombinationsPolicy
     : public CombinationsPolicyBase<FullCombinationsPolicy<TInputs...>, TInputs...>
 {
     public:
+    FullCombinationsPolicy() = default;
     explicit FullCombinationsPolicy(const TInputs &...t_inputs) { setData(t_inputs...); }
 
     void setData(const TInputs &...t_inputs) { this->setDataBaseImpl(t_inputs...); }
@@ -179,6 +114,7 @@ class StrictlyUpperCombinationsPolicy
     : public CombinationsPolicyBase<StrictlyUpperCombinationsPolicy<TInputs...>, TInputs...>
 {
     public:
+    StrictlyUpperCombinationsPolicy() = default;
     explicit StrictlyUpperCombinationsPolicy(const TInputs &...t_inputs) { setData(t_inputs...); }
 
     void setData(const TInputs &...t_inputs)
@@ -233,12 +169,5 @@ class StrictlyUpperCombinationsPolicy
         }
     }
 };
-
-template <template <typename...> class TCombinationsPolicy, typename... TInputs>
-auto makeCombinations(const TInputs &...t_inputs)
-{
-    using PolicyType = TCombinationsPolicy<TInputs...>;
-    return CombinationsProducer<PolicyType>(PolicyType(t_inputs...));
-}
 
 #endif  // COMBINATIONS_H
