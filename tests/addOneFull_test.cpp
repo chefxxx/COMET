@@ -6,8 +6,8 @@
 #include <iomanip>
 #include <numeric>
 
-#include "Producers.h"
 #include "Combinations.h"
+#include "Producers.h"
 
 using DoubleMicros = std::chrono::duration<double, std::micro>;
 

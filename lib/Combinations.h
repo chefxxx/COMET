@@ -28,6 +28,7 @@ struct CombinationsPolicyBase {
     protected:
     void addOneBaseImpl()
     {
+        // TODO: move this check closer to addOne call
         if (!m_isEnd) {
             constexpr size_t N = sizeof...(TInputs);
             bool wasModified   = true;

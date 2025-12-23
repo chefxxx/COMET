@@ -45,12 +45,28 @@ class BlockFullCombinationsTest : public ::testing::Test
 //     ASSERT_EQ(data2.size(), expectedBucketsNums.size());
 // }
 
+TEST(BlockProducerTest, compilationTest)
+{
+    auto lambda = [](double const &a) {
+        return a;
+    };
+    // TODO: actually buckets can be an a array, mby to consider according to
+    // TODO: what Giullio said about using map and set
+    const std::vector buckets{0.0, 0.25, 0.5, 0.75, 1.0};
+    const std::vector v1{-0.05, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95, 1.05};
+    const std::vector v2{0.15, 0.30, 0.45, 0.6, 0.75, 0.90};
+    // TODO: change BucketPolicy creation interface to
+    // BucketPolicy(lambda0, lambda1, ..., {buckets, ...}, false);
+    const auto bp = BucketPolicy(std::make_tuple(lambda), {buckets}, false);
+    auto bc       = makeBlockCombinations<FullCombinationsPolicy>(bp, v1, v2);
+}
+
 TEST_F(BlockFullCombinationsTest, groupedDataBucketsNumbersAreCorrect)
 {
-    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, v1, v2, v3);
-    const auto &data0     = std::get<0>(blockFull.data());
-    const auto &data1     = std::get<1>(blockFull.data());
-    const auto &data2     = std::get<2>(blockFull.data());
+    auto blockFull    = makeBlockCombinations<FullCombinationsPolicy>(bp, v1, v2, v3);
+    const auto &data0 = std::get<0>(blockFull.data());
+    const auto &data1 = std::get<1>(blockFull.data());
+    const auto &data2 = std::get<2>(blockFull.data());
 
     for (const auto &bn : expectedBucketsNums) {
         ASSERT_EQ(data0.contains(bn), true);

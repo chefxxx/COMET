@@ -87,26 +87,27 @@ auto makeCombinations(const TInputs &...t_inputs)
     return CombinationsProducer<PolicyType>(PolicyType(t_inputs...));
 }
 
-// TODO: combinations policy used here must be templated with std::vector<Inputs::cons_iterator>...
 template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TInputs>
 struct BlockProducer {
     // Here int* is just a placeholder for a type,
     // because BucketIterType does not depend on the template parameter.
-    using BucketIterType  = GroupedBuckets<int*>::BucketIterType;
+    using BucketIterType  = GroupedBuckets<int *>::BucketIterType;
     using GroupedDataType = std::tuple<GroupedBuckets<typename TInputs::const_iterator>...>;
 
-    explicit BlockProducer(const TBucketPolicy &t_bucketPolicy, TCombinationsPolicy t_combinationsPolicy, const TInputs &...t_inputs)
-    : m_bucketPolicy(t_bucketPolicy), m_combinationsPolicy(std::move(t_combinationsPolicy))
+    explicit BlockProducer(
+        const TBucketPolicy &t_bucketPolicy, TCombinationsPolicy t_combinationsPolicy,
+        const TInputs &...t_inputs
+    )
+        : m_bucketPolicy(t_bucketPolicy), m_combinationsPolicy(std::move(t_combinationsPolicy))
     {
-        m_groupedData = tupleTransform(std::make_tuple(t_inputs...),
-            [&](auto &&t_input) {
-                return groupData(t_input.begin(), t_input.end(), m_bucketPolicy);
-            });
+        m_groupedData = tupleTransform(std::make_tuple(t_inputs...), [&](auto &&t_input) {
+            return groupData(t_input.begin(), t_input.end(), m_bucketPolicy);
+        });
     }
 
-    struct BlockSentinel {};
+    struct BlockSentinel {
+    };
     struct BlockIterator {
-
         private:
         BucketIterType m_current;
         BucketIterType m_end;
@@ -120,11 +121,14 @@ struct BlockProducer {
     TCombinationsPolicy m_combinationsPolicy;
 };
 
-template <template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename... TInputs>
+template <
+    template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename... TInputs>
 auto makeBlockCombinations(const TBucketPolicy &t_bucketPolicy, const TInputs &...t_inputs)
 {
     using PolicyType = TCombinationsPolicy<std::vector<typename TInputs::const_iterator>...>;
-    return BlockProducer<TBucketPolicy, PolicyType, TInputs...>(t_bucketPolicy, PolicyType{}, t_inputs...);
+    return BlockProducer<TBucketPolicy, PolicyType, TInputs...>(
+        t_bucketPolicy, PolicyType{}, t_inputs...
+    );
 }
 
-#endif //PRODUCERS_H
+#endif  // PRODUCERS_H

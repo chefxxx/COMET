@@ -2,8 +2,8 @@
 // Created by mshamrai on 7/17/25.
 //
 
-#ifndef BUCKETPOLICY_H
-#define BUCKETPOLICY_H
+#ifndef BUCKET_POLICY_H
+#define BUCKET_POLICY_H
 
 #include <gtest/gtest_prod.h>
 #include <algorithm>
@@ -115,4 +115,4 @@ struct BucketPolicy final {
     bool ignoreOverflows;
 };
 
-#endif  // BUCKETPOLICY_H
+#endif  // BUCKET_POLICY_H
