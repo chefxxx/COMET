@@ -2,7 +2,7 @@
 #                                Project setup                                   #
 # ------------------------------------------------------------------------------ #
 
-set(PROJECT_NAME "EventMixing2")
+set(PROJECT_NAME "COMET")
 set(LIB_NAME ${PROJECT_NAME}_lib)
 set(TEST_NAME ${PROJECT_NAME}_test)
 

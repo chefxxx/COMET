@@ -3,11 +3,10 @@
 //
 
 #include <gtest/gtest.h>
-
 #include <iomanip>
 #include <numeric>
 
-#include "CombinationsRework.h"
+#include "Combinations.h"
 
 using DoubleMicros = std::chrono::duration<double, std::micro>;
 
@@ -16,7 +15,7 @@ TEST(AddOneFullTest, twoVectorsSameSize)
     const std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
     const std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
 
-    auto combinationsProducer = FullCombinationsProducer(v1, v2);
+    auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(v1, v2);
 
     const std::vector<std::tuple<int, char>> expectedValues = {
         {1, 'a'},
@@ -77,7 +76,7 @@ TEST(AddOneFullTest, fourVectorsDifferentSizes)
     const std::vector v3              = {'=', '#', '$', '!'};
     const std::vector<std::string> v4 = {"Michał", "Mati"};
 
-    auto combinationsProducer = FullCombinationsProducer(v1, v2, v3, v4);
+    auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(v1, v2, v3, v4);
 
     std::vector<std::tuple<int, char, char, std::string>> expected = {
         // Combinations starting with 1
@@ -224,6 +223,6 @@ TEST(AddOneFullTest, OneRangeIsEmpty)
     constexpr std::vector<char> v2 = {};
     const std::vector v3           = {'a', 'b', 'c', 'd'};
 
-    const auto combinationsProducer = FullCombinationsProducer(v1, v2, v3);
+    const auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(v1, v2, v3);
     ASSERT_TRUE(combinationsProducer.isEnd());
 }

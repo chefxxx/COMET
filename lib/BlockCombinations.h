@@ -5,7 +5,7 @@
 // #ifndef BLOCKCOMBINATINOS_H
 // #define BLOCKCOMBINATINOS_H
 //
-// #include "Combinations.h"
+// #include "Combinations_Legacy.h"
 //
 // template <typename TBucketPolicy, typename TCombinationsProducer, std::forward_iterator...
 // TIters> struct BlockCombinationsProducer {

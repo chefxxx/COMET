@@ -2,16 +2,15 @@
 // Created by mshamrai on 9/14/25.
 //
 
-#include <CombinationsRework.h>
+#include <Combinations.h>
 #include <gtest/gtest.h>
-#include "Combinations.h"
 
 TEST(AddOneStrictlyUpper, twoVectorsSameSize)
 {
     const std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
     const std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
 
-    auto combinationsProducer = StrictlyUpperCombinationsProducer(v1, v2);
+    auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(v1, v2);
 
     const std::vector<std::tuple<int, char>> expected = {
         {1, 'b'},
@@ -36,6 +35,7 @@ TEST(AddOneStrictlyUpper, twoVectorsSameSize)
 
     /* this loop does not even execute, because we have input iterator */
     for (const auto &[elem0, elem1] : combinationsProducer) {
+        std::cout << "I do not even execute :( ...\n";
         auto [ex0, ex1] = expected[i];
         ++i;
         ASSERT_EQ(elem0, ex0);
@@ -49,7 +49,7 @@ TEST(AddOneStrictlyUpper, threeVectorsDifferentSize)
     const std::vector v2 = {'#', '@', '$', '%', '*'};
     const std::vector v3 = {'a', 'b', 'c', 'd'};
 
-    auto combinationsProducer = StrictlyUpperCombinationsProducer(v1, v2, v3);
+    auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(v1, v2, v3);
 
     const std::vector<std::tuple<int, char, char>> expected = {
         {1, '@', 'c'},
@@ -74,7 +74,7 @@ TEST(AddOneStrictlyUpper, oneRangeIsLessThanItCanBe)
     const std::vector v2 = {'#'};
     const std::vector v3 = {'a', 'b', 'c', 'd'};
 
-    const auto combinationsProducer = StrictlyUpperCombinationsProducer(v1, v2, v3);
+    const auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(v1, v2, v3);
 
     ASSERT_TRUE(combinationsProducer.isEnd());
 }
@@ -85,7 +85,7 @@ TEST(AddOneStrictlyUpper, classicExampleTest)
     const std::vector v2 = {0, 1, 2, 3, 4};
     const std::vector v3 = {0, 1, 2, 3, 4};
 
-    auto combinationsProducer = StrictlyUpperCombinationsProducer(v1, v2, v3);
+    auto combinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(v1, v2, v3);
 
     const std::vector<std::tuple<int, int, int>> expected = {
         {0, 1, 2},
