@@ -80,7 +80,7 @@ TEST(AddOneFullTest, fourVectorsDifferentSizes)
     auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(v1, v2, v3, v4);
 
     std::vector<std::tuple<int, char, char, std::string>> expected = {
-        // Combinations starting with 1
+  // Combinations starting with 1
         {1, 'a', '=', "Michał"},
         {1, 'a', '=',    "Mati"},
         {1, 'a', '#', "Michał"},
@@ -122,7 +122,7 @@ TEST(AddOneFullTest, fourVectorsDifferentSizes)
         {1, 'e', '!', "Michał"},
         {1, 'e', '!',    "Mati"},
 
-        // Combinations starting with 2
+ // Combinations starting with 2
         {2, 'a', '=', "Michał"},
         {2, 'a', '=',    "Mati"},
         {2, 'a', '#', "Michał"},
@@ -164,7 +164,7 @@ TEST(AddOneFullTest, fourVectorsDifferentSizes)
         {2, 'e', '!', "Michał"},
         {2, 'e', '!',    "Mati"},
 
-        // Combinations starting with 3
+ // Combinations starting with 3
         {3, 'a', '=', "Michał"},
         {3, 'a', '=',    "Mati"},
         {3, 'a', '#', "Michał"},
