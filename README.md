@@ -1,6 +1,6 @@
-## 🔬 EventMixing²
+## 🔬 COMET
 
-EventMixing² is a highly optimised, generic library for generating tuples from large datasets. 
+COMET is a highly optimised, generic library for generating tuples from large datasets. 
 
 ## 🌟 Features
 
