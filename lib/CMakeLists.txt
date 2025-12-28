@@ -2,8 +2,7 @@
 #                             Create header lib                                  #
 # ------------------------------------------------------------------------------ #
 
-add_library(${LIB_NAME} INTERFACE
-        GroupedCombinations.h)
+add_library(${LIB_NAME} INTERFACE)
 
 # ------------------------------------------------------------------------------ #
 #                               Load files                                       #
