@@ -4,45 +4,53 @@
 
 #ifndef COMET_BUCKETSORTHELPERS_H
 #define COMET_BUCKETSORTHELPERS_H
-#include <map>
+#include <algorithm>
+#include <cassert>
+#include <numeric>
 #include <set>
 #include <unordered_map>
+#include <vector>
 
 template <typename BucketType, typename T, typename Callable>
-std::set<BucketType> getAvailableBuckets(T container, Callable callable)
-{
-    std::set<BucketType> availableBuckets = std::set<BucketType>();
-    for (auto element : container) {
-        availableBuckets.insert(callable(element));
+std::set<BucketType> getAvailableBuckets(const T& container, const Callable& callable) {
+    std::vector<BucketType> availableBuckets;
+    availableBuckets.reserve(container.size());
+    for (const auto& element : container) {
+        availableBuckets.push_back(callable(element));
     }
+
+    std::sort(availableBuckets.begin(), availableBuckets.end());
+    availableBuckets.erase(std::unique(availableBuckets.begin(), availableBuckets.end()));
     return availableBuckets;
 }
 
-template <typename BucketType, typename T, typename Callable>
-std::map<BucketType, int> getAmountsInAvailableBuckets(T container, Callable callable,
-    std::set<BucketType> availableBuckets)
-{
-    std::map<BucketType, int> availableBucketsWithAmounts = std::map<BucketType, int>();
-    for (auto bucket : availableBuckets) {
-        availableBucketsWithAmounts.insert(callable(bucket), 0);
-    }
-    for (auto element : container) {
-        ++availableBucketsWithAmounts[callable(element)];
-    }
-    return availableBucketsWithAmounts;
-}
-
 template <typename BucketType>
-std::unordered_map<BucketType, int> getMappingFromBucketsToIndices(std::set<BucketType> availableBuckets){
-    std::unordered_map<BucketType, int> mapping = std::unordered_map<BucketType, int>(availableBuckets.size());
-    int i = 0;
-    for (auto bucket : availableBuckets) {
-        mapping[bucket] = i;
-        ++i;
-    }
-    return mapping;
+int getIndexFromBucket(const std::vector<BucketType>& availableBuckets, const BucketType& bucket) {
+    auto lowerBound = std::lower_bound(availableBuckets.begin(), availableBuckets.end(), bucket);
+
+    return lowerBound == availableBuckets.end() ? -1 :
+        std::distance(availableBuckets.begin(), lowerBound);
 }
 
+template <typename BucketType, typename T, typename Callable>
+std::vector<size_t> getAmountsInsideAvailableBuckets(const T& container, const Callable& callable,
+    const std::vector<BucketType, int>& availableBuckets) {
+    std::vector<size_t> amounts(availableBuckets.size(), 0);
+    for (const auto& element : container) {
+        auto id = callable(element);
 
+        int index = getIndexFromBuckets(availableBuckets, element);
+        assert(index != -1);
+
+        ++amounts[index];
+    }
+    return amounts;
+}
+
+std::vector<size_t> getOffsetsFromAmounts(const std::vector<int>& amounts) {
+    std::vector<size_t> offsets(amounts.size() + 1, 0);
+    std::inclusive_scan(amounts.begin(), amounts.end(), offsets.begin() + 1);
+    return offsets;
+}
 
 #endif  // COMET_BUCKETSORTHELPERS_H
