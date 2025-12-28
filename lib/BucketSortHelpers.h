@@ -12,7 +12,7 @@
 #include <vector>
 
 template <typename BucketType, typename T, typename Callable>
-std::set<BucketType> getAvailableBuckets(const T& container, const Callable& callable)
+std::vector<BucketType> getAvailableBuckets(const T& container, const Callable& callable)
 {
     std::vector<BucketType> availableBuckets;
     availableBuckets.reserve(container.size());
@@ -21,7 +21,9 @@ std::set<BucketType> getAvailableBuckets(const T& container, const Callable& cal
     }
 
     std::sort(availableBuckets.begin(), availableBuckets.end());
-    availableBuckets.erase(std::unique(availableBuckets.begin(), availableBuckets.end()));
+    availableBuckets.erase(
+        std::unique(availableBuckets.begin(), availableBuckets.end()), availableBuckets.end()
+    );
     return availableBuckets;
 }
 
@@ -37,15 +39,14 @@ int getIndexFromBucket(const std::vector<BucketType>& availableBuckets, const Bu
 
 template <typename BucketType, typename T, typename Callable>
 std::vector<size_t> getAmountsInsideAvailableBuckets(
-    const T& container, const Callable& callable,
-    const std::vector<BucketType, int>& availableBuckets
+    const T& container, const Callable& callable, const std::vector<BucketType>& availableBuckets
 )
 {
     std::vector<size_t> amounts(availableBuckets.size(), 0);
     for (const auto& element : container) {
         auto id = callable(element);
 
-        int index = getIndexFromBuckets(availableBuckets, element);
+        int index = getIndexFromBucket(availableBuckets, id);
         assert(index != -1);
 
         ++amounts[index];
@@ -53,7 +54,7 @@ std::vector<size_t> getAmountsInsideAvailableBuckets(
     return amounts;
 }
 
-inline std::vector<size_t> getOffsetsFromAmounts(const std::vector<int>& amounts)
+inline std::vector<size_t> getOffsetsFromAmounts(const std::vector<size_t>& amounts)
 {
     std::vector<size_t> offsets(amounts.size() + 1, 0);
     std::inclusive_scan(amounts.begin(), amounts.end(), offsets.begin() + 1);
