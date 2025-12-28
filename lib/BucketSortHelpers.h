@@ -12,7 +12,8 @@
 #include <vector>
 
 template <typename BucketType, typename T, typename Callable>
-std::set<BucketType> getAvailableBuckets(const T& container, const Callable& callable) {
+std::set<BucketType> getAvailableBuckets(const T& container, const Callable& callable)
+{
     std::vector<BucketType> availableBuckets;
     availableBuckets.reserve(container.size());
     for (const auto& element : container) {
@@ -25,16 +26,21 @@ std::set<BucketType> getAvailableBuckets(const T& container, const Callable& cal
 }
 
 template <typename BucketType>
-int getIndexFromBucket(const std::vector<BucketType>& availableBuckets, const BucketType& bucket) {
+int getIndexFromBucket(const std::vector<BucketType>& availableBuckets, const BucketType& bucket)
+{
     auto lowerBound = std::lower_bound(availableBuckets.begin(), availableBuckets.end(), bucket);
 
-    return lowerBound == availableBuckets.end() ? -1 :
-        std::distance(availableBuckets.begin(), lowerBound);
+    return lowerBound == availableBuckets.end()
+               ? -1
+               : std::distance(availableBuckets.begin(), lowerBound);
 }
 
 template <typename BucketType, typename T, typename Callable>
-std::vector<size_t> getAmountsInsideAvailableBuckets(const T& container, const Callable& callable,
-    const std::vector<BucketType, int>& availableBuckets) {
+std::vector<size_t> getAmountsInsideAvailableBuckets(
+    const T& container, const Callable& callable,
+    const std::vector<BucketType, int>& availableBuckets
+)
+{
     std::vector<size_t> amounts(availableBuckets.size(), 0);
     for (const auto& element : container) {
         auto id = callable(element);
@@ -47,7 +53,8 @@ std::vector<size_t> getAmountsInsideAvailableBuckets(const T& container, const C
     return amounts;
 }
 
-std::vector<size_t> getOffsetsFromAmounts(const std::vector<int>& amounts) {
+inline std::vector<size_t> getOffsetsFromAmounts(const std::vector<int>& amounts)
+{
     std::vector<size_t> offsets(amounts.size() + 1, 0);
     std::inclusive_scan(amounts.begin(), amounts.end(), offsets.begin() + 1);
     return offsets;
