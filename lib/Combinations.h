@@ -16,14 +16,14 @@
 
 template <typename Derived, typename... TInputs>
 struct CombinationsPolicyBase {
-    using CombinationsType  = std::tuple<typename TInputs::const_iterator...>;
-    using CombinationsValue = std::tuple<typename TInputs::value_type...>;
-    using CombinationsReference =
+    using combinations_type  = std::tuple<typename TInputs::const_iterator...>;
+    using combinations_value = std::tuple<typename TInputs::value_type...>;
+    using combinations_reference =
         std::tuple<typename std::iterator_traits<typename TInputs::const_iterator>::reference...>;
 
     // interface functions for CombinationsProducer
     [[nodiscard]] bool isEnd() const { return m_isEnd; }
-    [[nodiscard]] CombinationsType &current() { return m_current; }
+    [[nodiscard]] combinations_type &current() { return m_current; }
 
     protected:
     void addOneBaseImpl()
@@ -50,8 +50,8 @@ struct CombinationsPolicyBase {
     bool m_isEnd = false;
     std::array<int64_t, sizeof...(TInputs)> m_endIndexNumbers;
     std::array<int64_t, sizeof...(TInputs)> m_currentIndexNumbers;
-    CombinationsType m_sentinel;
-    CombinationsType m_current;
+    combinations_type m_sentinel;
+    combinations_type m_current;
 
     private:
     template <size_t I, typename TInput>

@@ -1,105 +1,105 @@
 //
-// Created by Mateusz Mikiciuk on 18/07/2025.
+// Created by Mateusz Mikiciuk on 29/12/2025.
 //
 
 #ifndef HELPERS_H
 #define HELPERS_H
 
-#include <iterator>
-#include <set>
-#include <unordered_map>
+#include <map>
+#include <tuple>
+
 #include "BucketPolicy.h"
 
-template <std::forward_iterator TIter>
-struct GroupedBuckets {
-    using BucketIterType = std::set<int>::const_iterator;
-
-    const std::vector<TIter> &at(BucketIterType t_iter) const { return m_Buckets.at(*t_iter); }
-    const std::vector<TIter> &at(const int t_bucketNo) const { return m_Buckets.at(t_bucketNo); }
-
-    [[nodiscard]] size_t size() const { return m_BucketsNumbers.size(); }
-
-    void insert(int t_bucketNo, TIter t_iter)
-    {
-        m_Buckets[t_bucketNo].push_back(t_iter);
-        m_BucketsNumbers.insert(t_bucketNo);
-    }
-
-    [[nodiscard]] BucketIterType erase(BucketIterType t_iter)
-    {
-        m_Buckets.erase(*t_iter);
-        return m_BucketsNumbers.erase(t_iter);
-    }
-
-    [[nodiscard]] bool contains(const int t_bucketNo) const
-    {
-        return m_BucketsNumbers.contains(t_bucketNo);
-    }
-
-    [[nodiscard]] BucketIterType begin() const { return m_BucketsNumbers.begin(); }
-    [[nodiscard]] BucketIterType end() const { return m_BucketsNumbers.end(); }
-
-    private:
-    std::unordered_map<int, std::vector<TIter>> m_Buckets;
-    std::set<int> m_BucketsNumbers;
-};
-
-template <std::forward_iterator TIter, typename TBucketPolicy>
-    requires is_bucket_policy<TBucketPolicy, TIter>
-[[nodiscard]] auto groupData(
-    TIter start, TIter end, TBucketPolicy bucketPolicy, const std::size_t minCatSize = 1
-)
-{
-    GroupedBuckets<TIter> resultData;
-    for (auto it = start; it != end; ++it) {
-        const int bucketNumber = bucketPolicy.getBucket(*it);
-        resultData.insert(bucketNumber, it);
-    }
-
-    // We need this second loop,
-    // bc in the one above we do not know when we hit last element in bucket.
-    for (auto it = resultData.begin(); it != resultData.end();) {
-        if (resultData.at(it).size() < minCatSize) {
-            it = resultData.erase(it);
-        } else {
-            ++it;
-        }
-    }
-    return resultData;
-}
-
-template <std::forward_iterator TIter1, std::forward_iterator TIter2>
-void syncHelper(GroupedBuckets<TIter1> &firstData, const GroupedBuckets<TIter2> &comparedData)
-{
-    for (auto it = firstData.begin(); it != firstData.end();) {
-        if (!comparedData.contains(*it)) {
-            it = firstData.erase(it);
-        } else {
-            ++it;
-        }
-    }
-}
-
-template <std::forward_iterator... TIters>
-void syncBuckets(std::tuple<GroupedBuckets<TIters>...> &groupedData)
-{
-    constexpr size_t N = sizeof...(TIters);
-    auto &firstData    = std::get<0>(groupedData);
-    [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
-        (syncHelper(firstData, std::get<Is>(groupedData)), ...);
-        (syncHelper(std::get<Is>(groupedData), firstData), ...);
-    }(std::make_index_sequence<N>());
-}
+// TODO: concepts for TBucketPolicy
 
 template <typename... Types, typename Func>
-auto tupleTransform(const std::tuple<Types...> &tuple, Func &&f)
+auto tupleTransform(const std::tuple<Types...> &t_tuple, Func &&t_fn)
 {
     return std::apply(
         [&]<typename... InnerTypes>(InnerTypes &&...elem) {
-            return std::make_tuple(f(std::forward<InnerTypes>(elem))...);
+            return std::make_tuple(t_fn(std::forward<InnerTypes>(elem))...);
         },
-        tuple
+        t_tuple
     );
 }
+
+// sort of std::map<> specialization type
+template <typename TBucketPolicy, typename TInput>
+struct SingleBlockBuckets {
+    using underlying_iterator_type = typename TInput::const_iterator;
+    using container_type           = std::map<int, std::vector<underlying_iterator_type>>;
+    using iterator                 = typename container_type::const_iterator;
+    using value_type               = typename container_type::value_type;
+
+    SingleBlockBuckets() = default;
+    explicit SingleBlockBuckets(const TBucketPolicy &t_bucketPolicy, const TInput &t_input, const int t_minCatSize)
+    {
+        createSingle(t_bucketPolicy, t_input, t_minCatSize);
+    }
+
+    // sync api
+    iterator begin() const { return m_buckets.begin(); }
+    iterator end() const { return m_buckets.end(); }
+    iterator erase(iterator t_it) { return m_buckets.erase(t_it); }
+    value_type at(int t_bucketNum) const { return m_buckets.at(t_bucketNum); }
+    [[nodiscard]] bool contains(int t_bucketNum) const { return m_buckets.contains(t_bucketNum); }
+
+    private:
+    container_type m_buckets;
+
+    // new version of groupData() function
+    void createSingle(const TBucketPolicy &t_bucketPolicy, const TInput &t_input, const size_t t_minCatSize)
+    {
+        for (auto it = t_input.begin(); it != t_input.end(); ++it) {
+            const int bucketNumber = t_bucketPolicy.getBucket(*it);
+            m_buckets[bucketNumber].push_back(it);
+        }
+
+        // We need this second loop,
+        // bc in the one above we do not know when we hit last element in bucket.
+        for (auto it = m_buckets.begin(); it != m_buckets.end();) {
+            if (it->second.size() < t_minCatSize) {
+                it = m_buckets.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+};
+
+template <typename TBucketPolicy, typename... TInputs>
+struct CoupledBlockBuckets {
+    CoupledBlockBuckets() = default;
+    explicit CoupledBlockBuckets(const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const TInputs &...t_inputs)
+    {
+        m_data = tupleTransform(std::forward_as_tuple(t_inputs...), [&](auto &&t_input) {
+            return SingleBlockBuckets(t_bucketPolicy, t_input, t_minCatSize);
+        });
+        syncBuckets();
+    }
+    private:
+    std::tuple<SingleBlockBuckets<TBucketPolicy, TInputs>...> m_data;
+
+    void syncHelper(auto &firstData, const auto &comparedData)
+    {
+        for (auto it = firstData.begin(); it != firstData.end();) {
+            if (!comparedData.contains(it->first)) {
+                it = firstData.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+
+    void syncBuckets()
+    {
+        constexpr size_t N = sizeof...(TInputs);
+        auto &firstData    = std::get<0>(m_data);
+        [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
+            (syncHelper(firstData, std::get<Is>(m_data)), ...);
+            (syncHelper(std::get<Is>(m_data), firstData), ...);
+        }(std::make_index_sequence<N>());
+    }
+};
 
 #endif  // HELPERS_H
