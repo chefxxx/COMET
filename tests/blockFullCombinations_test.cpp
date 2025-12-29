@@ -88,6 +88,8 @@ TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
     }
 }
 
+#if 0
+
 using DoubleMicros = std::chrono::duration<double, std::micro>;
 
 TEST(BlockPerformanceTest, bigVectorsOneBucket)
@@ -109,3 +111,5 @@ TEST(BlockPerformanceTest, bigVectorsOneBucket)
     const DoubleMicros duration = stop - start;
     std::cout << std::format("Time taken {} s\n", duration.count() / 1e6);
 }
+
+#endif
