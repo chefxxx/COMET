@@ -61,19 +61,23 @@ inline std::vector<size_t> getOffsetsFromAmounts(const std::vector<size_t>& amou
 }
 
 template <typename T>
-concept HasSize = requires(const T& element)
-{
-    { element.size() } -> std::integral;
+concept HasSize = requires(const T& element) {
+    {
+        element.size()
+    } -> std::integral;
 };
 
 template <typename BucketType, HasSize T, typename Callable>
-auto getIteratorsSorted(const T& container, const Callable& callable,
-    const std::vector<size_t>& offsets, const std::vector<BucketType>& availableBuckets, std::vector<size_t>& amounts)
+auto getIteratorsSorted(
+    const T& container, const Callable& callable, const std::vector<size_t>& offsets,
+    const std::vector<BucketType>& availableBuckets, std::vector<size_t>& amounts
+)
 {
     // The last value in offsets tells how many elements will be placed in the sorted vector
     auto sizeOfSorted = offsets.back();
     std::vector<typename T::const_iterator> sorted(sizeOfSorted);
-    for (auto iterator = container.begin(); sizeOfSorted > 0 && iterator != container.end(); ++iterator) {
+    for (auto iterator = container.begin(); sizeOfSorted > 0 && iterator != container.end();
+         ++iterator) {
         auto id = getIndexFromBucket(availableBuckets, callable(*iterator));
         if (id != -1) {
             sorted[offsets[id + 1] - amounts[id]--] = iterator;

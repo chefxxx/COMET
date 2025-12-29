@@ -21,8 +21,7 @@ struct TestElement {
     double val;
 };
 
-struct GroupingData
-{
+struct GroupingData {
     int primaryKey;
     std::string name;
 };
@@ -30,8 +29,6 @@ struct GroupingData
 class BucketSortHelpersTest : public ::testing::Test
 {
     public:
-
-
     std::vector<TestElement> data = {
         {100, 1.1},
         { 10, 2.2},
@@ -42,11 +39,11 @@ class BucketSortHelpersTest : public ::testing::Test
     };
 
     std::vector<GroupingData> dataGrouping = {
-        {10, "Ten"},
-          {20, "Twenty"},
+        {10,    "Ten"},
+        {20, "Twenty"},
         {30, "Thirty"},
-        {40, "Forty"},
-        {50, "Fifty"}
+        {40,  "Forty"},
+        {50,  "Fifty"}
     };
 
     std::vector<TestElement> dataAssociated = {
@@ -123,7 +120,8 @@ TEST_F(BucketSortHelpersTest, GetIteratorsSortedTestBasicGroupingAndStability)
     auto amounts = getAmountsInsideAvailableBuckets(dataAssociated, testLambda, buckets);
     auto offsets = getOffsetsFromAmounts(amounts);
 
-    auto sortedIterators = getIteratorsSorted(dataAssociated, testLambda, offsets, buckets, amounts);
+    auto sortedIterators =
+        getIteratorsSorted(dataAssociated, testLambda, offsets, buckets, amounts);
 
     EXPECT_EQ(sortedIterators[0]->id, 10);
     EXPECT_EQ(sortedIterators[0]->val, 0.0);
@@ -141,14 +139,16 @@ TEST_F(BucketSortHelpersTest, GetIteratorsSortedTestBasicGroupingAndStability)
     EXPECT_EQ(sortedIterators[5]->val, 3.0);
 }
 
-TEST_F(BucketSortHelpersTest, GetIteratorsSortedHandlesEmptyContainer) {
+TEST_F(BucketSortHelpersTest, GetIteratorsSortedHandlesEmptyContainer)
+{
     std::vector<GroupingData> emptyGroupingSource;
     std::vector<TestElement> emptyAssociatedSource;
     auto buckets = getAvailableBuckets<int>(emptyGroupingSource, groupingTestLambda);
     auto amounts = getAmountsInsideAvailableBuckets(emptyAssociatedSource, testLambda, buckets);
     auto offsets = getOffsetsFromAmounts(amounts);
 
-    auto sortedIts = getIteratorsSorted(emptyAssociatedSource, testLambda, offsets, buckets, amounts);
+    auto sortedIts =
+        getIteratorsSorted(emptyAssociatedSource, testLambda, offsets, buckets, amounts);
 
     EXPECT_TRUE(sortedIts.empty());
 }
@@ -159,7 +159,7 @@ TEST_F(BucketSortHelpersTest, GetIteratorsSortedHandlesEmptyGroupingSource)
     auto buckets = getAvailableBuckets<int>(emptyGroupingSource, groupingTestLambda);
     auto amounts = getAmountsInsideAvailableBuckets(dataAssociated, testLambda, buckets);
     EXPECT_TRUE(amounts.empty());
-    auto offsets = getOffsetsFromAmounts(amounts);
+    auto offsets          = getOffsetsFromAmounts(amounts);
     auto sizeOfTheOffsets = offsets.size();
     EXPECT_TRUE(sizeOfTheOffsets == 1);
     EXPECT_TRUE(offsets[0] == 0);
@@ -182,12 +182,18 @@ TEST_F(BucketSortHelpersTest, GetIteratorsSortedHandlesEmptyAssociatedSource)
     EXPECT_TRUE(offsets.size() == amounts.size() + 1);
     EXPECT_TRUE(offsets.back() == 0);
 
-    auto sortedIts = getIteratorsSorted(emptyAssociatedSource, testLambda, offsets, buckets, amounts);
+    auto sortedIts =
+        getIteratorsSorted(emptyAssociatedSource, testLambda, offsets, buckets, amounts);
     EXPECT_TRUE(sortedIts.empty());
 }
 
-TEST_F(BucketSortHelpersTest, GetIteratorsSortedHandlesNoSuchBucketSituation) {
-    std::vector<TestElement> singleBucket = {{5, 1.0}, {5, 2.0}, {5, 33.0}};
+TEST_F(BucketSortHelpersTest, GetIteratorsSortedHandlesNoSuchBucketSituation)
+{
+    std::vector<TestElement> singleBucket = {
+        {5,  1.0},
+        {5,  2.0},
+        {5, 33.0}
+    };
 
     auto buckets = getAvailableBuckets<int>(dataGrouping, groupingTestLambda);
     auto amounts = getAmountsInsideAvailableBuckets(singleBucket, testLambda, buckets);
@@ -205,9 +211,18 @@ TEST_F(BucketSortHelpersTest, GetIteratorsSortedHandlesNoSuchBucketSituation) {
     EXPECT_TRUE(sortedIts.empty());
 }
 
-TEST_F(BucketSortHelpersTest, GetIteratorsSortedOneBucket) {
-    std::vector<GroupingData> newGroupingData = {{1, "One"}, {3, "Three"}, {5, "Five"}};
-    std::vector<TestElement> singleBucket = {{5, 1.0}, {5, 2.0}, {5, 33.0}};
+TEST_F(BucketSortHelpersTest, GetIteratorsSortedOneBucket)
+{
+    std::vector<GroupingData> newGroupingData = {
+        {1,   "One"},
+        {3, "Three"},
+        {5,  "Five"}
+    };
+    std::vector<TestElement> singleBucket = {
+        {5,  1.0},
+        {5,  2.0},
+        {5, 33.0}
+    };
 
     auto buckets = getAvailableBuckets<int>(newGroupingData, groupingTestLambda);
     auto amounts = getAmountsInsideAvailableBuckets(singleBucket, testLambda, buckets);
@@ -220,12 +235,20 @@ TEST_F(BucketSortHelpersTest, GetIteratorsSortedOneBucket) {
     EXPECT_EQ(sortedIts[2]->val, 33.0);
 }
 
-TEST(BucketSortHelpersManualTest, NonRandomAccessContainer)
+TEST(BucketSortHelpersManualTest, GetIteratorsSortedNonRandomAccessContainer)
 {
-    std::unordered_map<int, int> groupingMap = {{1, 1}, {2, 3}, {3, 2}};
+    std::unordered_map<int, int> groupingMap = {
+        {1, 1},
+        {2, 3},
+        {3, 2}
+    };
     std::list<int> l = {2, 1, 2};
-    auto call = [](int i) { return i; };
-    auto callOnMap = [](const auto& pair) { return pair.second; };
+    auto call        = [](int i) {
+        return i;
+    };
+    auto callOnMap = [](const auto &pair) {
+        return pair.second;
+    };
 
     auto buckets = getAvailableBuckets<int>(groupingMap, callOnMap);
     auto amounts = getAmountsInsideAvailableBuckets(l, call, buckets);
