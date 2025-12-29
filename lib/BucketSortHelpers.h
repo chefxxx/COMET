@@ -32,7 +32,7 @@ int getIndexFromBucket(const std::vector<BucketType>& availableBuckets, const Bu
 {
     auto lowerBound = std::lower_bound(availableBuckets.begin(), availableBuckets.end(), bucket);
 
-    return lowerBound == availableBuckets.end()
+    return lowerBound == availableBuckets.end() || bucket < *lowerBound
                ? -1
                : std::distance(availableBuckets.begin(), lowerBound);
 }
@@ -47,9 +47,8 @@ std::vector<size_t> getAmountsInsideAvailableBuckets(
         auto id = callable(element);
 
         int index = getIndexFromBucket(availableBuckets, id);
-        assert(index != -1);
-
-        ++amounts[index];
+        if (index != -1)
+            ++amounts[index];
     }
     return amounts;
 }
@@ -59,6 +58,30 @@ inline std::vector<size_t> getOffsetsFromAmounts(const std::vector<size_t>& amou
     std::vector<size_t> offsets(amounts.size() + 1, 0);
     std::inclusive_scan(amounts.begin(), amounts.end(), offsets.begin() + 1);
     return offsets;
+}
+
+template <typename T>
+concept HasSize = requires(const T& element)
+{
+    { element.size() } -> std::integral;
+};
+
+template <typename BucketType, HasSize T, typename Callable>
+auto getIteratorsSorted(const T& container, const Callable& callable,
+    const std::vector<size_t>& offsets, const std::vector<BucketType>& availableBuckets, std::vector<size_t>& amounts)
+{
+    // The last value in offsets tells how many elements will be placed in the sorted vector
+    auto sizeOfSorted = offsets.back();
+    std::vector<typename T::const_iterator> sorted(sizeOfSorted);
+    for (auto iterator = container.begin(); sizeOfSorted > 0 && iterator != container.end(); ++iterator) {
+        auto id = getIndexFromBucket(availableBuckets, callable(*iterator));
+        if (id != -1) {
+            sorted[offsets[id + 1] - amounts[id]--] = iterator;
+            --sizeOfSorted;
+        }
+    }
+
+    return sorted;
 }
 
 #endif  // COMET_BUCKETSORTHELPERS_H

@@ -5,6 +5,7 @@
 #include <Combinations.h>
 #include <gtest/gtest.h>
 
+#include <format>
 #include <numeric>
 
 #include "Producers.h"
