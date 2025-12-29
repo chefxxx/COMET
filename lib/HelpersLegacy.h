@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include "BucketPolicy.h"
 
+#if 0
+
 // TODO: rework of grouped buckets
 template <std::forward_iterator TIter>
 struct GroupedBuckets {
@@ -102,5 +104,7 @@ auto tupleTransform(const std::tuple<Types...> &t_tuple, Func &&t_fn)
         t_tuple
     );
 }
+
+#endif
 
 #endif  // HELPERS_H

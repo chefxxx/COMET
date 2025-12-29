@@ -4,6 +4,9 @@
 
 #include <Combinations.h>
 #include <gtest/gtest.h>
+
+#include <numeric>
+
 #include "Producers.h"
 
 class BlockFullCombinationsTest : public ::testing::Test
@@ -18,7 +21,7 @@ class BlockFullCombinationsTest : public ::testing::Test
     struct testCallable {
         auto operator()(double const &a) const { return a; }
     };
-    testCallable callable;
+    [[no_unique_address]] testCallable callable;
 
     dataType v1{-0.05, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95, 1.05};
     dataType v2{0.15, 0.30, 0.45, 0.6, 0.75, 0.90};
@@ -78,9 +81,31 @@ TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
     for (const auto &[elem0, elem1, elem2] : blockFull) {
         auto &[ex0, ex1, ex2] = arr[k];
         ++k;
-        const std::string message = "At iteration " + std::to_string(k) + "\n";
+        const std::string message = std::format("At iteration {}", k);
         ASSERT_EQ(elem0, ex0) << message;
         ASSERT_EQ(elem1, ex1) << message;
         ASSERT_EQ(elem2, ex2) << message;
     }
+}
+
+using DoubleMicros = std::chrono::duration<double, std::micro>;
+
+TEST(BlockPerformanceTest, bigVectorsOneBucket)
+{
+    constexpr size_t SIZE = 1e3;
+    std::vector<size_t> v1(SIZE);
+    std::vector<size_t> v2(SIZE);
+    std::iota(v1.begin(), v1.end(), 0);
+    std::iota(v2.begin(), v2.end(), 1);
+    auto lambda = [](const int &a) { return a; };
+    const std::vector buckets{100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0};
+    const auto bp = BucketPolicy(std::make_tuple(lambda), {buckets}, false);
+    auto bc  = makeBlockCombinations<FullCombinationsPolicy>(bp, 1, v1, v2);
+    const auto start          = std::chrono::high_resolution_clock::now();
+    for (const auto &[elem0, elem1] : bc) {
+        std::cout << std::format("({}, {})", elem0, elem1) << std::endl;
+    }
+    const auto stop             = std::chrono::high_resolution_clock::now();
+    const DoubleMicros duration = stop - start;
+    std::cout << std::format("Time taken {} s\n", duration.count() / 1e6);
 }
