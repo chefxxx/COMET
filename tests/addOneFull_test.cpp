@@ -9,8 +9,6 @@
 #include "Combinations.h"
 #include "Producers.h"
 
-using DoubleMicros = std::chrono::duration<double, std::micro>;
-
 TEST(AddOneFullTest, twoVectorsSameSize)
 {
     const std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
