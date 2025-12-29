@@ -32,7 +32,9 @@ struct SingleBlockBuckets {
     using value_type               = typename container_type::value_type;
 
     SingleBlockBuckets() = default;
-    explicit SingleBlockBuckets(const TBucketPolicy &t_bucketPolicy, const TInput &t_input, const int t_minCatSize)
+    explicit SingleBlockBuckets(
+        const TBucketPolicy &t_bucketPolicy, const TInput &t_input, const int t_minCatSize
+    )
     {
         createSingle(t_bucketPolicy, t_input, t_minCatSize);
     }
@@ -48,7 +50,9 @@ struct SingleBlockBuckets {
     container_type m_buckets;
 
     // new version of groupData() function
-    void createSingle(const TBucketPolicy &t_bucketPolicy, const TInput &t_input, const size_t t_minCatSize)
+    void createSingle(
+        const TBucketPolicy &t_bucketPolicy, const TInput &t_input, const size_t t_minCatSize
+    )
     {
         for (auto it = t_input.begin(); it != t_input.end(); ++it) {
             const int bucketNumber = t_bucketPolicy.getBucket(*it);
@@ -70,15 +74,52 @@ struct SingleBlockBuckets {
 template <typename TBucketPolicy, typename... TInputs>
 struct CoupledBlockBuckets {
     CoupledBlockBuckets() = default;
-    explicit CoupledBlockBuckets(const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const TInputs &...t_inputs)
+    explicit CoupledBlockBuckets(
+        const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const TInputs &...t_inputs
+    )
     {
         m_data = tupleTransform(std::forward_as_tuple(t_inputs...), [&](auto &&t_input) {
             return SingleBlockBuckets(t_bucketPolicy, t_input, t_minCatSize);
         });
-        syncBuckets();
+        syncBuckets();  // syncBuckets() has to be called before initialization of iterators!
+        m_current = tupleTransform(m_data, [&](auto &&t_single) {
+            return t_single.begin();
+        });
+        m_end     = tupleTransform(m_data, [&](auto &&t_single) {
+            return t_single.end();
+        });
     }
+
+    void nextIterators()
+    {
+        std::apply(
+            [](auto &...t_iters) {
+                (++t_iters, ...);
+            },
+            m_current
+        );
+    }
+
+    [[nodiscard]] bool isEnd() const
+    {
+        return std::get<0>(m_current) ==
+               std::get<0>(m_end);  // if one have finished, then all have finished
+    }
+
+    [[nodiscard]] auto currentBuckets() const
+    {
+        return std::apply(
+            [](auto const &...iters) {
+                return std::forward_as_tuple(iters->second...);
+            },
+            m_current
+        );
+    }
+
     private:
     std::tuple<SingleBlockBuckets<TBucketPolicy, TInputs>...> m_data;
+    std::tuple<typename SingleBlockBuckets<TBucketPolicy, TInputs>::iterator...> m_current;
+    std::tuple<typename SingleBlockBuckets<TBucketPolicy, TInputs>::iterator...> m_end;
 
     void syncHelper(auto &firstData, const auto &comparedData)
     {

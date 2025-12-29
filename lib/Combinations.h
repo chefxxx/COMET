@@ -39,10 +39,11 @@ struct CombinationsPolicyBase {
         }
     }
 
-    void setDataBaseImpl(const TInputs &...t_inputs)
+    template <typename TTuple>
+    void setDataBaseImpl(TTuple &&t_inputs)
     {
         [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
-            ((setDataHelper<Is>(t_inputs)), ...);
+            ((setDataHelper<Is>(std::get<Is>(t_inputs))), ...);
             this->m_isEnd = ((this->m_endIndexNumbers[Is] == 0) || ...);
         }(std::make_index_sequence<sizeof...(TInputs)>{});
     }
@@ -85,7 +86,18 @@ class FullCombinationsPolicy
     FullCombinationsPolicy() = default;
     explicit FullCombinationsPolicy(const TInputs &...t_inputs) { setData(t_inputs...); }
 
-    void setData(const TInputs &...t_inputs) { this->setDataBaseImpl(t_inputs...); }
+    void setData(const TInputs &...t_inputs)
+    {
+        this->setDataBaseImpl(std::forward_as_tuple(t_inputs...));
+    }
+
+    // this version is used in BlockProducer
+    template <typename TTuple>
+    void setData(TTuple &&t_tuple)
+    {
+        this->setDataBaseImpl(std::forward<TTuple>(t_tuple));
+    }
+
     void addOne() { this->addOneBaseImpl(); }
 
     template <size_t I, size_t N>
@@ -118,17 +130,16 @@ class StrictlyUpperCombinationsPolicy
     StrictlyUpperCombinationsPolicy() = default;
     explicit StrictlyUpperCombinationsPolicy(const TInputs &...t_inputs) { setData(t_inputs...); }
 
+    template <typename TTuple>
+    void setData(TTuple &&t_tuple)
+    {
+        this->setDataBaseImpl(std::forward<TTuple>(t_tuple));
+        setDataPolicyHelper();
+    }
     void setData(const TInputs &...t_inputs)
     {
-        this->setDataBaseImpl(t_inputs...);
-        // Set ranges here have the same logic as a loop into ... with setting new
-        // pointers for right side positions.
-        if (!this->m_isEnd) {
-            constexpr auto N = sizeof...(t_inputs);
-            bool shouldEnd   = true;
-            setRanges<N - 1, N>(shouldEnd);
-            this->m_isEnd = !shouldEnd;
-        }
+        this->setDataBaseImpl(std::forward_as_tuple(t_inputs...));
+        setDataPolicyHelper();
     }
 
     void addOne() { this->addOneBaseImpl(); }
@@ -142,6 +153,18 @@ class StrictlyUpperCombinationsPolicy
     }
 
     private:
+    void setDataPolicyHelper()
+    {
+        // Set ranges here have the same logic as a loop into ... with setting new
+        // pointers for right side positions.
+        if (!this->m_isEnd) {
+            constexpr auto N = sizeof...(TInputs);
+            bool shouldEnd   = true;
+            setRanges<N - 1, N>(shouldEnd);
+            this->m_isEnd = !shouldEnd;
+        }
+    }
+
     template <size_t I, size_t N>
     void setRanges(bool &t_condition)
     {
