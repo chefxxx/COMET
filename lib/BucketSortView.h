@@ -4,18 +4,19 @@
 
 #ifndef COMET_BUCKETSORTVIEW_H
 #define COMET_BUCKETSORTVIEW_H
+#include <random>
 #include <span>
 
 #include "BucketSortHelpers.h"
 
-template <typename GroupingType, typename AssociatedType, typename BucketType>
+template <typename GroupingType, typename GroupingCallable, typename AssociatedType, typename AssociatedCallable>
 class BucketSortView
 {
     public:
+    using BucketType = std::decay_t<std::invoke_result_t<GroupingCallable, typename GroupingType::value_type>>;
     using AssociatedIteratorType = typename AssociatedType::const_iterator;
     using ViewSpanType           = typename std::span<AssociatedIteratorType>;
 
-    template <typename GroupingCallable, typename AssociatedCallable>
     BucketSortView(
         const GroupingType& groupingSource, const GroupingCallable& groupingCallable,
         const AssociatedType& associatedSource, const AssociatedCallable& associatedCallable
@@ -26,14 +27,15 @@ class BucketSortView
             associatedSource, associatedCallable, m_availableBuckets
         );
         m_offsets         = getOffsetsFromAmounts(amounts);
-        m_sortedIterators = getIteratorsSorted(amounts);
+        m_sortedIterators = getIteratorsSorted(associatedSource, associatedCallable, m_offsets, m_availableBuckets, amounts);
     }
 
     ViewSpanType getSpanForBucket(const BucketType& bucketId) const
     {
         auto index = getIndexFromBucket(m_availableBuckets, bucketId);
         assert(index != -1);
-        return index != -1 ? ViewSpanType(m_sortedIterators[m_offsets[index]], m_offsets[index + 1])
+        auto sortedStart = m_sortedIterators.begin();
+        return index != -1 ? ViewSpanType(sortedStart + m_offsets[index], m_offsets[index + 1] - m_offsets[index])
                            : ViewSpanType();
     }
 
