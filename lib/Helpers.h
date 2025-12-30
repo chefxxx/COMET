@@ -7,6 +7,7 @@
 
 #include <map>
 #include <tuple>
+#include <unordered_map>
 
 #include "BucketPolicy.h"
 
@@ -27,9 +28,10 @@ auto tupleTransform(const std::tuple<Types...> &t_tuple, Func &&t_fn)
 template <typename TBucketPolicy, typename TInput>
 struct SingleBlockBuckets {
     using underlying_iterator_type = typename TInput::const_iterator;
-    using container_type           = std::map<int, std::vector<underlying_iterator_type>>;
-    using iterator                 = typename container_type::const_iterator;
-    using value_type               = typename container_type::value_type;
+    // TODO: consider std::unordered_map<> here, requires further tests
+    using container_type = std::map<int, std::vector<underlying_iterator_type>>;
+    using iterator       = typename container_type::const_iterator;
+    using value_type     = typename container_type::value_type;
 
     SingleBlockBuckets() = default;
     explicit SingleBlockBuckets(

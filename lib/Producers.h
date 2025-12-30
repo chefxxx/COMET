@@ -15,7 +15,7 @@
 template <typename TCombinationsPolicy>
 struct CombinationsProducer {
     // This constructor is used in makeCombinations func
-    explicit CombinationsProducer(TCombinationsPolicy policy) : m_policy(std::move(policy)) {}
+    explicit CombinationsProducer(TCombinationsPolicy &&policy) : m_policy(std::move(policy)) {}
 
     struct CombinationsSentinel {
     };
@@ -90,7 +90,7 @@ auto makeCombinations(const TInputs &...t_inputs)
 template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TInputs>
 struct BlockProducer {
     explicit BlockProducer(
-        const TBucketPolicy &t_bucketPolicy, TCombinationsPolicy t_combinationsPolicy,
+        const TBucketPolicy &t_bucketPolicy, TCombinationsPolicy &&t_combinationsPolicy,
         const int t_minCatSize, const TInputs &...t_inputs
     )
         : m_bucketPolicy(t_bucketPolicy),
@@ -104,10 +104,10 @@ struct BlockProducer {
     struct BlockIterator {
         using iterator_category = std::input_iterator_tag;
         using difference_type   = std::ptrdiff_t;
-        using value_type        = typename TCombinationsPolicy::combinations_value;
+        using value_type        = std::tuple<typename TInputs::value_type...>;
         using pointer           = void;
-        // TODO: define reference using type
-        // using reference         = typename TCombinationsPolicy::combinations_reference;
+        using reference         = std::tuple<
+                    typename std::iterator_traits<typename TInputs::const_iterator>::reference...>;
 
         BlockIterator() = default;
         explicit BlockIterator(
@@ -147,7 +147,7 @@ struct BlockProducer {
             return copy;
         }
 
-        auto operator*() const
+        reference operator*() const
         {
             return std::apply(
                 [](auto &&...args) {
