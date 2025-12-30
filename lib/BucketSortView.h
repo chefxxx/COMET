@@ -9,11 +9,14 @@
 
 #include "BucketSortHelpers.h"
 
-template <typename GroupingType, typename GroupingCallable, typename AssociatedType, typename AssociatedCallable>
+template <
+    typename GroupingType, typename GroupingCallable, typename AssociatedType,
+    typename AssociatedCallable>
 class BucketSortView
 {
     public:
-    using BucketType = std::decay_t<std::invoke_result_t<GroupingCallable, typename GroupingType::value_type>>;
+    using BucketType =
+        std::decay_t<std::invoke_result_t<GroupingCallable, typename GroupingType::value_type>>;
     using AssociatedIteratorType = typename AssociatedType::const_iterator;
     using ViewSpanType           = typename std::span<AssociatedIteratorType>;
 
@@ -27,7 +30,9 @@ class BucketSortView
             associatedSource, associatedCallable, m_availableBuckets
         );
         m_offsets         = getOffsetsFromAmounts(amounts);
-        m_sortedIterators = getIteratorsSorted(associatedSource, associatedCallable, m_offsets, m_availableBuckets, amounts);
+        m_sortedIterators = getIteratorsSorted(
+            associatedSource, associatedCallable, m_offsets, m_availableBuckets, amounts
+        );
     }
 
     ViewSpanType getSpanForBucket(const BucketType& bucketId) const
@@ -35,8 +40,11 @@ class BucketSortView
         auto index = getIndexFromBucket(m_availableBuckets, bucketId);
         assert(index != -1);
         auto sortedStart = m_sortedIterators.begin();
-        return index != -1 ? ViewSpanType(sortedStart + m_offsets[index], m_offsets[index + 1] - m_offsets[index])
-                           : ViewSpanType();
+        return index != -1
+                   ? ViewSpanType(
+                         sortedStart + m_offsets[index], m_offsets[index + 1] - m_offsets[index]
+                     )
+                   : ViewSpanType();
     }
 
     private:
