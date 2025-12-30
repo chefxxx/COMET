@@ -5,10 +5,7 @@
 #ifndef COMET_BUCKETSORTHELPERS_H
 #define COMET_BUCKETSORTHELPERS_H
 #include <algorithm>
-#include <cassert>
 #include <numeric>
-#include <set>
-#include <unordered_map>
 #include <vector>
 
 template <typename BucketType, typename T, typename Callable>
