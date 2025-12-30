@@ -7,7 +7,7 @@
 #include <vector>
 #include "BucketPolicy.h"
 
-namespace calculateBucketAtIndicesTest
+namespace test
 {
 struct TestElem {
     double x;
@@ -29,17 +29,16 @@ auto lambda2 = [](auto const &arg) {
     return arg.y;
 };
 
-const auto callableShort = std::make_tuple(lambda1, lambda2);
 }  // namespace calculateBucketAtIndicesTest
 
 TEST(CalculateBucketAtIndicesTest, fiveRangesInTwoDimensionsWithout)
 {
-    const auto bin1 = std::vector<double>{1.0, 2.0, 3.0, 4.0};
-    const auto bin2 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    const auto arg  = std::make_tuple(1.5, 2.5);
-    auto bp         = BucketPolicy(calculateBucketAtIndicesTest::callableShort, {bin1, bin2});
+    constexpr auto bin1 = std::array{1.0, 2.0, 3.0, 4.0};
+    constexpr auto bin2 = std::array{0.0, 1.0, 2.0, 3.0};
+    const auto arg = std::make_tuple(1.5, 2.5);
+    const auto bp   = BucketPolicy(true, test::lambda1, test::lambda2, bin1, bin2);
 
-    const auto test    = bp.calculateBucketAtIndices(bp.getUpperIndicesForTuple(arg));
+    const auto test= bp.calculateBucketAtIndices(bp.getUpperIndicesForTuple(arg));
     constexpr auto res = 16;
 
     ASSERT_EQ(res, test);

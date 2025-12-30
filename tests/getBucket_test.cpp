@@ -6,7 +6,7 @@
 
 #include "BucketPolicy.h"
 
-namespace GetBucketTest
+namespace test
 {
 struct TestElem {
     double x;
@@ -37,16 +37,14 @@ auto lambda5 = [](auto const &arg) {
     return arg->v;
 };
 
-const auto callableShort = std::make_tuple(lambda1, lambda2);
-const auto callablesLong = std::make_tuple(lambda1, lambda2, lambda3, lambda4, lambda5);
 }  // namespace GetBucketTest
 
 TEST(GetBucketTest, sevenAndFiveRngesWithOverflow)
 {
-    const auto bin1 = std::vector<double>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    const auto bin2 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    auto bp         = BucketPolicy(GetBucketTest::callableShort, {bin1, bin2});
-    auto arg        = GetBucketTest::TestElem{-1.0, 2.0};
+    const auto bin1 = std::vector{1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    const auto bin2 = std::vector{0.0, 1.0, 2.0, 3.0};
+    const auto bp   = BucketPolicy(false, test::lambda1, test::lambda2, bin1, bin2);
+    auto arg        = test::TestElem{-1.0, 2.0};
 
     const auto test    = bp.getBucket(&arg);
     constexpr auto res = -1;
@@ -55,13 +53,13 @@ TEST(GetBucketTest, sevenAndFiveRngesWithOverflow)
 
 TEST(GetBucketTest, manyDimensionsWithOverflow)
 {
-    const auto bin1 = std::vector<double>{-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    const auto bin2 = std::vector<double>{0.25, 1.0, 2.222222, 3.2223};
-    const auto bin3 = std::vector<double>{-0.7, -0.6, -0.5, 3.0, 4.0, 10.0};
-    const auto bin4 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    const auto bin5 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    auto arg        = GetBucketTest::TestElemB{-0.5, 0.44, -0.66, 2.45, 10.0};
-    auto bp         = BucketPolicy(GetBucketTest::callablesLong, {bin1, bin2, bin3, bin4, bin5});
+    const auto bin1 = std::vector{-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    const auto bin2 = std::vector{0.25, 1.0, 2.222222, 3.2223};
+    const auto bin3 = std::vector{-0.7, -0.6, -0.5, 3.0, 4.0, 10.0};
+    const auto bin4 = std::vector{0.0, 1.0, 2.0, 3.0};
+    const auto bin5 = std::vector{0.0, 1.0, 2.0, 3.0};
+    auto arg        = test::TestElemB{-0.5, 0.44, -0.66, 2.45, 10.0};
+    const auto bp   = BucketPolicy(true, test::lambda1, test::lambda2, test::lambda3, test::lambda4, test::lambda5, bin1, bin2, bin3, bin4, bin5);
 
     const auto test    = bp.getBucket(&arg);
     constexpr auto res = -1;

@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include "BucketPolicy.h"
 
-namespace getUpperIndicesForTupleTest
+namespace test
 {
 struct TestElem {
     double x;
@@ -36,60 +36,51 @@ auto lambda5 = [](auto const &arg) {
     return arg.v;
 };
 
-const auto callableShort = std::make_tuple(lambda1, lambda2);
-const auto callablesLong = std::make_tuple(lambda1, lambda2, lambda3, lambda4, lambda5);
 }  // namespace getUpperIndicesForTupleTest
 
 TEST(GetUpperIndicesForTupleTest, fiveRangesInEachDimensionWithoutOverflows)
 {
-    auto bin1 = std::vector<double>{1.0, 2.0, 3.0, 4.0};
-    auto bin2 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    auto bp   = BucketPolicy(getUpperIndicesForTupleTest::callableShort, {bin1, bin2});
-    auto arg  = std::make_tuple(1.5, 2.5);
-
-    auto res  = std::make_tuple(1, 3);
-    auto test = bp.getUpperIndicesForTuple(arg);
-
+    auto bin1     = std::vector{1.0, 2.0, 3.0, 4.0};
+    auto bin2     = std::vector{0.0, 1.0, 2.0, 3.0};
+    const auto bp = BucketPolicy(true, test::lambda1, test::lambda2, bin1, bin2);
+    const auto arg  = std::make_tuple(1.5, 2.5);
+    const auto res  = std::make_tuple(1, 3);
+    const auto test = bp.getUpperIndicesForTuple(arg);
     ASSERT_EQ(res, test);
 }
 
 TEST(GetUpperIndicesForTupleTest, fiveRangesInEachDimensionWithOverflows)
 {
-    auto bin1 = std::vector<double>{1.0, 2.0, 3.0, 4.0};
-    auto bin2 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    auto bp   = BucketPolicy(getUpperIndicesForTupleTest::callableShort, {bin1, bin2}, true);
-    auto arg  = std::make_tuple(1.5, 3.5);
-
-    auto res  = std::make_tuple(1, -1);
-    auto test = bp.getUpperIndicesForTuple(arg);
-
+    auto bin1 = std::vector{1.0, 2.0, 3.0, 4.0};
+    auto bin2 = std::vector{0.0, 1.0, 2.0, 3.0};
+    const auto bp = BucketPolicy(true, test::lambda1, test::lambda2, bin1, bin2);
+    const auto arg = std::make_tuple(1.5, 3.5);
+    const auto res  = std::make_tuple(1, -1);
+    const auto test = bp.getUpperIndicesForTuple(arg);
     ASSERT_EQ(res, test);
 }
 
 TEST(GetUpperIndicesForTupleTest, sevenAndFiveRangesWithOverflows)
 {
-    auto bin1 = std::vector<double>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    auto bin2 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    auto bp   = BucketPolicy(getUpperIndicesForTupleTest::callableShort, {bin1, bin2});
-    auto arg  = std::make_tuple(5.5, -0.5);
-
-    auto test = bp.getUpperIndicesForTuple(arg);
-    auto res  = std::make_tuple(5, -1);
+    auto bin1 = std::vector{1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    auto bin2 = std::vector{0.0, 1.0, 2.0, 3.0};
+    const auto bp   = BucketPolicy(true, test::lambda1, test::lambda2, bin1, bin2);
+    const auto arg  = std::make_tuple(5.5, -0.5);
+    const auto res = std::make_tuple(5, -1);
+    const auto test = bp.getUpperIndicesForTuple(arg);
     ASSERT_EQ(res, test);
 }
 
 TEST(GetUpperIndicesForTupleTest, manyDimensionsWithOverflows)
 {
-    auto bin1 = std::vector<double>{-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    auto bin2 = std::vector<double>{0.25, 1.0, 2.222222, 3.2223};
-    auto bin3 = std::vector<double>{-0.7, -0.6, -0.5, 3.0, 4.0, 10.0};
-    auto bin4 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    auto bin5 = std::vector<double>{0.0, 1.0, 2.0, 3.0};
-    auto bp =
-        BucketPolicy(getUpperIndicesForTupleTest::callablesLong, {bin1, bin2, bin3, bin4, bin5});
-    auto arg = std::make_tuple(-0.5, 0.44, -0.66, 2.45, 10.0);
-
-    auto test = bp.getUpperIndicesForTuple(arg);
-    auto res  = std::make_tuple(3, 1, 1, 3, -1);
+    auto bin1 = std::vector{-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    auto bin2 = std::vector{0.25, 1.0, 2.222222, 3.2223};
+    auto bin3 = std::vector{-0.7, -0.6, -0.5, 3.0, 4.0, 10.0};
+    auto bin4 = std::vector{0.0, 1.0, 2.0, 3.0};
+    auto bin5 = std::vector{0.0, 1.0, 2.0, 3.0};
+    const auto bp = BucketPolicy(true, test::lambda1, test::lambda2, test::lambda3, test::lambda4, test::lambda5, bin1, bin2, bin3, bin4, bin5);
+    const auto arg = std::make_tuple(-0.5, 0.44, -0.66, 2.45, 10.0);
+    const auto test = bp.getUpperIndicesForTuple(arg);
+    const auto res  = std::make_tuple(3, 1, 1, 3, -1);
     ASSERT_EQ(res, test);
 }

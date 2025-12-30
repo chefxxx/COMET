@@ -88,6 +88,24 @@ TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
     }
 }
 
+TEST(BlockProducerTest, compilationTest)
+{
+    // buckets and their corresponding buckets
+    constexpr std::array buckets0{0.0, 0.25, 0.5, 0.75, 1.0};
+    constexpr std::array buckets1{0.0, 0.25, 0.5, 0.75};
+    auto lambda0 = [](double const &a) { return a; };
+    auto lambda1 = [](double const &a) { return a; };
+
+    // the data
+    const std::vector v1{-0.05, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95, 1.05};
+    const std::vector v2{0.15, 0.30, 0.45, 0.6, 0.75, 0.90};
+
+    // bucket policy and block combinations interface
+    const auto bp = BucketPolicy(lambda0, lambda1, {buckets0, buckets1}, false);
+    auto bc  = makeBlockCombinations<FullCombinationsPolicy>(bp, v1, v2);
+}
+
+
 #if 0
 
 using DoubleMicros = std::chrono::duration<double, std::micro>;
