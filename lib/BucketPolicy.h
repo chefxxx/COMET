@@ -20,6 +20,27 @@ int findIndex(Container const &data, T2 const &value, const bool ignoreOverflows
 
 template <typename... AllArgs>
 struct BucketPolicy final {
+
+    explicit BucketPolicy(const bool t_ignoreOverflows, AllArgs &&...t_args)
+        : m_callables(
+              extract_from_tuple<0>(std::make_index_sequence<N>{}, std::forward_as_tuple(t_args...))
+          ),
+          m_buckets(
+              extract_from_tuple<N>(std::make_index_sequence<N>{}, std::forward_as_tuple(t_args...))
+          ),
+          m_ignoreOverflows(t_ignoreOverflows)
+    {
+    }
+
+    template <typename TElement>
+    [[nodiscard]] int getBucket(TElement const &element) const
+    {
+        auto values  = getValues(element);
+        auto indices = getUpperIndicesForTuple(values);
+        auto bucket  = calculateBucketAtIndices(indices);
+        return bucket;
+    }
+
     private:
     // Note: I assumed that user passes equal number of bins and callables.
     // TODO: Later we will provide concepts restricting types of those.
@@ -43,28 +64,6 @@ struct BucketPolicy final {
         return std::make_tuple(std::get<Offset + I>(std::forward<TFullType>(t_full))...);
     }
 
-    public:
-    explicit BucketPolicy(const bool t_ignoreOverflows, AllArgs &&...t_args)
-        : m_callables(
-              extract_from_tuple<0>(std::make_index_sequence<N>{}, std::forward_as_tuple(t_args...))
-          ),
-          m_buckets(
-              extract_from_tuple<N>(std::make_index_sequence<N>{}, std::forward_as_tuple(t_args...))
-          ),
-          m_ignoreOverflows(t_ignoreOverflows)
-    {
-    }
-
-    template <typename TElement>
-    [[nodiscard]] int getBucket(TElement const &element) const
-    {
-        auto values  = getValues(element);
-        auto indices = getUpperIndicesForTuple(values);
-        auto bucket  = calculateBucketAtIndices(indices);
-        return bucket;
-    }
-
-    private:
     // TODO: ghost function
     [[nodiscard]] constexpr int getMaximalBucketCount() const
     {
