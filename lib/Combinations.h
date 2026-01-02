@@ -18,7 +18,6 @@ template <typename Derived, typename... TInputs>
 struct CombinationsPolicyBase {
     using combinations_type  = std::tuple<typename TInputs::const_iterator...>;
     using combinations_value = std::tuple<typename TInputs::value_type...>;
-    // TODO: think if this is necessary
     using combinations_reference =
         std::tuple<typename std::iterator_traits<typename TInputs::const_iterator>::reference...>;
 
@@ -40,11 +39,10 @@ struct CombinationsPolicyBase {
         }
     }
 
-    template <typename TTuple>
-    void setDataBaseImpl(TTuple &&t_inputs)
+    void setDataBaseImpl(const TInputs &...t_inputs)
     {
         [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
-            ((setDataHelper<Is>(std::get<Is>(t_inputs))), ...);
+            ((setDataHelper<Is>(t_inputs)), ...);
             this->m_isEnd = ((this->m_endIndexNumbers[Is] == 0) || ...);
         }(std::make_index_sequence<sizeof...(TInputs)>{});
     }
@@ -87,17 +85,7 @@ class FullCombinationsPolicy
     FullCombinationsPolicy() = default;
     explicit FullCombinationsPolicy(const TInputs &...t_inputs) { setData(t_inputs...); }
 
-    void setData(const TInputs &...t_inputs)
-    {
-        this->setDataBaseImpl(std::forward_as_tuple(t_inputs...));
-    }
-
-    // this version is used in BlockProducer
-    template <typename TTuple>
-    void setData(TTuple &&t_tuple)
-    {
-        this->setDataBaseImpl(std::forward<TTuple>(t_tuple));
-    }
+    void setData(const TInputs &...t_inputs) { this->setDataBaseImpl(t_inputs...); }
 
     void addOne() { this->addOneBaseImpl(); }
 
@@ -131,15 +119,9 @@ class StrictlyUpperCombinationsPolicy
     StrictlyUpperCombinationsPolicy() = default;
     explicit StrictlyUpperCombinationsPolicy(const TInputs &...t_inputs) { setData(t_inputs...); }
 
-    template <typename TTuple>
-    void setData(TTuple &&t_tuple)
-    {
-        this->setDataBaseImpl(std::forward<TTuple>(t_tuple));
-        setDataPolicyHelper();
-    }
     void setData(const TInputs &...t_inputs)
     {
-        this->setDataBaseImpl(std::forward_as_tuple(t_inputs...));
+        this->setDataBaseImpl(t_inputs...);
         setDataPolicyHelper();
     }
 

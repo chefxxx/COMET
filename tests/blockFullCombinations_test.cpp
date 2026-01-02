@@ -95,19 +95,19 @@ using DoubleMicros = std::chrono::duration<double, std::micro>;
 
 TEST(BlockPerformanceTest, bigVectorsOneBucket)
 {
-    constexpr size_t SIZE = 1e3;
+    constexpr size_t SIZE = 1e7;
     std::vector<size_t> v1(SIZE);
     std::vector<size_t> v2(SIZE);
     std::iota(v1.begin(), v1.end(), 0);
     std::iota(v2.begin(), v2.end(), 1);
     auto lambda = [](const int &a) { return a; };
-    const std::vector buckets{100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0};
-    const auto bp = BucketPolicy(std::make_tuple(lambda), {buckets}, false);
-    auto bc  = makeBlockCombinations<FullCombinationsPolicy>(bp, 1, v1, v2);
-    const auto start          = std::chrono::high_resolution_clock::now();
-    for (const auto &[elem0, elem1] : bc) {
-        std::cout << std::format("({}, {})", elem0, elem1) << std::endl;
+    std::vector<double> buckets(SIZE + 1);
+    for (size_t i = 0; i <= SIZE / 10; ++i) {
+        buckets[i] = i * 10.0;
     }
+    const auto bp = BucketPolicy(std::make_tuple(lambda), {buckets}, false);
+    const auto start          = std::chrono::high_resolution_clock::now();
+    auto bc  = makeBlockCombinations<FullCombinationsPolicy>(bp, 1, v1, v2);
     const auto stop             = std::chrono::high_resolution_clock::now();
     const DoubleMicros duration = stop - start;
     std::cout << std::format("Time taken {} s\n", duration.count() / 1e6);
