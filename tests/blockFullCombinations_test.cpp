@@ -80,10 +80,9 @@ TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
     for (const auto &[elem0, elem1, elem2] : blockFull) {
         auto &[ex0, ex1, ex2] = arr[k];
         ++k;
-        const std::string message = std::format("At iteration {}", k);
-        ASSERT_EQ(elem0, ex0) << message;
-        ASSERT_EQ(elem1, ex1) << message;
-        ASSERT_EQ(elem2, ex2) << message;
+        ASSERT_EQ(elem0, ex0);
+        ASSERT_EQ(elem1, ex1);
+        ASSERT_EQ(elem2, ex2);
     }
 }
 
