@@ -12,13 +12,22 @@
 template <
     typename GroupingType, typename GroupingCallable, typename AssociatedType,
     typename AssociatedCallable>
+concept AssociatedCallableResultIsConvertibleToGrouping = std::same_as<
+    std::decay_t<std::invoke_result_t<GroupingCallable, typename GroupingType::value_type>>,
+    std::decay_t<std::invoke_result_t<AssociatedCallable, typename AssociatedType::value_type>>>;
+
+template <
+    typename GroupingType, typename GroupingCallable, typename AssociatedType,
+    typename AssociatedCallable>
+    requires AssociatedCallableResultIsConvertibleToGrouping<
+        GroupingType, GroupingCallable, AssociatedType, AssociatedCallable>
 class BucketSortView
 {
     public:
     using BucketType =
         std::decay_t<std::invoke_result_t<GroupingCallable, typename GroupingType::value_type>>;
     using AssociatedIteratorType = typename AssociatedType::const_iterator;
-    using ViewSpanType           = typename std::span<AssociatedIteratorType>;
+    using ViewSpanType           = typename std::span<const AssociatedIteratorType>;
 
     BucketSortView(
         const GroupingType& groupingSource, const GroupingCallable& groupingCallable,
@@ -35,10 +44,9 @@ class BucketSortView
         );
     }
 
-    ViewSpanType getSpanForBucket(const BucketType& bucketId) const
+    auto getSpanForBucket(const BucketType& bucketId) const
     {
-        auto index = getIndexFromBucket(m_availableBuckets, bucketId);
-        assert(index != -1);
+        auto index       = getIndexFromBucket(m_availableBuckets, bucketId);
         auto sortedStart = m_sortedIterators.begin();
         return index != -1
                    ? ViewSpanType(
