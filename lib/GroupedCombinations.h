@@ -45,10 +45,14 @@ struct GroupedCombinations {
 };
 
 template <
-    template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename TGrouping>
-
-auto makeGroupedCombinations()
+    template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename TGrouping,
+    typename... TAssociated>
+auto makeGroupedCombinations(
+    const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const TGrouping& grouping,
+    const TAssociated&... associated
+)
 {
+    //TODO: Try to implement the makeGroupedCombinations and start implement the iterators.
 }
 
 #endif  // COMET_GROUPEDCOMBINATIONS_H
