@@ -20,7 +20,6 @@ int findIndex(Container const &data, T2 const &value, const bool ignoreOverflows
 
 template <typename... AllArgs>
 struct BucketPolicy final {
-
     explicit BucketPolicy(const bool t_ignoreOverflows, AllArgs &&...t_args)
         : m_callables(
               extract_from_tuple<0>(std::make_index_sequence<N>{}, std::forward_as_tuple(t_args...))
