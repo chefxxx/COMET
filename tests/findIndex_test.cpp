@@ -2,82 +2,77 @@
 // Created by Mykhailo Shamrai on 18/07/2025.
 //
 
-#include <Helpers.h>
 #include <gtest/gtest.h>
+#include "BucketPolicy.h"
 
 TEST(BinarySearchTest, oneElementVector_indexOne)
 {
-    std::vector<double> v{0.0};
-
-    double value = 1.0;
-
-    int res  = -1;
-    int test = findIndex(v, value, true);
+    constexpr std::array v{0.0};
+    constexpr double value = 1.0;
+    constexpr int res      = -1;
+    const int test         = findIndex(v, value, true);
     ASSERT_EQ(res, test);
 }
 
 TEST(FindIndexTest, emptyVectorWithoutOverflow)
 {
-    std::vector<double> v{};
-    double value = 1.0;
-
-    int res  = 0;
-    int test = findIndex(v, value, false);
-
+    constexpr std::array<double, 0> v{};
+    constexpr double value = 1.0;
+    constexpr int res      = 0;
+    const int test         = findIndex(v, value, false);
     ASSERT_EQ(res, test);
 }
 
 TEST(FindIndexTest, emptyVectorWithOverflows)
 {
-    std::vector<double> v{};
-    double value = 1.0;
-
-    int res  = -1;
-    int test = findIndex(v, value, true);
-
+    constexpr std::array<double, 0> v{};
+    constexpr double value = 1.0;
+    constexpr int res      = -1;
+    const int test         = findIndex(v, value, true);
     ASSERT_EQ(res, test);
 }
 
 TEST(FindIndexTest, sixRangesWithoutOverflows)
 {
-    std::vector<double> v{0.0, 1.0, 2.0, 3.0, 4.0};
-    double value = 3.6;
+    // Changed to constexpr array to match Clang hints and first test style
+    constexpr std::array v{0.0, 1.0, 2.0, 3.0, 4.0};
+    constexpr double value = 3.6;
 
-    int res  = 4;
-    int test = findIndex(v, value, false);
+    constexpr int res = 4;
+    const int test    = findIndex(v, value, false);
 
     ASSERT_EQ(res, test);
 }
 
 TEST(FindIndexTest, fourRangesWithOverflows)
 {
-    std::vector<double> v{0.0, 1.0, 2.0, 3.0, 4.0};
-    double value = -0.00001;
+    constexpr std::array v{0.0, 1.0, 2.0, 3.0, 4.0};
+    constexpr double value = -0.00001;
 
-    int res  = -1;
-    int test = findIndex(v, value, true);
+    constexpr int res = -1;
+    const int test    = findIndex(v, value, true);
 
     ASSERT_EQ(res, test);
 }
 
 TEST(FindIndexTest, fourRangesWithOverflowsVectorOfDoubleAndFloatArg)
 {
-    std::vector<double> v{0.0, 1.0, 2.0, 3.0, 4.0};
-    float value = -0.00001;
+    constexpr std::array v{0.0, 1.0, 2.0, 3.0, 4.0};
+    constexpr float value = -0.00001f;
 
-    int res  = -1;
-    int test = findIndex(v, value, true);
+    constexpr int res = -1;
+    const int test    = findIndex(v, value, true);
 
     ASSERT_EQ(res, test);
 }
 
 TEST(FindIndexTest, fourRangesWithOverflowsVectorOfIntsAndlongArg)
 {
-    std::vector<int> v{0, 2, 4, 6, 8};
-    long value = 1;
+    constexpr std::array v{0, 2, 4, 6, 8};
+    constexpr long value = 1;
 
-    int res  = 1;
-    int test = findIndex(v, value, true);
+    constexpr int res = 1;
+    const int test    = findIndex(v, value, true);
 
     ASSERT_EQ(res, test);
 }
