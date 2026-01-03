@@ -44,12 +44,12 @@ TEST_F(BucketSortViewTest, CorrectGroupingAndAccess)
 
     auto span1 = view.getSpanForBucket(1);
     ASSERT_EQ(span1.size(), 2);
-    EXPECT_EQ(span1[0]->name, "A");
-    EXPECT_EQ(span1[1]->name, "C");
+    EXPECT_EQ(span1[0].name, "A");
+    EXPECT_EQ(span1[1].name, "C");
 
     auto span2 = view.getSpanForBucket(2);
     ASSERT_EQ(span2.size(), 1);
-    EXPECT_EQ(span2[0]->name, "B");
+    EXPECT_EQ(span2[0].name, "B");
 
     auto span3 = view.getSpanForBucket(3);
     EXPECT_TRUE(span3.empty());
@@ -67,9 +67,9 @@ TEST_F(BucketSortViewTest, StabilityIsPreserved)
     );
     auto span = view.getSpanForBucket(1);
     ASSERT_EQ(span.size(), 3);
-    EXPECT_EQ(span[0]->name, "First");
-    EXPECT_EQ(span[1]->name, "Second");
-    EXPECT_EQ(span[2]->name, "Third");
+    EXPECT_EQ(span[0].name, "First");
+    EXPECT_EQ(span[1].name, "Second");
+    EXPECT_EQ(span[2].name, "Third");
 }
 
 TEST_F(BucketSortViewTest, CheckNonExistingGroupingId)

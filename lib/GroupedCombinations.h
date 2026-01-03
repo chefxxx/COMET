@@ -6,6 +6,7 @@
 #define COMET_GROUPEDCOMBINATIONS_H
 
 #include "BucketSortView.h"
+#include "Producers.h"
 
 template <typename TSource, typename TCallable>
 struct SourceWithCallable {
@@ -25,7 +26,7 @@ template <typename TCombinationsProducer, typename TGrouping, typename... TAssoc
 struct GroupedCombinations {
     public:
     explicit GroupedCombinations(
-        const TCombinationsProducer& combinations_producer, const TGrouping& grouping,
+        TCombinationsProducer&& combinations_producer, const TGrouping& grouping,
         const TAssociated&... associated
     )
     {
@@ -52,7 +53,13 @@ auto makeGroupedCombinations(
     const TAssociated&... associated
 )
 {
-    // TODO: Try to implement the makeGroupedCombinations and start implement the iterators.
+    constexpr int N            = sizeof...(TAssociated);
+    auto combinationsGenerator = [&]<size_t... Is>(std::index_sequence<Is...>) {
+        return makeBlockCombinations<TCombinationsPolicy>(
+            t_bucketPolicy, t_minCatSize, (Is, grouping.ProvidedSource)...
+        );
+    }(std::make_index_sequence<N>{});
+    return GroupedCombinations(std::move(combinationsGenerator), grouping, associated...);
 }
 
 #endif  // COMET_GROUPEDCOMBINATIONS_H
