@@ -4,9 +4,9 @@
 
 #include <Combinations.h>
 #include <gtest/gtest.h>
-
 #include <numeric>
 
+#include "BucketPolicy.h"
 #include "Producers.h"
 
 class BlockFullCombinationsTest : public ::testing::Test
@@ -30,9 +30,6 @@ class BlockFullCombinationsTest : public ::testing::Test
     dataType v4{0.33, 0.66, 0.99};
     dataType v5{0.25, 0.5, 0.75};
 
-    BucketPolicy<testCallable> bp  = BucketPolicy(std::make_tuple(callable), {buckets}, false);
-    BucketPolicy<testCallable> bp2 = BucketPolicy(std::make_tuple(callable), {buckets2}, false);
-
     std::vector<int> expectedBucketsNums{2, 3, 4};
 };
 
@@ -51,7 +48,8 @@ TEST_F(BlockFullCombinationsTest, simpleIterationElementsAreCorrect)
     };
 
     int k          = 0;
-    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp2, 1, v4, v5);
+    const auto bp  = BucketPolicy(false, callable, buckets2);
+    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, 1, v4, v5);
     for (auto [elem0, elem1] : blockFull) {
         auto &[ex0, ex1] = arr[k];
         k++;
@@ -62,13 +60,14 @@ TEST_F(BlockFullCombinationsTest, simpleIterationElementsAreCorrect)
 
 TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
 {
+    const auto bp  = BucketPolicy(false, callable, buckets);
     auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bp, 1, v1, v2, v3);
     const std::array<std::tuple<double, double, double>, 34> arr = {
         {
-         {0.25, 0.3, 0.33},  {0.25, 0.3, 0.44},  {0.25, 0.45, 0.33}, {0.25, 0.45, 0.44},
-         {0.35, 0.3, 0.33},  {0.35, 0.3, 0.44},  {0.35, 0.45, 0.33}, {0.35, 0.45, 0.44},
-         {0.45, 0.3, 0.33},  {0.45, 0.3, 0.44},  {0.45, 0.45, 0.33}, {0.45, 0.45, 0.44},
-         {0.55, 0.6, 0.55},  {0.55, 0.6, 0.66},  {0.65, 0.6, 0.55},  {0.65, 0.6, 0.66},
+         {0.25, 0.3, 0.33}, {0.25, 0.3, 0.44}, {0.25, 0.45, 0.33}, {0.25, 0.45, 0.44},
+         {0.35, 0.3, 0.33}, {0.35, 0.3, 0.44}, {0.35, 0.45, 0.33}, {0.35, 0.45, 0.44},
+         {0.45, 0.3, 0.33}, {0.45, 0.3, 0.44}, {0.45, 0.45, 0.33}, {0.45, 0.45, 0.44},
+         {0.55, 0.6, 0.55}, {0.55, 0.6, 0.66}, {0.65, 0.6, 0.55}, {0.65, 0.6, 0.66},
          {0.75, 0.75, 0.77}, {0.75, 0.75, 0.88}, {0.75, 0.75, 0.99}, {0.75, 0.90, 0.77},
          {0.75, 0.90, 0.88}, {0.75, 0.90, 0.99}, {0.85, 0.75, 0.77}, {0.85, 0.75, 0.88},
          {0.85, 0.75, 0.99}, {0.85, 0.90, 0.77}, {0.85, 0.90, 0.88}, {0.85, 0.90, 0.99},
@@ -81,10 +80,9 @@ TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
     for (const auto &[elem0, elem1, elem2] : blockFull) {
         auto &[ex0, ex1, ex2] = arr[k];
         ++k;
-        const std::string message = std::format("At iteration {}", k);
-        ASSERT_EQ(elem0, ex0) << message;
-        ASSERT_EQ(elem1, ex1) << message;
-        ASSERT_EQ(elem2, ex2) << message;
+        ASSERT_EQ(elem0, ex0);
+        ASSERT_EQ(elem1, ex1);
+        ASSERT_EQ(elem2, ex2);
     }
 }
 
