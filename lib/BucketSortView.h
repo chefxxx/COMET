@@ -27,7 +27,8 @@ class BucketSortView
     using BucketType =
         std::decay_t<std::invoke_result_t<GroupingCallable, typename GroupingType::value_type>>;
     using AssociatedIteratorType = typename AssociatedType::const_iterator;
-    using OriginalViewSpanType   = typename std::span<const AssociatedIteratorType>;
+    using OriginalViewSpanType   = std::span<const AssociatedIteratorType>;
+    using SpanViewType           = SpanView<OriginalViewSpanType>;
 
     BucketSortView(
         const GroupingType& groupingSource, const GroupingCallable& groupingCallable,

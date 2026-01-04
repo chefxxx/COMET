@@ -22,7 +22,7 @@ TEST(AddOneFullTest, twoVectorsSameSize)
         iterators.push_back(it);
     }
 
-    auto span = std::span(iterators);
+    auto span     = std::span(iterators);
     auto spanView = SpanView(span);
 
     auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(v1, spanView);

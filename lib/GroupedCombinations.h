@@ -43,6 +43,28 @@ struct GroupedCombinations {
         typename TGrouping::source, typename TGrouping::callable, typename TAssociated::source,
         typename TAssociated::callable>...>
         m_views;
+
+    // Helper structs for obtaining types from the views and combine them with Grouping type
+    template <typename T>
+    struct ExtractSpanViewTypes;
+
+    template <typename... Views>
+    struct ExtractSpanViewTypes<std::tuple<Views...>> {
+        using type = std::tuple<typename Views::SpanViewType...>;
+    };
+
+    template <typename G, typename Tuple>
+    struct InterleaveWithTuple;
+
+    template <typename G, typename... As>
+    struct InterleaveWithTuple<G, std::tuple<As...>> {
+        using type = decltype(std::tuple_cat(std::declval<std::tuple<G, As>>()...));
+    };
+
+    public:
+    using AssociatedTupleType = ExtractSpanViewTypes<decltype(m_views)>::type;
+    using ResultTupleType =
+        InterleaveWithTuple<typename TGrouping::TSource, AssociatedTupleType>::type;
 };
 
 template <
