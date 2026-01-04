@@ -10,8 +10,8 @@ template <typename TSpanType>
 struct SpanView {
     public:
     using OriginalSpanIter = TSpanType::iterator;
-    using SourceIterType      = TSpanType::element_type;
-    using SourceValueType     = std::iterator_traits<SourceIterType>::value_type;
+    using SourceIterType   = TSpanType::element_type;
+    using SourceValueType  = std::iterator_traits<SourceIterType>::value_type;
 
     using size_type       = std::size_t;
     using difference_type = std::ptrdiff_t;
@@ -56,6 +56,17 @@ struct SpanView {
             --(*this);
             return copy;
         }
+        SpanViewIterator &operator+=(difference_type n)
+        {
+            m_spanIter += n;
+            return *this;
+        }
+
+        SpanViewIterator &operator-=(difference_type n)
+        {
+            m_spanIter -= n;
+            return *this;
+        }
 
         reference operator*() const { return **m_spanIter; }
 
@@ -69,6 +80,25 @@ struct SpanView {
         friend bool operator!=(const SpanViewIterator &lhs, const SpanViewIterator &rhs)
         {
             return lhs.m_spanIter != rhs.m_spanIter;
+        }
+
+        reference operator[](difference_type n) const { return *m_spanIter[n]; }
+
+        friend SpanViewIterator operator+(SpanViewIterator it, difference_type n)
+        {
+            return SpanViewIterator(it.m_spanIter + n);
+        }
+        friend SpanViewIterator operator+(difference_type n, SpanViewIterator it)
+        {
+            return SpanViewIterator(it.m_spanIter + n);
+        }
+        friend SpanViewIterator operator-(SpanViewIterator it, difference_type n)
+        {
+            return SpanViewIterator(it.m_spanIter - n);
+        }
+        friend difference_type operator-(const SpanViewIterator &a, const SpanViewIterator &b)
+        {
+            return a.m_spanIter - b.m_spanIter;
         }
 
         private:
