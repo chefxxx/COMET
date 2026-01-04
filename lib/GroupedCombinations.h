@@ -28,14 +28,10 @@ struct GroupedCombinations {
     explicit GroupedCombinations(
         TCombinationsProducer&& combinations_producer, const TGrouping& grouping,
         const TAssociated&... associated
-    )
-    {
-        m_combinationsProducer = combinations_producer;
-        m_views                = std::make_tuple(BucketSortView(
-            grouping.ProvidedSource, grouping.ProvidedCallable, associated.ProvidedSource,
-            associated.ProvidedCallable
-        )...);
-    }
+        ) : m_combinationsProducer(combinations_producer), m_views(std::make_tuple(BucketSortView(
+                grouping.ProvidedSource, grouping.ProvidedCallable, associated.ProvidedSource,
+                associated.ProvidedCallable
+            )...)) {}
 
     private:
     TCombinationsProducer m_combinationsProducer;
@@ -64,7 +60,7 @@ struct GroupedCombinations {
     public:
     using AssociatedTupleType = ExtractSpanViewTypes<decltype(m_views)>::type;
     using ResultTupleType =
-        InterleaveWithTuple<typename TGrouping::TSource, AssociatedTupleType>::type;
+        InterleaveWithTuple<typename TGrouping::source, AssociatedTupleType>::type;
 };
 
 template <
@@ -78,7 +74,7 @@ auto makeGroupedCombinations(
     constexpr int N            = sizeof...(TAssociated);
     auto combinationsGenerator = [&]<size_t... Is>(std::index_sequence<Is...>) {
         return makeBlockCombinations<TCombinationsPolicy>(
-            t_bucketPolicy, t_minCatSize, (Is, grouping.ProvidedSource)...
+            t_bucketPolicy, t_minCatSize, (static_cast<void>(Is), grouping.ProvidedSource)...
         );
     }(std::make_index_sequence<N>{});
     return GroupedCombinations(std::move(combinationsGenerator), grouping, associated...);
