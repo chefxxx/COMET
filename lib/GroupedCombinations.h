@@ -28,10 +28,14 @@ struct GroupedCombinations {
     explicit GroupedCombinations(
         TCombinationsProducer&& combinations_producer, const TGrouping& grouping,
         const TAssociated&... associated
-        ) : m_combinationsProducer(combinations_producer), m_views(std::make_tuple(BucketSortView(
-                grouping.ProvidedSource, grouping.ProvidedCallable, associated.ProvidedSource,
-                associated.ProvidedCallable
-            )...)) {}
+    )
+        : m_combinationsProducer(combinations_producer),
+          m_views(std::make_tuple(BucketSortView(
+              grouping.ProvidedSource, grouping.ProvidedCallable, associated.ProvidedSource,
+              associated.ProvidedCallable
+          )...))
+    {
+    }
 
     private:
     TCombinationsProducer m_combinationsProducer;
