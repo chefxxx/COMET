@@ -8,11 +8,22 @@
 
 #include "Combinations.h"
 #include "Producers.h"
+#include "SpanView.h"
 
 TEST(AddOneFullTest, twoVectorsSameSize)
 {
     const std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
     const std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
+    //
+    // std::vector<decltype(v2)::const_iterator> iterators;
+    // iterators.reserve(v2.size());
+    //
+    // for (auto it = v2.begin(); it != v2.end(); ++it) {
+    //     iterators.push_back(it);
+    // }
+    //
+    // auto span = std::span(iterators);
+    // auto spanView = SpanView(span);
 
     auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(v1, v2);
 

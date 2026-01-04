@@ -50,6 +50,7 @@ struct CombinationsPolicyBase {
     bool m_isEnd = false;
     std::array<int64_t, sizeof...(TInputs)> m_endIndexNumbers;
     std::array<int64_t, sizeof...(TInputs)> m_currentIndexNumbers;
+    combinations_type m_starts;
     combinations_type m_sentinel;
     combinations_type m_current;
 
@@ -57,6 +58,7 @@ struct CombinationsPolicyBase {
     template <size_t I, typename TInput>
     void setDataHelper(const TInput &t_input)
     {
+        std::get<I>(m_starts)    = t_input.begin();
         std::get<I>(m_current)   = t_input.begin();
         std::get<I>(m_sentinel)  = t_input.end();
         m_currentIndexNumbers[I] = 0;
@@ -156,6 +158,7 @@ class StrictlyUpperCombinationsPolicy
             ((resetState<I, Is, N>(t_condition)), ...);
         }(std::make_index_sequence<I>());
     }
+
 
     // Here there are changes from the Full version. The pointers must be set not to 0, but to
     // Position + 1 from the nearest left pointer.

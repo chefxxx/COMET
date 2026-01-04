@@ -6,31 +6,30 @@
 #define COMET_SPANVIEW_H
 #include <span>
 
-template <typename TSource>
+template <typename TSpanType>
 struct SpanView {
     public:
-    using SourceIterType      = typename TSource::iterator;
-    using SourceConstIterType = typename TSource::const_iterator;
-    using SourceValueType     = typename TSource::value_type;
+    using OriginalSpanIter = TSpanType::iterator;
+    using SourceIterType      = TSpanType::element_type;
+    using SourceValueType     = std::iterator_traits<SourceIterType>::value_type;
 
-    using InnerSpanType   = typename std::span<const SourceConstIterType>;
     using size_type       = std::size_t;
     using difference_type = std::ptrdiff_t;
-    explicit SpanView(InnerSpanType s) : m_span(s){};
+    explicit SpanView(TSpanType s) : m_span(s){};
 
     using value_type      = SourceValueType;
     using reference       = const SourceValueType &;
     using const_reference = const SourceValueType &;
 
     struct SpanViewIterator {
-        using iterator_category = std::forward_iterator_tag;
+        using iterator_category = std::bidirectional_iterator_tag;
         using difference_type   = std::ptrdiff_t;
         using value_type        = SourceValueType;
         using reference         = const value_type &;
         using pointer           = const value_type *;
 
         SpanViewIterator() = default;
-        SpanViewIterator(InnerSpanType spanIterPtr) : m_spanIter(spanIterPtr) {}
+        SpanViewIterator(OriginalSpanIter spanIter) : m_spanIter(spanIter) {}
 
         SpanViewIterator &operator++()
         {
@@ -42,6 +41,19 @@ struct SpanView {
         {
             SpanViewIterator copy = *this;
             ++(*this);
+            return copy;
+        }
+
+        SpanViewIterator &operator--()
+        {
+            --m_spanIter;
+            return *this;
+        }
+
+        SourceIterType operator--(int)
+        {
+            SpanViewIterator copy = *this;
+            --(*this);
             return copy;
         }
 
@@ -60,7 +72,7 @@ struct SpanView {
         }
 
         private:
-        InnerSpanType m_spanIter;
+        OriginalSpanIter m_spanIter;
     };
 
     using iterator       = SpanViewIterator;
@@ -76,7 +88,7 @@ struct SpanView {
     [[nodiscard]] reference operator[](size_type index) const { return *m_span[index]; }
 
     private:
-    InnerSpanType m_span;
+    TSpanType m_span;
 };
 
 #endif  // COMET_SPANVIEW_H

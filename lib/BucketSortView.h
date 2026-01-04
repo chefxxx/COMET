@@ -28,7 +28,6 @@ class BucketSortView
         std::decay_t<std::invoke_result_t<GroupingCallable, typename GroupingType::value_type>>;
     using AssociatedIteratorType = typename AssociatedType::const_iterator;
     using OriginalViewSpanType   = typename std::span<const AssociatedIteratorType>;
-    using WrapperViewSpanType    = SpanView<AssociatedType>;
 
     BucketSortView(
         const GroupingType& groupingSource, const GroupingCallable& groupingCallable,
@@ -50,10 +49,10 @@ class BucketSortView
         auto index       = getIndexFromBucket(m_availableBuckets, bucketId);
         auto sortedStart = m_sortedIterators.begin();
         return index != -1
-                   ? WrapperViewSpanType(OriginalViewSpanType(
+                   ? SpanView(OriginalViewSpanType(
                          sortedStart + m_offsets[index], m_offsets[index + 1] - m_offsets[index]
                      ))
-                   : WrapperViewSpanType(OriginalViewSpanType());
+                   : SpanView(OriginalViewSpanType());
     }
 
     private:
