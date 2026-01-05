@@ -21,29 +21,50 @@ concept ValidAssociated = AssociatedCallableResultIsConvertibleToGrouping<
     typename TGrouping::source, typename TGrouping::callable, typename TAssociated::source,
     typename TAssociated::callable>;
 
-template <typename TCombinationsProducer, typename TGrouping, typename... TAssociated>
+template <typename TProducerType, template <typename...> typename TCombinationsPolicy, typename TBucketPolicy, typename TGrouping, typename... TAssociated>
     requires(ValidAssociated<TGrouping, TAssociated> && ...)
 struct GroupedCombinations {
-    public:
+
+    using GroupingCallableType = TGrouping::callable;
     using ViewsType = std::tuple<BucketSortView<
         typename TGrouping::source, typename TGrouping::callable, typename TAssociated::source,
         typename TAssociated::callable>...>;
 
-    explicit GroupedCombinations(
-        TCombinationsProducer&& combinations_producer, const TGrouping& grouping,
+    template <std::size_t... Is>
+    static TProducerType makeProducer(
+        const TBucketPolicy& bucketPolicy,
+        int minCatSize,
+        const TGrouping& grouping,
+        std::index_sequence<Is...>
+    ) {
+        return makeBlockCombinations<TCombinationsPolicy>(
+            bucketPolicy,
+            minCatSize,
+            (static_cast<void>(Is), grouping.ProvidedSource)...
+        );
+    }
+
+    explicit GroupedCombinations(const TBucketPolicy& t_bucketPolicy, const int t_minCatSize, const TGrouping& grouping,
         const TAssociated&... associated
     )
-        : m_combinationsProducer(combinations_producer),
-          m_views(std::make_tuple(BucketSortView(
+        : m_views(std::make_tuple(BucketSortView(
               grouping.ProvidedSource, grouping.ProvidedCallable, associated.ProvidedSource,
               associated.ProvidedCallable
-          )...))
+          )...)),
+    m_groupingCallable(grouping.ProvidedCallable), m_combinationsProducer(makeProducer(
+      t_bucketPolicy,
+      t_minCatSize,
+      grouping,
+      std::make_index_sequence<sizeof...(TAssociated)>{}
+  ))
     {
     }
 
     private:
-    TCombinationsProducer m_combinationsProducer;
     ViewsType m_views;
+    GroupingCallableType m_groupingCallable;
+    TProducerType m_combinationsProducer;
+
 
     // Helper structs for obtaining types from the views and combine them with Grouping type
     template <typename T>
@@ -77,17 +98,17 @@ struct GroupedCombinations {
         using difference_type   = std::ptrdiff_t;
         using value_type        = ResultTupleType;
         using pointer           = ResultTupleType*;
-        using reference         = ResultTupleTypeRef;
+        //using reference         = ResultTupleTypeRef;
 
-        using BlockIteratorType    = TCombinationsProducer::iterator;
+        using BlockIteratorType    = TProducerType::iterator;
         using GroupingCallableType = TGrouping::callable;
 
         GroupedIterator() = default;
-        GroupedIterator(
-            BlockIteratorType* blockIteratorPtr, ViewsType* viewsPtr,
-            GroupingCallableType* callablePtr
+        GroupedIterator(ViewsType* viewsPtr,
+            GroupingCallableType* callablePtr, TProducerType* combinationsProducerPtr
         )
-            : m_blockIteratorPtr(blockIteratorPtr), m_viewsPtr(viewsPtr), m_callablePtr(callablePtr)
+            : m_viewsPtr(viewsPtr), m_callablePtr(callablePtr),
+        m_combinationsProducerPtr(combinationsProducerPtr), m_blockIteratorPtr(combinationsProducerPtr->begin())
         {
         }
 
@@ -104,21 +125,48 @@ struct GroupedCombinations {
             return copy;
         }
 
-        reference operator*() const
+        // auto operator*() const
+        // {
+        //     auto currentCombination  = *m_blockIteratorPtr;
+        //     constexpr auto N         = std::tuple_size_v<decltype(currentCombination)>;
+        //     auto currentBucketValues = tupleTransform(currentCombination, *m_callablePtr);
+        //     return [&]<size_t... Is>(std::index_sequence<Is...>) {
+        //         return std::tuple_cat(
+        //             std::make_tuple(std::get<Is>(currentCombination),
+        //             std::get<Is>(*m_viewsPtr).getSpanForBucket(std::get<Is>(currentBucketValues)))...
+        //         );
+        //     }(std::make_index_sequence<N>{});
+        // }
+
+        auto operator*() const
         {
-            auto currentCombination  = *m_blockIteratorPtr;
-            auto currentBucketValues = tupleTransform(currentCombination, *m_callablePtr);
+            return *m_blockIteratorPtr;
+        }
+
+        friend bool operator==(const GroupedIterator& lhs, const GroupedIterator& rhs)
+        {
+            return lhs.m_blockIteratorPtr == rhs.m_blockIteratorPtr;
+        }
+
+        friend bool operator==(const GroupedIterator& lhs, GroupingSentinel)
+        {
+            return lhs.m_blockIteratorPtr == lhs.m_combinationsProducerPtr->end();
         }
 
         private:
-        BlockIteratorType* m_blockIteratorPtr;
         ViewsType* m_viewsPtr;
         GroupingCallableType* m_callablePtr;
+        TProducerType* m_combinationsProducerPtr;
+        BlockIteratorType m_blockIteratorPtr;
     };
+
+    [[nodiscard]] GroupedIterator begin() { return GroupedIterator(&m_views,
+        &m_groupingCallable, &m_combinationsProducer); }
+    [[nodiscard]] GroupingSentinel end() { return GroupingSentinel{}; }
 };
 
 template <
-    template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename TGrouping,
+    template <typename...> typename TCombinationsPolicy, typename TBucketPolicy, typename TGrouping,
     typename... TAssociated>
 auto makeGroupedCombinations(
     const TBucketPolicy& t_bucketPolicy, const int t_minCatSize, const TGrouping& grouping,
@@ -126,12 +174,13 @@ auto makeGroupedCombinations(
 )
 {
     constexpr int N            = sizeof...(TAssociated);
-    auto combinationsGenerator = [&]<size_t... Is>(std::index_sequence<Is...>) {
+    using TProducerType = decltype([&]<size_t... Is>(std::index_sequence<Is...>) {
         return makeBlockCombinations<TCombinationsPolicy>(
             t_bucketPolicy, t_minCatSize, (static_cast<void>(Is), grouping.ProvidedSource)...
         );
-    }(std::make_index_sequence<N>{});
-    return GroupedCombinations(std::move(combinationsGenerator), grouping, associated...);
+    }(std::make_index_sequence<N>{}));
+    return GroupedCombinations<TProducerType, TCombinationsPolicy, TBucketPolicy, TGrouping, TAssociated...>
+    (t_bucketPolicy, t_minCatSize, grouping, associated...);
 }
 
 #endif  // COMET_GROUPEDCOMBINATIONS_H

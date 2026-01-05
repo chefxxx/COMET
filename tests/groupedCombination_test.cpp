@@ -87,10 +87,18 @@ TEST_F(GroupedCombinationsTest, ConstructionWithTwoAssociatedSources)
 
     // Define Bucket Policy and Min Cat Size
     const auto bucketPolicy = BucketPolicy(false, bucketCallable, buckets);
-    int minCatSize          = 0;
+    int minCatSize          = 1;
 
     auto groupedCombinations = makeGroupedCombinations<FullCombinationsPolicy>(
-        bucketPolicy, minCatSize, groupingWrapper, associatedWrapper1, associatedWrapper2,
-        associatedWrapper3
+        bucketPolicy, minCatSize, groupingWrapper, associatedWrapper1, associatedWrapper2
     );
+
+    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bucketPolicy, minCatSize, groupingSource, groupingSource);
+    for (auto [elem0, elem1] : blockFull) {
+        std::cout << "elo" << std::endl;
+    }
+
+    for (auto [elem0, elem1] : groupedCombinations) {
+        std::cout << "elo" << std::endl;
+    }
 }
