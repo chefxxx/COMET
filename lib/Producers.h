@@ -149,6 +149,7 @@ struct BlockProducer {
 
         reference operator*() const
         {
+            // TODO: why do we use this type instead of tuple of iterators
             return std::apply(
                 [](auto &&...args) {
                     return std::forward_as_tuple(**args...);
@@ -182,6 +183,7 @@ struct BlockProducer {
         return BlockIterator(&m_combinationsPolicy, &m_groupedData);
     }
     [[nodiscard]] BlockSentinel end() { return BlockSentinel{}; }
+    using iterator = BlockIterator;
 
     private:
     TBucketPolicy m_bucketPolicy;

@@ -25,6 +25,10 @@ template <typename TCombinationsProducer, typename TGrouping, typename... TAssoc
     requires(ValidAssociated<TGrouping, TAssociated> && ...)
 struct GroupedCombinations {
     public:
+    using ViewsType = std::tuple<BucketSortView<
+        typename TGrouping::source, typename TGrouping::callable, typename TAssociated::source,
+        typename TAssociated::callable>...>;
+
     explicit GroupedCombinations(
         TCombinationsProducer&& combinations_producer, const TGrouping& grouping,
         const TAssociated&... associated
@@ -39,10 +43,7 @@ struct GroupedCombinations {
 
     private:
     TCombinationsProducer m_combinationsProducer;
-    std::tuple<BucketSortView<
-        typename TGrouping::source, typename TGrouping::callable, typename TAssociated::source,
-        typename TAssociated::callable>...>
-        m_views;
+    ViewsType m_views;
 
     // Helper structs for obtaining types from the views and combine them with Grouping type
     template <typename T>
@@ -64,7 +65,56 @@ struct GroupedCombinations {
     public:
     using AssociatedTupleType = ExtractSpanViewTypes<decltype(m_views)>::type;
     using ResultTupleType =
-        InterleaveWithTuple<typename TGrouping::source, AssociatedTupleType>::type;
+        InterleaveWithTuple<typename TGrouping::source::value_type, AssociatedTupleType>::type;
+    using ResultTupleTypeRef = InterleaveWithTuple<
+        typename std::iterator_traits<typename TGrouping::source::const_iterator>::reference,
+        ResultTupleType>::type;
+
+    struct GroupingSentinel {
+    };
+    struct GroupedIterator {
+        using iterator_category = std::input_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = ResultTupleType;
+        using pointer           = ResultTupleType*;
+        using reference         = ResultTupleTypeRef;
+
+        using BlockIteratorType    = TCombinationsProducer::iterator;
+        using GroupingCallableType = TGrouping::callable;
+
+        GroupedIterator() = default;
+        GroupedIterator(
+            BlockIteratorType* blockIteratorPtr, ViewsType* viewsPtr,
+            GroupingCallableType* callablePtr
+        )
+            : m_blockIteratorPtr(blockIteratorPtr), m_viewsPtr(viewsPtr), m_callablePtr(callablePtr)
+        {
+        }
+
+        GroupedIterator& operator++()
+        {
+            ++m_blockIteratorPtr;
+            return *this;
+        }
+
+        GroupedIterator operator++(int)
+        {
+            auto copy = *this;
+            ++(*this);
+            return copy;
+        }
+
+        reference operator*() const
+        {
+            auto currentCombination  = *m_blockIteratorPtr;
+            auto currentBucketValues = tupleTransform(currentCombination, *m_callablePtr);
+        }
+
+        private:
+        BlockIteratorType* m_blockIteratorPtr;
+        ViewsType* m_viewsPtr;
+        GroupingCallableType* m_callablePtr;
+    };
 };
 
 template <
