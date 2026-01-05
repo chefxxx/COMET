@@ -69,6 +69,14 @@ class GroupedCombinationsTest : public ::testing::Test
         {10, "Assoc3_G10_2", 1},
     };
 
+    SourceWithCallable<std::vector<GroupingElement>, decltype(GroupingCallable)> groupingWrapper{
+        groupingSource, GroupingCallable
+    };
+    SourceWithCallable<std::vector<AssociatedElement1>, decltype(AssociatedCallable1)>
+        assocWrapper1{associatedSource1, AssociatedCallable1};
+    SourceWithCallable<std::vector<AssociatedElement2>, decltype(AssociatedCallable2)>
+        assocWrapper2{associatedSource2, AssociatedCallable2};
+
     const std::vector<double> buckets{0.0, 0.25, 0.5, 0.75, 1.0};
 
     struct BucketCallable {
@@ -77,28 +85,82 @@ class GroupedCombinationsTest : public ::testing::Test
     [[no_unique_address]] BucketCallable bucketCallable;
 };
 
-TEST_F(GroupedCombinationsTest, ConstructionWithTwoAssociatedSources)
+TEST_F(GroupedCombinationsTest, CorrectDataAlignment)
 {
-    // Wrap sources with callables as expected by GroupedCombinations
-    auto groupingWrapper    = SourceWithCallable{groupingSource, GroupingCallable};
-    auto associatedWrapper1 = SourceWithCallable{associatedSource1, AssociatedCallable1};
-    auto associatedWrapper2 = SourceWithCallable{associatedSource2, AssociatedCallable2};
-    auto associatedWrapper3 = SourceWithCallable{associatedSource3, AssociatedCallable3};
-
-    // Define Bucket Policy and Min Cat Size
     const auto bucketPolicy = BucketPolicy(false, bucketCallable, buckets);
-    int minCatSize          = 1;
 
-    auto groupedCombinations = makeGroupedCombinations<FullCombinationsPolicy>(
-        bucketPolicy, minCatSize, groupingWrapper, associatedWrapper1, associatedWrapper2
+    auto grouped = makeGroupedCombinations<FullCombinationsPolicy>(
+        bucketPolicy, 1, groupingWrapper, assocWrapper1, assocWrapper2
     );
 
-    auto blockFull = makeBlockCombinations<FullCombinationsPolicy>(bucketPolicy, minCatSize, groupingSource, groupingSource);
-    for (auto [elem0, elem1] : blockFull) {
-        std::cout << "elo" << std::endl;
-    }
+    int count = 0;
+    for (auto [el0, span1, el1, span2] : grouped) {
+        count++;
 
-    for (auto [elem0, elem1] : groupedCombinations) {
-        std::cout << "elo" << std::endl;
+        if (el0.Id == 10) {
+            EXPECT_EQ(span1.size(), 2);
+            EXPECT_DOUBLE_EQ(span1[0].value, 1.1);
+        } else if (el0.Id == 20) {
+            EXPECT_EQ(span1.size(), 0);
+        }
+
+        if (el1.Id == 10) {
+            EXPECT_EQ(span2.size(), 2);  // Assoc2_G10_1, Assoc2_G10_2
+        } else if (el1.Id == 20) {
+            EXPECT_EQ(span2.size(), 1);  // Assoc2_G20
+            EXPECT_EQ(span2[0].value, "Assoc2_G20");
+        }
+    }
+    EXPECT_EQ(count, 4);
+}
+
+TEST_F(GroupedCombinationsTest, FiltersOutUnknownIds)
+{
+    const auto bucketPolicy = BucketPolicy(false, bucketCallable, buckets);
+
+    auto grouped = makeGroupedCombinations<FullCombinationsPolicy>(
+        bucketPolicy, 1, groupingWrapper, assocWrapper1, assocWrapper2
+    );
+
+    for (auto [el0, span1, el1, span2] : grouped) {
+        for (auto it : span1) {
+            EXPECT_NE(it.groupId, 30);
+        }
+    }
+}
+
+TEST_F(GroupedCombinationsTest, ThreeAssociatedSourcesWork)
+{
+    auto assocWrapper3      = SourceWithCallable{associatedSource3, AssociatedCallable3};
+    const auto bucketPolicy = BucketPolicy(false, bucketCallable, buckets);
+
+    auto grouped = makeGroupedCombinations<FullCombinationsPolicy>(
+        bucketPolicy, 1, groupingWrapper, assocWrapper1, assocWrapper2, assocWrapper3
+    );
+
+    bool found20 = false;
+    for (auto [el0, s1, el1, s2, el2, s3] : grouped) {
+        if (el0.Id == 20) {
+            found20 = true;
+            EXPECT_EQ(s3.size(), 2);
+        }
+    }
+    EXPECT_TRUE(found20);
+}
+
+TEST_F(GroupedCombinationsTest, PreservesOriginalOrderInSpans)
+{
+    const auto bucketPolicy = BucketPolicy(false, bucketCallable, buckets);
+
+    auto grouped = makeGroupedCombinations<FullCombinationsPolicy>(
+        bucketPolicy, 1, groupingWrapper, assocWrapper1, assocWrapper2
+    );
+
+    for (auto [el0, s1, el1, s2] : grouped) {
+        if (el0.Id == 10) {
+            ASSERT_GE(s1.size(), 2);
+            EXPECT_DOUBLE_EQ(s1[0].value, 1.1);
+            EXPECT_DOUBLE_EQ(s1[1].value, 1.2);
+        }
     }
 }
