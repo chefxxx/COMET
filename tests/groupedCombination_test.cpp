@@ -4,7 +4,7 @@
 
 #include "BucketPolicy.h"
 #include "Combinations.h"
-#include "GroupedCombinations.h"
+#include "Producers.h"
 #include "gtest/gtest.h"
 
 struct GroupingElement {
