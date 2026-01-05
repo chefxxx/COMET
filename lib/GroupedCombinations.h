@@ -31,28 +31,24 @@ struct GroupedCombinations {
         typename TGrouping::source, typename TGrouping::callable, typename TAssociated::source,
         typename TAssociated::callable>...>;
 
-    template <std::size_t... Is>
-    static TProducerType
-    makeProducer(const TBucketPolicy& bucketPolicy, int minCatSize, const TGrouping& grouping, std::index_sequence<Is...>)
-    {
-        return makeBlockCombinations<TCombinationsPolicy>(
-            bucketPolicy, minCatSize, (static_cast<void>(Is), grouping.ProvidedSource)...
-        );
-    }
+    using BucketType = std::invoke_result_t<typename TGrouping::callable, typename TGrouping::source::value_type>;
 
     explicit GroupedCombinations(
         const TBucketPolicy& t_bucketPolicy, const int t_minCatSize, const TGrouping& grouping,
         const TAssociated&... associated
     )
-        : m_views(std::make_tuple(BucketSortView(
-              grouping.ProvidedSource, grouping.ProvidedCallable, associated.ProvidedSource,
-              associated.ProvidedCallable
-          )...)),
+        : m_views([&]() {
+            auto availableBuckets = getAvailableBuckets<BucketType>(grouping.ProvidedSource, grouping.ProvidedCallable);
+              return std::make_tuple(BucketSortView(grouping.ProvidedSource, grouping.ProvidedCallable, associated.ProvidedSource,
+                  associated.ProvidedCallable, availableBuckets
+              )...);
+          }()),
           m_groupingCallable(grouping.ProvidedCallable),
-          m_combinationsProducer(makeProducer(
-              t_bucketPolicy, t_minCatSize, grouping,
-              std::make_index_sequence<sizeof...(TAssociated)>{}
-          ))
+          m_combinationsProducer([&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
+              return makeBlockCombinations<TCombinationsPolicy>(
+                  t_bucketPolicy, t_minCatSize, (static_cast<void>(Is), grouping.ProvidedSource)...
+              );
+          }(std::make_index_sequence<sizeof...(TAssociated)>{}))
     {
     }
 
@@ -129,7 +125,7 @@ struct GroupedCombinations {
         {
             auto currentCombination = *m_blockIteratorPtr;
             constexpr auto N        = sizeof...(TAssociated);
-            return [&]<size_t... Is>(std::index_sequence<Is...>) {
+            return [&]<size_t... Is>(const std::index_sequence<Is...>&) {
                 return std::tuple_cat(std::make_tuple(
                     std::get<Is>(currentCombination),
                     std::get<Is>(*m_viewsPtr)

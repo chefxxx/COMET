@@ -12,7 +12,8 @@ file(GLOB TEST_SOURCES
 #                               Define exec                                      #
 # ------------------------------------------------------------------------------ #
 
-add_executable(${TEST_NAME} ${TEST_SOURCES})
+add_executable(${TEST_NAME} ${TEST_SOURCES}
+        stressTest_test.cpp)
 
 # ------------------------------------------------------------------------------ #
 #                                   Link                                         #

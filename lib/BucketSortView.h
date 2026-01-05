@@ -34,9 +34,26 @@ class BucketSortView
         const GroupingType& groupingSource, const GroupingCallable& groupingCallable,
         const AssociatedType& associatedSource, const AssociatedCallable& associatedCallable
     )
+        : m_availableBuckets(getAvailableBuckets<BucketType>(groupingSource, groupingCallable))
     {
-        m_availableBuckets = getAvailableBuckets<BucketType>(groupingSource, groupingCallable);
-        auto amounts       = getAmountsInsideAvailableBuckets(
+        auto amounts = getAmountsInsideAvailableBuckets(
+            associatedSource, associatedCallable, m_availableBuckets
+        );
+        m_offsets         = getOffsetsFromAmounts(amounts);
+        m_sortedIterators = getIteratorsSorted(
+            associatedSource, associatedCallable, m_offsets, m_availableBuckets, amounts
+        );
+    }
+
+    // Constructor, if the available buckets are known before and there is no need to count them
+    BucketSortView(
+        const GroupingType& groupingSource, const GroupingCallable& groupingCallable,
+        const AssociatedType& associatedSource, const AssociatedCallable& associatedCallable,
+        const std::vector<BucketType>& availableBuckets
+    )
+        : m_availableBuckets(availableBuckets)
+    {
+        auto amounts = getAmountsInsideAvailableBuckets(
             associatedSource, associatedCallable, m_availableBuckets
         );
         m_offsets         = getOffsetsFromAmounts(amounts);
