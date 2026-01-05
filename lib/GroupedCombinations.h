@@ -93,7 +93,9 @@ struct GroupedCombinations {
         using difference_type   = std::ptrdiff_t;
         using value_type        = ResultTupleType;
         using pointer           = void;
-        using reference         = ResultTupleTypeRef;
+        // TODO: Here is something bad with objects lifetime, the value_type is safer but may
+        // eat more memory
+        using reference = ResultTupleTypeRef;
 
         using BlockIteratorType    = TProducerType::iterator;
         using GroupingCallableType = TGrouping::callable;
@@ -123,7 +125,7 @@ struct GroupedCombinations {
             return copy;
         }
 
-        reference operator*() const
+        auto operator*() const
         {
             auto currentCombination = *m_blockIteratorPtr;
             constexpr auto N        = sizeof...(TAssociated);
