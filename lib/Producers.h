@@ -6,8 +6,8 @@
 #define PRODUCERS_H
 
 #include <tuple>
-#include "Helpers.h"
 #include "BucketSortView.h"
+#include "Helpers.h"
 
 /**
  * @brief This class just serves as an iterable wrapper around policies.
@@ -229,7 +229,7 @@ struct GroupedProducer {
 
     template <std::size_t... Is>
     static TProducerType
-    makeProducer(const TBucketPolicy& bucketPolicy, int minCatSize, const TGrouping& grouping, std::index_sequence<Is...>)
+    makeProducer(const TBucketPolicy &bucketPolicy, int minCatSize, const TGrouping &grouping, std::index_sequence<Is...>)
     {
         return makeBlockCombinations<TCombinationsPolicy>(
             bucketPolicy, minCatSize, (static_cast<void>(Is), grouping.ProvidedSource)...
@@ -237,8 +237,8 @@ struct GroupedProducer {
     }
 
     explicit GroupedProducer(
-        const TBucketPolicy& t_bucketPolicy, const int t_minCatSize, const TGrouping& grouping,
-        const TAssociated&... associated
+        const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const TGrouping &grouping,
+        const TAssociated &...associated
     )
         : m_views(std::make_tuple(BucketSortView(
               grouping.ProvidedSource, grouping.ProvidedCallable, associated.ProvidedSource,
@@ -298,8 +298,8 @@ struct GroupedProducer {
 
         GroupedIterator() = default;
         GroupedIterator(
-            ViewsType* viewsPtr, GroupingCallableType* callablePtr,
-            TProducerType* combinationsProducerPtr
+            ViewsType *viewsPtr, GroupingCallableType *callablePtr,
+            TProducerType *combinationsProducerPtr
         )
             : m_viewsPtr(viewsPtr),
               m_callablePtr(callablePtr),
@@ -308,7 +308,7 @@ struct GroupedProducer {
         {
         }
 
-        GroupedIterator& operator++()
+        GroupedIterator &operator++()
         {
             ++m_blockIteratorPtr;
             return *this;
@@ -334,20 +334,20 @@ struct GroupedProducer {
             }(std::make_index_sequence<N>{});
         }
 
-        friend bool operator==(const GroupedIterator& lhs, const GroupedIterator& rhs)
+        friend bool operator==(const GroupedIterator &lhs, const GroupedIterator &rhs)
         {
             return lhs.m_blockIteratorPtr == rhs.m_blockIteratorPtr;
         }
 
-        friend bool operator==(const GroupedIterator& lhs, GroupingSentinel)
+        friend bool operator==(const GroupedIterator &lhs, GroupingSentinel)
         {
             return lhs.m_blockIteratorPtr == lhs.m_combinationsProducerPtr->end();
         }
 
         private:
-        ViewsType* m_viewsPtr;
-        GroupingCallableType* m_callablePtr;
-        TProducerType* m_combinationsProducerPtr;
+        ViewsType *m_viewsPtr;
+        GroupingCallableType *m_callablePtr;
+        TProducerType *m_combinationsProducerPtr;
         BlockIteratorType m_blockIteratorPtr;
     };
 
@@ -362,8 +362,8 @@ template <
     template <typename...> typename TCombinationsPolicy, typename TBucketPolicy, typename TGrouping,
     typename... TAssociated>
 auto makeGroupedCombinations(
-    const TBucketPolicy& t_bucketPolicy, const int t_minCatSize, const TGrouping& grouping,
-    const TAssociated&... associated
+    const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const TGrouping &grouping,
+    const TAssociated &...associated
 )
 {
     constexpr int N     = sizeof...(TAssociated);
