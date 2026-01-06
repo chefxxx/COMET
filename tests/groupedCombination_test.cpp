@@ -4,6 +4,7 @@
 
 #include "BucketPolicy.h"
 #include "Combinations.h"
+#include "HeavyStructures.h"
 #include "Producers.h"
 #include "gtest/gtest.h"
 
@@ -87,6 +88,7 @@ class GroupedCombinationsTest : public ::testing::Test
 
 TEST_F(GroupedCombinationsTest, CorrectDataAlignment)
 {
+    const HeavyAssociatedSecondStruct str{};
     const auto bucketPolicy = BucketPolicy(false, bucketCallable, buckets);
 
     auto grouped = makeGroupedCombinations<FullCombinationsPolicy>(
@@ -94,7 +96,7 @@ TEST_F(GroupedCombinationsTest, CorrectDataAlignment)
     );
 
     int count = 0;
-    for (auto [el0, span1, el1, span2] : grouped) {
+    for (const auto& [el0, span1, el1, span2] : grouped) {
         count++;
 
         if (el0.Id == 10) {
@@ -139,7 +141,7 @@ TEST_F(GroupedCombinationsTest, ThreeAssociatedSourcesWork)
     );
 
     bool found20 = false;
-    for (auto [el0, s1, el1, s2, el2, s3] : grouped) {
+    for (const auto& [el0, s1, el1, s2, el2, s3] : grouped) {
         if (el0.Id == 20) {
             found20 = true;
             EXPECT_EQ(s3.size(), 2);
@@ -156,7 +158,7 @@ TEST_F(GroupedCombinationsTest, PreservesOriginalOrderInSpans)
         bucketPolicy, 1, groupingWrapper, assocWrapper1, assocWrapper2
     );
 
-    for (auto [el0, s1, el1, s2] : grouped) {
+    for (const auto& [el0, s1, el1, s2] : grouped) {
         if (el0.Id == 10) {
             ASSERT_GE(s1.size(), 2);
             EXPECT_DOUBLE_EQ(s1[0].value, 1.1);
