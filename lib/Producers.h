@@ -87,6 +87,13 @@ auto makeCombinations(const TInputs &...t_inputs)
     return CombinationsProducer<PolicyType>(PolicyType(t_inputs...));
 }
 
+template <template <typename...> class TCombinationsPolicy, typename... TInputs>
+auto makeSameTypeCombinations(int categoryNeighbours, const TInputs &...t_inputs)
+{
+    using PolicyType = TCombinationsPolicy<TInputs...>;
+    return CombinationsProducer<PolicyType>(PolicyType(categoryNeighbours, t_inputs...));
+}
+
 template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TInputs>
 struct BlockProducer {
     explicit BlockProducer(
@@ -107,7 +114,7 @@ struct BlockProducer {
         using value_type        = std::tuple<typename TInputs::value_type...>;
         using pointer           = void;
         using reference         = std::tuple<
-            typename std::iterator_traits<typename TInputs::const_iterator>::reference...>;
+                    typename std::iterator_traits<typename TInputs::const_iterator>::reference...>;
 
         BlockIterator() = default;
         explicit BlockIterator(
