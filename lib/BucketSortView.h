@@ -49,6 +49,7 @@ class BucketSortView
     {
         auto index       = getIndexFromBucket(m_availableBuckets, bucketId);
         auto sortedStart = m_sortedIterators.begin();
+        // TODO: Something very bad happens here with copies.
         return index != -1
                    ? SpanView(OriginalViewSpanType(
                          sortedStart + m_offsets[index], m_offsets[index + 1] - m_offsets[index]

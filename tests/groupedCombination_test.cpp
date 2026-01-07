@@ -134,7 +134,7 @@ TEST_F(GroupedCombinationsTest, FiltersOutUnknownIds)
 TEST_F(GroupedCombinationsTest, ThreeAssociatedSourcesWork)
 {
     const auto assocWrapper3 = SourceWithCallable{associatedSource3, AssociatedCallable3};
-    const auto bucketPolicy = BucketPolicy(false, bucketCallable, buckets);
+    const auto bucketPolicy  = BucketPolicy(false, bucketCallable, buckets);
 
     auto grouped = makeGroupedCombinations<FullCombinationsPolicy>(
         bucketPolicy, 1, groupingWrapper, assocWrapper1, assocWrapper2, assocWrapper3

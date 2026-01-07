@@ -5,8 +5,6 @@
 #ifndef COMET_SPANVIEW_H
 #define COMET_SPANVIEW_H
 
-#include <span>
-
 template <typename TSpanType>
 struct SpanView {
     using OriginalSpanIter = typename TSpanType::iterator;
@@ -15,7 +13,7 @@ struct SpanView {
 
     using size_type       = std::size_t;
     using difference_type = std::ptrdiff_t;
-    explicit SpanView(TSpanType s) : m_span(s){};
+    explicit SpanView(const TSpanType &s) : m_span(s){};
 
     using value_type      = SourceValueType;
     using reference       = const SourceValueType &;
