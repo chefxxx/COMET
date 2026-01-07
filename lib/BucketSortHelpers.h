@@ -4,6 +4,7 @@
 
 #ifndef COMET_BUCKETSORTHELPERS_H
 #define COMET_BUCKETSORTHELPERS_H
+
 #include <algorithm>
 #include <numeric>
 #include <vector>

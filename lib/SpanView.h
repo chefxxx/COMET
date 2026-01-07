@@ -4,14 +4,14 @@
 
 #ifndef COMET_SPANVIEW_H
 #define COMET_SPANVIEW_H
+
 #include <span>
 
 template <typename TSpanType>
 struct SpanView {
-    public:
-    using OriginalSpanIter = TSpanType::iterator;
-    using SourceIterType   = TSpanType::element_type;
-    using SourceValueType  = std::iterator_traits<SourceIterType>::value_type;
+    using OriginalSpanIter = typename TSpanType::iterator;
+    using SourceIterType   = typename TSpanType::element_type;
+    using SourceValueType  = typename std::iterator_traits<SourceIterType>::value_type;
 
     using size_type       = std::size_t;
     using difference_type = std::ptrdiff_t;
@@ -29,7 +29,7 @@ struct SpanView {
         using pointer           = const value_type *;
 
         SpanViewIterator() = default;
-        SpanViewIterator(OriginalSpanIter spanIter) : m_spanIter(spanIter) {}
+        explicit SpanViewIterator(OriginalSpanIter spanIter) : m_spanIter(spanIter) {}
 
         SpanViewIterator &operator++()
         {

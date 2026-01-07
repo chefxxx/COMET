@@ -222,7 +222,7 @@ template <
     typename TBucketPolicy, typename TGrouping, typename... TAssociated>
     requires(ValidAssociated<TGrouping, TAssociated> && ...)
 struct GroupedProducer {
-    using GroupingCallableType = TGrouping::callable;
+    using GroupingCallableType = typename TGrouping::callable;
     using ViewsType            = std::tuple<BucketSortView<
         typename TGrouping::source, typename TGrouping::callable, typename TAssociated::source,
         typename TAssociated::callable>...>;
@@ -275,12 +275,9 @@ struct GroupedProducer {
     };
 
     public:
-    using AssociatedTupleType = ExtractSpanViewTypes<decltype(m_views)>::type;
-    using ResultTupleType =
-        InterleaveWithTuple<typename TGrouping::source::value_type, AssociatedTupleType>::type;
-    using ResultTupleTypeRef = InterleaveWithTuple<
-        typename std::iterator_traits<typename TGrouping::source::const_iterator>::reference,
-        AssociatedTupleType>::type;
+    using AssociatedTupleType = typename ExtractSpanViewTypes<decltype(m_views)>::type;
+    using ResultTupleType = typename InterleaveWithTuple<typename TGrouping::source::value_type, AssociatedTupleType>::type;
+    using ResultTupleTypeRef = typename InterleaveWithTuple<typename std::iterator_traits<typename TGrouping::source::const_iterator>::reference, AssociatedTupleType>::type;
 
     struct GroupingSentinel {
     };
@@ -289,12 +286,11 @@ struct GroupedProducer {
         using difference_type   = std::ptrdiff_t;
         using value_type        = ResultTupleType;
         using pointer           = void;
-        // TODO: Here is something bad with objects lifetime, the value_type is safer but may
-        // eat more memory
+        // TODO: Here is something bad with objects lifetime, the value_type is safer but may eat more memory
         using reference = ResultTupleTypeRef;
 
-        using BlockIteratorType    = TProducerType::iterator;
-        using GroupingCallableType = TGrouping::callable;
+        using BlockIteratorType    = typename TProducerType::iterator;
+        using GroupingCallableType = typename TGrouping::callable;
 
         GroupedIterator() = default;
         GroupedIterator(
@@ -321,12 +317,12 @@ struct GroupedProducer {
             return copy;
         }
 
-        auto operator*() const
+        reference operator*() const
         {
             auto currentCombination = *m_blockIteratorPtr;
             constexpr auto N        = sizeof...(TAssociated);
             return [&]<size_t... Is>(std::index_sequence<Is...>) {
-                return std::tuple_cat(std::make_tuple(
+                return std::tuple_cat(std::forward_as_tuple(
                     std::get<Is>(currentCombination),
                     std::get<Is>(*m_viewsPtr)
                         .getSpanForBucket((*m_callablePtr)(std::get<Is>(currentCombination)))
