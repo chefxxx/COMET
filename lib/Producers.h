@@ -206,10 +206,13 @@ auto makeBlockCombinations(
 
 template <typename TSource, typename TCallable>
 struct SourceWithCallable {
+    // TODO: Change the whole wrapper, so it accepts the rvalue?
     using source   = TSource;
     using callable = TCallable;
-    source ProvidedSource;
+    const source &ProvidedSource;
     callable ProvidedCallable;
+    SourceWithCallable(const TSource &s, TCallable c) : ProvidedSource(s), ProvidedCallable(c) {}
+    SourceWithCallable(TSource &&, TCallable) = delete;
 };
 
 template <typename TGrouping, typename TAssociated>

@@ -166,3 +166,5 @@ TEST_F(GroupedCombinationsTest, PreservesOriginalOrderInSpans)
         }
     }
 }
+
+TEST_F(GroupedCombinationsTest, TestUseCase) {}
