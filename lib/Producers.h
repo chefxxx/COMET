@@ -353,6 +353,7 @@ struct GroupedProducer {
         ViewsType *m_viewsPtr;
         GroupingCallableType *m_callablePtr;
         TProducerType *m_combinationsProducerPtr;
+        // TODO: change name here and change the callable to value?
         BlockIteratorType m_blockIteratorPtr;
     };
 
