@@ -64,7 +64,7 @@ struct BucketPolicy final {
     }
 
     // TODO: ghost function
-    [[nodiscard]] constexpr int getMaximalBucketCount() const
+    [[nodiscard]] constexpr int gcodeetMaximalBucketCount() const
     {
         return [&]<std::size_t... I>(std::index_sequence<I...>) {
             return (1 * ... * (std::get<I>(m_buckets).size() + 1));

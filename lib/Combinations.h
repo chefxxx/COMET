@@ -89,6 +89,7 @@ class FullCombinationsPolicy
 
     void addOne() { this->addOneBaseImpl(); }
 
+    // TODO: Consider if this must be private with using friend to base class.
     template <size_t I, size_t N>
     void addOneImpl(bool &t_wasModified)
     {
