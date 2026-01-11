@@ -222,7 +222,6 @@ auto makeBlockCombinations(
     );
 }
 
-
 template <
     template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename... TInputs>
 auto makeSameKindBlockCombinations(
@@ -233,7 +232,8 @@ auto makeSameKindBlockCombinations(
     using PolicyType = TCombinationsPolicy<std::vector<typename TInputs::const_iterator>...>;
     return BlockProducer<TBucketPolicy, PolicyType, TInputs...>(
         t_bucketPolicy, PolicyType(t_categoryNeighbors), t_minCatSize, t_inputs...
-
+    );
+}
 
 template <typename TSource, typename TCallable>
 struct SourceWithCallable {
