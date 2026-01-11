@@ -5,6 +5,7 @@
 #ifndef COMBINATIONS_H
 #define COMBINATIONS_H
 
+#include <algorithm>
 #include <iterator>
 #include <tuple>
 
