@@ -178,4 +178,145 @@ class StrictlyUpperCombinationsPolicy
     }
 };
 
+template <typename... TInputs>
+class SameTypeFullCombinationsPolicy
+    : public CombinationsPolicyBase<SameTypeFullCombinationsPolicy<TInputs...>, TInputs...>
+{
+    public:
+    SameTypeFullCombinationsPolicy() = default;
+    explicit SameTypeFullCombinationsPolicy(int categoryNeighbours, const TInputs &...t_inputs)
+    {
+        m_categoryNeighbours = categoryNeighbours;
+        m_maxIndex           = categoryNeighbours;
+        setData(t_inputs...);
+    }
+
+    SameTypeFullCombinationsPolicy(int categoryNeighbours)
+    {
+        m_categoryNeighbours = categoryNeighbours;
+        m_maxIndex           = categoryNeighbours;
+    }
+
+    void addOne() { this->addOneBaseImpl(); }
+
+    void setData(const TInputs &...t_inputs) { this->setDataBaseImpl(t_inputs...); };
+
+    template <size_t I, size_t N>
+    void addOneImpl(bool &t_wasModified)
+    {
+        constexpr auto ind           = N - I - 1;
+        int64_t currentPointersIndex = this->m_currentIndexNumbers[ind];
+        if constexpr (ind == 0) {
+            m_maxIndex = currentPointersIndex + m_categoryNeighbours;
+            m_minIndex = currentPointersIndex;
+        }
+        if (currentPointersIndex <= m_maxIndex) {
+            [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
+                (resetState<I, Is, N>(), ...);
+            }(std::make_index_sequence<I>());
+            t_wasModified = false;
+        }
+    }
+
+    private:
+    int m_categoryNeighbours = 0;
+    int64_t m_maxIndex       = 0;
+    int64_t m_minIndex       = 0;
+
+    // N - number of data sources
+    // I - which position from the right side is considered
+    // J - loop iterator, which pointer is set to 0 from the N - I to right position
+    template <size_t I, size_t J, size_t N>
+    void resetState()
+    {
+        constexpr auto ind = N - I + J;
+        std::get<ind>(this->m_current) += (m_minIndex - this->m_currentIndexNumbers[ind]);
+        this->m_currentIndexNumbers[ind] = m_minIndex;
+    }
+};
+
+template <typename... TInputs>
+class SameTypeStrictlyUpperCombinationsPolicy
+    : public CombinationsPolicyBase<SameTypeStrictlyUpperCombinationsPolicy<TInputs...>, TInputs...>
+{
+    public:
+    SameTypeStrictlyUpperCombinationsPolicy() = default;
+    explicit SameTypeStrictlyUpperCombinationsPolicy(
+        int categoryNeighbours, const TInputs &...t_inputs
+    )
+        : m_categoryNeighbours(categoryNeighbours), m_maxIndex(m_categoryNeighbours)
+    {
+        setData(t_inputs...);
+    }
+
+    SameTypeStrictlyUpperCombinationsPolicy(int categoryNeighbours)
+        : m_categoryNeighbours(categoryNeighbours)
+    {
+    }
+
+    void addOne() { this->addOneBaseImpl(); }
+
+    void setData(const TInputs &...t_inputs)
+    {
+        this->setDataBaseImpl(t_inputs...);
+        setDataPolicyHelper();
+    }
+
+    template <size_t I, size_t N>
+    void addOneImpl(bool &t_wasModified)
+    {
+        constexpr auto ind           = N - I - 1;
+        int64_t currentPointersIndex = this->m_currentIndexNumbers[ind];
+        if constexpr (ind == 0) {
+            m_maxIndex = currentPointersIndex + m_categoryNeighbours;
+        }
+        if (currentPointersIndex <= m_maxIndex) {
+            bool wasChanged = true;
+            setRanges<I, N>(wasChanged);
+            t_wasModified = !wasChanged;
+        }
+    }
+
+    // Here we don't need to have min index
+
+    private:
+    int m_categoryNeighbours = 0;
+    int64_t m_maxIndex       = 0;
+
+    void setDataPolicyHelper()
+    {
+        if (!this->m_isEnd) {
+            m_maxIndex       = this->m_currentIndexNumbers[0] + m_categoryNeighbours;
+            constexpr auto N = sizeof...(TInputs);
+            bool shouldEnd   = true;
+            setRanges<N - 1, N>(shouldEnd);
+            this->m_isEnd = !shouldEnd;
+        }
+    }
+
+    template <size_t I, size_t N>
+    void setRanges(bool &t_condition)
+    {
+        [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
+            ((resetState<I, Is, N>(t_condition)), ...);
+        }(std::make_index_sequence<I>());
+    }
+
+    template <size_t I, size_t J, size_t N>
+    void resetState(bool &t_condition)
+    {
+        if (t_condition) {
+            constexpr auto ind = N - I + J;
+            int64_t tmpInd     = this->m_currentIndexNumbers[ind - 1] + 1;
+            auto minBorder     = std::min(this->m_endIndexNumbers[ind], this->m_maxIndex + 1);
+            if (tmpInd < minBorder) {
+                std::get<ind>(this->m_current) += tmpInd - this->m_currentIndexNumbers[ind];
+                this->m_currentIndexNumbers[ind] = tmpInd;
+            } else {
+                t_condition = false;
+            }
+        }
+    }
+};
+
 #endif  // COMBINATIONS_H

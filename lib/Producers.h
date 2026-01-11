@@ -88,6 +88,13 @@ auto makeCombinations(const TInputs &...t_inputs)
     return CombinationsProducer<PolicyType>(PolicyType(t_inputs...));
 }
 
+template <template <typename...> class TCombinationsPolicy, typename... TInputs>
+auto makeSameKindCombinations(int categoryNeighbours, const TInputs &...t_inputs)
+{
+    using PolicyType = TCombinationsPolicy<TInputs...>;
+    return CombinationsProducer<PolicyType>(PolicyType(categoryNeighbours, t_inputs...));
+}
+
 template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TInputs>
 struct BlockProducer {
     explicit BlockProducer(
@@ -116,27 +123,38 @@ struct BlockProducer {
         )
             : m_dataPtr(t_coupled), m_policyPtr(t_policy)
         {
-            std::apply(
-                [&](auto const &...buckets) {
-                    m_policyPtr->setData(buckets...);
-                },
-                m_dataPtr->currentBuckets()
-            );
+            while (!m_dataPtr->isEnd()) {
+                std::apply(
+                    [&](auto const &...buckets) {
+                        m_policyPtr->setData(buckets...);
+                    },
+                    m_dataPtr->currentBuckets()
+                );
+
+                if (!m_policyPtr->isEnd()) {
+                    break;
+                }
+
+                m_dataPtr->nextIterators();
+            }
         }
 
         BlockIterator &operator++()
         {
             m_policyPtr->addOne();
-            if (m_policyPtr->isEnd()) {
+            while (m_policyPtr->isEnd() && !m_dataPtr->isEnd()) {
                 m_dataPtr->nextIterators();
-                if (!m_dataPtr->isEnd()) {
-                    std::apply(
-                        [&](auto const &...buckets) {
-                            m_policyPtr->setData(buckets...);
-                        },
-                        m_dataPtr->currentBuckets()
-                    );
+
+                if (m_dataPtr->isEnd()) {
+                    break;
                 }
+
+                std::apply(
+                    [&](auto const &...buckets) {
+                        m_policyPtr->setData(buckets...);
+                    },
+                    m_dataPtr->currentBuckets()
+                );
             }
             return *this;
         }
@@ -201,6 +219,19 @@ auto makeBlockCombinations(
     using PolicyType = TCombinationsPolicy<std::vector<typename TInputs::const_iterator>...>;
     return BlockProducer<TBucketPolicy, PolicyType, TInputs...>(
         t_bucketPolicy, PolicyType{}, t_minCatSize, t_inputs...
+    );
+}
+
+template <
+    template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename... TInputs>
+auto makeSameKindBlockCombinations(
+    const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const int t_categoryNeighbors,
+    const TInputs &...t_inputs
+)
+{
+    using PolicyType = TCombinationsPolicy<std::vector<typename TInputs::const_iterator>...>;
+    return BlockProducer<TBucketPolicy, PolicyType, TInputs...>(
+        t_bucketPolicy, PolicyType(t_categoryNeighbors), t_minCatSize, t_inputs...
     );
 }
 
