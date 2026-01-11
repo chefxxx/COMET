@@ -13,7 +13,7 @@
  * @brief This class just serves as an iterable wrapper around policies.
  * @tparam TCombinationsPolicy policy object that defines behaviour of the iterator
  */
-template <typename TCombinationsPolicy>
+template <IsCombinationsPolicy TCombinationsPolicy>
 struct CombinationsProducer {
     // This constructor is used in makeCombinations func
     explicit CombinationsProducer(TCombinationsPolicy &&policy) : m_policy(std::move(policy)) {}
@@ -89,6 +89,7 @@ auto makeCombinations(const TInputs &...t_inputs)
 }
 
 template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TInputs>
+requires InitializablePolicy<TCombinationsPolicy, std::vector<typename TInputs::const_iterator>...>
 struct BlockProducer {
     explicit BlockProducer(
         const TBucketPolicy &t_bucketPolicy, TCombinationsPolicy &&t_combinationsPolicy,
@@ -150,7 +151,6 @@ struct BlockProducer {
 
         reference operator*() const
         {
-            // TODO: why do we use this type instead of tuple of iterators
             return std::apply(
                 [](auto &&...args) {
                     return std::forward_as_tuple(**args...);
@@ -219,7 +219,6 @@ template <typename TGrouping, typename TAssociated>
 concept ValidAssociated = AssociatedCallableResultIsConvertibleToGrouping<
     typename TGrouping::source, typename TGrouping::callable, typename TAssociated::source,
     typename TAssociated::callable>;
-
 template <
     typename TProducerType, template <typename...> typename TCombinationsPolicy,
     typename TBucketPolicy, typename TGrouping, typename... TAssociated>

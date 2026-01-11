@@ -8,11 +8,21 @@
 #include <iterator>
 #include <tuple>
 
-// TODO: concepts restraining iterable containers and policies
-// template<typename T>
-// concept CombinableRange = std::ranges::forward_range<T> && requires(T t) {
-//     typename T::const_iterator;
-// };
+template <typename P>
+concept IsCombinationsPolicy = requires(P policy) {
+    typename P::combinations_type;
+    typename P::combinations_value;
+    typename P::combinations_reference;
+
+    { policy.isEnd() } -> std::convertible_to<bool>;
+    { policy.addOne() } -> std::same_as<void>;
+    { policy.current() } -> std::same_as<typename P::combinations_type&>;
+};
+
+template <typename P, typename... TInputs>
+concept InitializablePolicy = IsCombinationsPolicy<P> && requires(P policy, const TInputs&... inputs) {
+    { policy.setData(inputs...) } -> std::same_as<void>;
+};
 
 template <typename Derived, typename... TInputs>
 struct CombinationsPolicyBase {
