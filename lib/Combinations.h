@@ -190,6 +190,12 @@ class SameTypeFullCombinationsPolicy
         setData(t_inputs...);
     }
 
+    SameTypeFullCombinationsPolicy(int categoryNeighbours)
+    {
+        m_categoryNeighbours = categoryNeighbours;
+        m_maxIndex           = categoryNeighbours;
+    }
+
     void addOne() { this->addOneBaseImpl(); }
 
     void setData(const TInputs &...t_inputs) { this->setDataBaseImpl(t_inputs...); };
@@ -237,10 +243,14 @@ class SameTypeStrictlyUpperCombinationsPolicy
     explicit SameTypeStrictlyUpperCombinationsPolicy(
         int categoryNeighbours, const TInputs &...t_inputs
     )
+        : m_categoryNeighbours(categoryNeighbours), m_maxIndex(m_categoryNeighbours)
     {
-        m_categoryNeighbours = categoryNeighbours;
-        m_maxIndex           = categoryNeighbours;
         setData(t_inputs...);
+    }
+
+    SameTypeStrictlyUpperCombinationsPolicy(int categoryNeighbours)
+        : m_categoryNeighbours(categoryNeighbours)
+    {
     }
 
     void addOne() { this->addOneBaseImpl(); }
@@ -275,6 +285,7 @@ class SameTypeStrictlyUpperCombinationsPolicy
     void setDataPolicyHelper()
     {
         if (!this->m_isEnd) {
+            m_maxIndex       = this->m_currentIndexNumbers[0] + m_categoryNeighbours;
             constexpr auto N = sizeof...(TInputs);
             bool shouldEnd   = true;
             setRanges<N - 1, N>(shouldEnd);

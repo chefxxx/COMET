@@ -21,7 +21,7 @@ TEST_F(SameTypeFullCombinationsTest, WindowSizeZero_ReturnsDiagonalOnly)
 {
     int window = 0;
     auto producer =
-        makeSameTypeCombinations<SameTypeFullCombinationsPolicy>(window, v_small, v_small);
+        makeSameKindCombinations<SameTypeFullCombinationsPolicy>(window, v_small, v_small);
 
     std::vector<std::tuple<int, int>> expected = {
         {1, 1},
@@ -49,7 +49,7 @@ TEST_F(SameTypeFullCombinationsTest, WindowSizeHuge_ReturnsAllUpperCombinations)
 {
     int window = 100;
     auto producer =
-        makeSameTypeCombinations<SameTypeFullCombinationsPolicy>(window, v_small, v_small);
+        makeSameKindCombinations<SameTypeFullCombinationsPolicy>(window, v_small, v_small);
 
     std::vector<std::tuple<int, int>> expected = {
         {1, 1},
@@ -109,26 +109,11 @@ TEST_F(SameTypeFullCombinationsTest, WindowSizeHuge_ReturnsAllUpperCombinations)
     EXPECT_EQ(count, expected.size());
 }
 
-// TEST_F(SameTypeFullCombinationsTest, EmptyVectors_NoIterations)
-// {
-//     int window = 5;
-//     auto producer =
-//         makeSameTypeCombinations<SameTypeFullCombinationsPolicy>(window, v_empty, v_empty);
-//
-//     int count = 0;
-//     for (const auto& val : producer) {
-//         std::cout << std::get<0>(val) << std::endl;
-//         count++;
-//     }
-//     EXPECT_EQ(count, 0);
-//     EXPECT_TRUE(producer.isEnd());
-// }
-
 TEST_F(SameTypeFullCombinationsTest, TripletsWithWindow_GeneratesCubesOnDiagonal)
 {
     int window = 1;
     auto producer =
-        makeSameTypeCombinations<SameTypeFullCombinationsPolicy>(window, v_small, v_small, v_small);
+        makeSameKindCombinations<SameTypeFullCombinationsPolicy>(window, v_small, v_small, v_small);
 
     std::vector<std::tuple<int, int, int>> expected = {
         {1, 1, 1},
@@ -190,7 +175,7 @@ TEST_F(SameTypeFullCombinationsTest, StringTypes_WorksCorrectly)
     std::vector<std::string> v = {"A", "B", "C", "D", "E"};
     int window                 = 1;
 
-    auto producer = makeSameTypeCombinations<SameTypeFullCombinationsPolicy>(window, v, v);
+    auto producer = makeSameKindCombinations<SameTypeFullCombinationsPolicy>(window, v, v);
 
     std::vector<std::tuple<std::string, std::string>> expected = {
         {"A", "A"},

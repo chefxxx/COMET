@@ -21,7 +21,7 @@ TEST_F(SameTypeStrictlyUpperCombinationsTest, WindowSizeZero_ReturnsDiagonalOnly
 {
     int window = 0;
     auto producer =
-        makeSameTypeCombinations<SameTypeStrictlyUpperCombinationsPolicy>(window, v_small, v_small);
+        makeSameKindCombinations<SameTypeStrictlyUpperCombinationsPolicy>(window, v_small, v_small);
 
     std::vector<std::tuple<int, int>> expected = {};
 
@@ -39,7 +39,7 @@ TEST_F(SameTypeStrictlyUpperCombinationsTest, WindowSizeHuge_ReturnsAllUpperComb
 {
     int window = 100;
     auto producer =
-        makeSameTypeCombinations<SameTypeStrictlyUpperCombinationsPolicy>(window, v_small, v_small);
+        makeSameKindCombinations<SameTypeStrictlyUpperCombinationsPolicy>(window, v_small, v_small);
 
     std::vector<std::tuple<int, int>> expected = {
         {1, 2},
@@ -90,26 +90,10 @@ TEST_F(SameTypeStrictlyUpperCombinationsTest, WindowSizeHuge_ReturnsAllUpperComb
     EXPECT_EQ(count, expected.size());
 }
 
-// TEST_F(SameTypeStrictlyUpperCombinationsTest, EmptyVectors_NoIterations)
-// {
-//     int window = 5;
-//     auto producer =
-//         makeSameTypeCombinations<SameTypeStrictlyUpperCombinationsPolicy>(window, v_empty,
-//         v_empty);
-//
-//     int count = 0;
-//     for (const auto& val : producer) {
-//         std::cout << std::get<0>(val) << std::endl;
-//         count++;
-//     }
-//     EXPECT_EQ(count, 0);
-//     EXPECT_TRUE(producer.isEnd());
-// }
-
 TEST_F(SameTypeStrictlyUpperCombinationsTest, TripletsWithWindow)
 {
     int window    = 3;
-    auto producer = makeSameTypeCombinations<SameTypeStrictlyUpperCombinationsPolicy>(
+    auto producer = makeSameKindCombinations<SameTypeStrictlyUpperCombinationsPolicy>(
         window, v_small, v_small, v_small
     );
 
@@ -157,7 +141,7 @@ TEST_F(SameTypeStrictlyUpperCombinationsTest, StringTypes_WorksCorrectly)
     std::vector<std::string> v = {"A", "B", "C", "D", "E"};
     int window                 = 1;
 
-    auto producer = makeSameTypeCombinations<SameTypeStrictlyUpperCombinationsPolicy>(window, v, v);
+    auto producer = makeSameKindCombinations<SameTypeStrictlyUpperCombinationsPolicy>(window, v, v);
 
     std::vector<std::tuple<std::string, std::string>> expected = {
         {"A", "B"},
