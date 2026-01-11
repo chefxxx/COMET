@@ -177,85 +177,45 @@ class StrictlyUpperCombinationsPolicy
     }
 };
 
-template <typename Derived, typename... TInputs>
-class SameTypeCombinationsPolicyBase
-    : public CombinationsPolicyBase<SameTypeCombinationsPolicyBase<TInputs...>, TInputs...>
-{
-    using BaseType = CombinationsPolicyBase<SameTypeCombinationsPolicyBase<TInputs...>, TInputs...>;
-
-    protected:
-    void addOneBaseImpl()
-    {
-        if (!this->m_isEnd) {
-            constexpr size_t N = sizeof...(TInputs);
-            bool wasModified   = true;
-            [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
-                (addOneHelper<Is, N>(wasModified), ...);
-            }(std::make_index_sequence<N>());
-            this->m_isEnd = wasModified;
-        }
-    }
-
-    void setDataBaseImpl(int categoryNeighbours, const TInputs &...t_inputs)
-    {
-        m_categoryNeighbours = categoryNeighbours;
-        m_maxIndex           = categoryNeighbours;
-        this->BaseType::setDataBaseImpl(t_inputs...);
-    }
-
-    int m_categoryNeighbours = 0;
-    int64_t m_minIndex       = 0;
-    int64_t m_maxIndex       = 0;
-
-    private:
-    template <size_t I, size_t N>
-    void addOneHelper(bool &t_wasModified)
-    {
-        if (t_wasModified) {
-            constexpr auto ind           = N - I - 1;
-            int64_t currentPointersIndex = ++this->m_currentIndexNumbers[ind];
-            ++std::get<ind>(this->m_current);
-            if constexpr (ind == 0) {
-                m_minIndex = currentPointersIndex;
-                m_maxIndex = currentPointersIndex + m_categoryNeighbours;
-            }
-            // For ind = 0 m_maxIndex is always more than the currentPointersIndex
-            if (currentPointersIndex != this->m_endIndexNumbers[ind] &&
-                currentPointersIndex <= m_maxIndex) {
-                static_cast<Derived *>(this)->template addOneImpl<I, N>(t_wasModified);
-            }
-        }
-    }
-};
-
 template <typename... TInputs>
 class SameTypeFullCombinationsPolicy
-    : public SameTypeCombinationsPolicyBase<SameTypeFullCombinationsPolicy<TInputs...>, TInputs...>
+    : public CombinationsPolicyBase<SameTypeFullCombinationsPolicy<TInputs...>, TInputs...>
 {
     public:
     SameTypeFullCombinationsPolicy() = default;
     explicit SameTypeFullCombinationsPolicy(int categoryNeighbours, const TInputs &...t_inputs)
     {
-        setData(categoryNeighbours, t_inputs...);
+        m_categoryNeighbours = categoryNeighbours;
+        m_maxIndex           = categoryNeighbours;
+        setData(t_inputs...);
     }
 
     void addOne() { this->addOneBaseImpl(); }
 
-    void setData(int categoryNeighbours, const TInputs &...t_inputs)
-    {
-        this->setDataBaseImpl(categoryNeighbours, t_inputs...);
-    };
+    void setData(const TInputs &...t_inputs) { this->setDataBaseImpl(t_inputs...); };
 
     template <size_t I, size_t N>
     void addOneImpl(bool &t_wasModified)
     {
-        [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
-            (resetState<I, Is, N>(), ...);
-        }(std::make_index_sequence<I>());
-        t_wasModified = false;
+        constexpr auto ind           = N - I - 1;
+        int64_t currentPointersIndex = this->m_currentIndexNumbers[ind];
+        if constexpr (ind == 0) {
+            m_maxIndex = currentPointersIndex + m_categoryNeighbours;
+            m_minIndex = currentPointersIndex;
+        }
+        if (currentPointersIndex <= m_maxIndex) {
+            [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
+                (resetState<I, Is, N>(), ...);
+            }(std::make_index_sequence<I>());
+            t_wasModified = false;
+        }
     }
 
     private:
+    int m_categoryNeighbours = 0;
+    int64_t m_maxIndex       = 0;
+    int64_t m_minIndex       = 0;
+
     // N - number of data sources
     // I - which position from the right side is considered
     // J - loop iterator, which pointer is set to 0 from the N - I to right position
@@ -263,15 +223,14 @@ class SameTypeFullCombinationsPolicy
     void resetState()
     {
         constexpr auto ind = N - I + J;
-        std::get<ind>(this->m_current) += (this->m_minIndex - this->m_currentIndexNumbers[ind]);
-        this->m_currentIndexNumbers[ind] = this->m_minIndex;
+        std::get<ind>(this->m_current) += (m_minIndex - this->m_currentIndexNumbers[ind]);
+        this->m_currentIndexNumbers[ind] = m_minIndex;
     }
 };
 
 template <typename... TInputs>
 class SameTypeStrictlyUpperCombinationsPolicy
-    : public SameTypeCombinationsPolicyBase<
-          SameTypeStrictlyUpperCombinationsPolicy<TInputs...>, TInputs...>
+    : public CombinationsPolicyBase<SameTypeStrictlyUpperCombinationsPolicy<TInputs...>, TInputs...>
 {
     public:
     SameTypeStrictlyUpperCombinationsPolicy() = default;
@@ -279,26 +238,40 @@ class SameTypeStrictlyUpperCombinationsPolicy
         int categoryNeighbours, const TInputs &...t_inputs
     )
     {
-        setData(categoryNeighbours, t_inputs...);
+        m_categoryNeighbours = categoryNeighbours;
+        m_maxIndex           = categoryNeighbours;
+        setData(t_inputs...);
     }
 
     void addOne() { this->addOneBaseImpl(); }
 
-    void setData(int categoryNeighbours, const TInputs &...t_inputs)
+    void setData(const TInputs &...t_inputs)
     {
-        this->setDataBaseImpl(categoryNeighbours, t_inputs...);
+        this->setDataBaseImpl(t_inputs...);
         setDataPolicyHelper();
     }
 
     template <size_t I, size_t N>
     void addOneImpl(bool &t_wasModified)
     {
-        bool wasChanged = true;
-        setRanges<I, N>(wasChanged);
-        t_wasModified = !wasChanged;
+        constexpr auto ind           = N - I - 1;
+        int64_t currentPointersIndex = this->m_currentIndexNumbers[ind];
+        if constexpr (ind == 0) {
+            m_maxIndex = currentPointersIndex + m_categoryNeighbours;
+        }
+        if (currentPointersIndex <= m_maxIndex) {
+            bool wasChanged = true;
+            setRanges<I, N>(wasChanged);
+            t_wasModified = !wasChanged;
+        }
     }
 
+    // Here we don't need to have min index
+
     private:
+    int m_categoryNeighbours = 0;
+    int64_t m_maxIndex       = 0;
+
     void setDataPolicyHelper()
     {
         if (!this->m_isEnd) {
