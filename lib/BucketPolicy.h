@@ -85,7 +85,7 @@ struct BucketPolicy final {
 
 
     template <typename TElement>
-    [[nodiscard]] auto getValues(TElement const &element) const
+    [[nodiscard]] auto getValues(const TElement& element) const
     {
         return [&]<std::size_t... I>(std::index_sequence<I...>) {
             return std::make_tuple(std::get<I>(m_callables)(element)...);
@@ -93,7 +93,7 @@ struct BucketPolicy final {
     }
 
     template <typename... Types>
-    [[nodiscard]] auto getUpperIndicesForTuple(std::tuple<Types...> const& values) const
+    [[nodiscard]] auto getUpperIndicesForTuple(const std::tuple<Types...>& values) const
     {
         return [&]<std::size_t... I>(std::index_sequence<I...>) {
             return std::make_tuple(
@@ -103,7 +103,7 @@ struct BucketPolicy final {
     }
 
     template <typename... TIndices>
-    [[nodiscard]] int calculateBucketAtIndices(std::tuple<TIndices...> const &indices) const
+    [[nodiscard]] int calculateBucketAtIndices(const std::tuple<TIndices...>& indices) const
     {
         constexpr auto N = sizeof...(TIndices);
         auto indexSeq    = std::make_index_sequence<N - 1>();
