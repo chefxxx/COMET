@@ -13,7 +13,7 @@
  * @brief This class just serves as an iterable wrapper around policies.
  * @tparam TCombinationsPolicy policy object that defines behaviour of the iterator
  */
-template <IsCombinationsPolicy TCombinationsPolicy>
+template <typename TCombinationsPolicy>
 struct CombinationsProducer {
     // This constructor is used in makeCombinations func
     explicit CombinationsProducer(TCombinationsPolicy &&policy) : m_policy(std::move(policy)) {}
@@ -82,6 +82,7 @@ struct CombinationsProducer {
 };
 
 template <template <typename...> class TCombinationsPolicy, typename... TInputs>
+    requires BasicLifecyclePolicy<TCombinationsPolicy<TInputs...>, TInputs...>
 auto makeCombinations(const TInputs &...t_inputs)
 {
     using PolicyType = TCombinationsPolicy<TInputs...>;
@@ -89,7 +90,6 @@ auto makeCombinations(const TInputs &...t_inputs)
 }
 
 template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TInputs>
-requires InitializablePolicy<TCombinationsPolicy, std::vector<typename TInputs::const_iterator>...>
 struct BlockProducer {
     explicit BlockProducer(
         const TBucketPolicy &t_bucketPolicy, TCombinationsPolicy &&t_combinationsPolicy,
@@ -194,6 +194,10 @@ struct BlockProducer {
 
 template <
     template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename... TInputs>
+requires BlockLifecyclePolicy<
+        TCombinationsPolicy<std::vector<typename TInputs::const_iterator>...>,
+        std::vector<typename TInputs::const_iterator>...
+    >
 auto makeBlockCombinations(
     const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const TInputs &...t_inputs
 )

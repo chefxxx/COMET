@@ -20,9 +20,15 @@ concept IsCombinationsPolicy = requires(P policy) {
 };
 
 template <typename P, typename... TInputs>
-concept InitializablePolicy = IsCombinationsPolicy<P> && requires(P policy, const TInputs&... inputs) {
+concept BasicLifecyclePolicy = IsCombinationsPolicy<P> &&
+    std::constructible_from<P, const TInputs&...>;
+
+template <typename P, typename... TInputs>
+concept BlockLifecyclePolicy = IsCombinationsPolicy<P> &&
+    std::default_initializable<P> &&
+    requires(P policy, const TInputs&... inputs) {
     { policy.setData(inputs...) } -> std::same_as<void>;
-};
+    };
 
 template <typename Derived, typename... TInputs>
 struct CombinationsPolicyBase {
@@ -38,7 +44,6 @@ struct CombinationsPolicyBase {
     protected:
     void addOneBaseImpl()
     {
-        // TODO: move this check closer to addOne call
         if (!m_isEnd) {
             constexpr size_t N = sizeof...(TInputs);
             bool wasModified   = true;
@@ -102,7 +107,6 @@ class FullCombinationsPolicy
 
     void addOne() { this->addOneBaseImpl(); }
 
-    // TODO: Consider if this must be private with using friend to base class.
     template <size_t I, size_t N>
     void addOneImpl(bool &t_wasModified)
     {

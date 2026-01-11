@@ -5,7 +5,7 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
-#include <unordered_map>
+#include <map>
 #include <tuple>
 #include <vector>
 
@@ -30,7 +30,7 @@ template <typename TBucketPolicy, typename TInput>
     requires IsBucketPolicy<TBucketPolicy, typename TInput::const_iterator>
 struct SingleBlockBuckets {
     using underlying_iterator_type = typename TInput::const_iterator;
-    using container_type = std::unordered_map<int, std::vector<underlying_iterator_type>>;
+    using container_type = std::map<int, std::vector<underlying_iterator_type>>;
     using iterator       = typename container_type::const_iterator;
     using value_type     = typename container_type::value_type;
 
