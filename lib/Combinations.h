@@ -8,11 +8,34 @@
 #include <iterator>
 #include <tuple>
 
-// TODO: concepts restraining iterable containers and policies
-// template<typename T>
-// concept CombinableRange = std::ranges::forward_range<T> && requires(T t) {
-//     typename T::const_iterator;
-// };
+template <typename P>
+concept IsCombinationsPolicy = requires(P policy) {
+    typename P::combinations_type;
+    typename P::combinations_value;
+    typename P::combinations_reference;
+
+    {
+        policy.isEnd()
+    } -> std::convertible_to<bool>;
+    {
+        policy.addOne()
+    } -> std::same_as<void>;
+    {
+        policy.current()
+    } -> std::same_as<typename P::combinations_type &>;
+};
+
+template <typename P, typename... TInputs>
+concept BasicLifecyclePolicy =
+    IsCombinationsPolicy<P> && std::constructible_from<P, const TInputs &...>;
+
+template <typename P, typename... TInputs>
+concept BlockLifecyclePolicy = IsCombinationsPolicy<P> && std::default_initializable<P> &&
+                               requires(P policy, const TInputs &...inputs) {
+                                   {
+                                       policy.setData(inputs...)
+                                   } -> std::same_as<void>;
+                               };
 
 template <typename Derived, typename... TInputs>
 struct CombinationsPolicyBase {
@@ -28,7 +51,6 @@ struct CombinationsPolicyBase {
     protected:
     void addOneBaseImpl()
     {
-        // TODO: move this check closer to addOne call
         if (!m_isEnd) {
             constexpr size_t N = sizeof...(TInputs);
             bool wasModified   = true;
@@ -54,6 +76,9 @@ struct CombinationsPolicyBase {
     combinations_type m_current;
 
     private:
+    CombinationsPolicyBase() = default;
+    friend Derived;
+
     template <size_t I, typename TInput>
     void setDataHelper(const TInput &t_input)
     {
@@ -89,7 +114,6 @@ class FullCombinationsPolicy
 
     void addOne() { this->addOneBaseImpl(); }
 
-    // TODO: Consider if this must be private with using friend to base class.
     template <size_t I, size_t N>
     void addOneImpl(bool &t_wasModified)
     {

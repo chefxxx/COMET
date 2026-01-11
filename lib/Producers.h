@@ -82,6 +82,7 @@ struct CombinationsProducer {
 };
 
 template <template <typename...> class TCombinationsPolicy, typename... TInputs>
+    requires BasicLifecyclePolicy<TCombinationsPolicy<TInputs...>, TInputs...>
 auto makeCombinations(const TInputs &...t_inputs)
 {
     using PolicyType = TCombinationsPolicy<TInputs...>;
@@ -168,7 +169,6 @@ struct BlockProducer {
 
         reference operator*() const
         {
-            // TODO: why do we use this type instead of tuple of iterators
             return std::apply(
                 [](auto &&...args) {
                     return std::forward_as_tuple(**args...);
@@ -212,6 +212,9 @@ struct BlockProducer {
 
 template <
     template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename... TInputs>
+    requires BlockLifecyclePolicy<
+        TCombinationsPolicy<std::vector<typename TInputs::const_iterator>...>,
+        std::vector<typename TInputs::const_iterator>...>
 auto makeBlockCombinations(
     const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const TInputs &...t_inputs
 )
@@ -250,7 +253,6 @@ template <typename TGrouping, typename TAssociated>
 concept ValidAssociated = AssociatedCallableResultIsConvertibleToGrouping<
     typename TGrouping::source, typename TGrouping::callable, typename TAssociated::source,
     typename TAssociated::callable>;
-
 template <
     typename TProducerType, template <typename...> typename TCombinationsPolicy,
     typename TBucketPolicy, typename TGrouping, typename... TAssociated>
