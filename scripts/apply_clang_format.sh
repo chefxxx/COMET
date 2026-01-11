@@ -31,7 +31,7 @@ for TARGET_FOLDER in "${FOLDERS[@]}"; do
     unset 'find_command[${#find_command[@]}-1]'
     find_command+=(\) )
 
-    "${find_command[@]}" | xargs -P "$num_cores" -I {} clang-format -i -style="$CLANG_FORMAT_STYLE" "{}"
+    "${find_command[@]}" | xargs -P "$num_cores" -I {} clang-format-17 -i -style="$CLANG_FORMAT_STYLE" "{}"
 done
 
 echo "Formatting completed."

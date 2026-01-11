@@ -3,23 +3,29 @@
 //
 
 #include <gtest/gtest.h>
+#include <iomanip>
+#include <numeric>
+
 #include "Combinations.h"
+#include "Producers.h"
+#include "SpanView.h"
 
 TEST(AddOneFullTest, twoVectorsSameSize)
 {
-    std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
-    std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
+    const std::vector v1 = {1, 2, 3, 4, 5, 6, 7, 8};
+    const std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
 
-    Ranges r1 = {v1.begin(), v1.end()};
-    Ranges r2 = {v2.begin(), v2.end()};
+    std::vector<decltype(v2)::const_iterator> iterators;
+    iterators.reserve(v2.size());
 
-    auto tuple = std::make_tuple(r1, r2);
+    for (auto it = v2.begin(); it != v2.end(); ++it) {
+        iterators.push_back(it);
+    }
 
-    // Why does it compile with tuple created before and not without
-    // auto combinationPolicy = FullCombinationsPolicy({r1, r2}); ??? It is interesting
-    // Answer: to make it work we should add forwarding
+    auto span     = std::span(iterators);
+    auto spanView = SpanView(span);
 
-    auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(tuple);
+    auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(v1, spanView);
 
     const std::vector<std::tuple<int, char>> expectedValues = {
         {1, 'a'},
@@ -65,28 +71,22 @@ TEST(AddOneFullTest, twoVectorsSameSize)
     };
 
     int i = 0;
-    for (const auto& [elem0, elem1] : combinationsProducer) {
-        auto expectedCombination = expectedValues[i++];
-        ASSERT_EQ(*elem0, std::get<0>(expectedCombination));
-        ASSERT_EQ(*elem1, std::get<1>(expectedCombination));
+    for (const auto &[elem0, elem1] : combinationsProducer) {
+        const auto [ex0, ex1] = expectedValues[i];
+        ++i;
+        ASSERT_EQ(elem0, ex0);
+        ASSERT_EQ(elem1, ex1);
     }
 }
 
 TEST(AddOneFullTest, fourVectorsDifferentSizes)
 {
-    std::vector v1              = {1, 2, 3};
-    std::vector v2              = {'a', 'b', 'c', 'd', 'e'};
-    std::vector v3              = {'=', '#', '$', '!'};
-    std::vector<std::string> v4 = {"Michał", "Mati"};
+    const std::vector v1 = {1, 2, 3};
+    const std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
+    const std::vector v3 = {'=', '#', '$', '!'};
+    const std::vector v4 = {"Michał", "Mati"};
 
-    Ranges r1 = {v1.begin(), v1.end()};
-    Ranges r2 = {v2.begin(), v2.end()};
-    Ranges r3 = {v3.begin(), v3.end()};
-    Ranges r4 = {v4.begin(), v4.end()};
-
-    auto tuple = std::make_tuple(r1, r2, r3, r4);
-
-    auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(tuple);
+    auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(v1, v2, v3, v4);
 
     std::vector<std::tuple<int, char, char, std::string>> expected = {
   // Combinations starting with 1
@@ -217,26 +217,22 @@ TEST(AddOneFullTest, fourVectorsDifferentSizes)
     };
 
     int i = 0;
-    for (const auto& [elem0, elem1, elem2, elem3] : combinationsProducer) {
-        auto currentValues = expected[i++];
-        ASSERT_TRUE(*elem0 == std::get<0>(currentValues));
-        ASSERT_TRUE(*elem1 == std::get<1>(currentValues));
-        ASSERT_TRUE(*elem2 == std::get<2>(currentValues));
-        ASSERT_TRUE(*elem3 == std::get<3>(currentValues));
+    for (const auto &[elem0, elem1, elem2, elem3] : combinationsProducer) {
+        const auto &[ex0, ex1, ex2, ex3] = expected[i];
+        ++i;
+        ASSERT_TRUE(elem0 == ex0);
+        ASSERT_TRUE(elem1 == ex1);
+        ASSERT_TRUE(elem2 == ex2);
+        ASSERT_TRUE(elem3 == ex3);
     }
 }
 
 TEST(AddOneFullTest, OneRangeIsEmpty)
 {
-    std::vector v1       = {1, 2, 3};
-    std::vector<char> v2 = {};
-    std::vector v3       = {'a', 'b', 'c', 'd'};
+    const std::vector v1           = {1, 2, 3};
+    constexpr std::vector<char> v2 = {};
+    const std::vector v3           = {'a', 'b', 'c', 'd'};
 
-    Ranges r1 = {v1.begin(), v1.end()};
-    Ranges r2 = {v2.begin(), v2.end()};
-    Ranges r3 = {v3.begin(), v3.end()};
-
-    auto tuple                      = std::make_tuple(r1, r2, r3);
-    const auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(tuple);
+    const auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(v1, v2, v3);
     ASSERT_TRUE(combinationsProducer.isEnd());
 }

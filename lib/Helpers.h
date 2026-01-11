@@ -1,112 +1,153 @@
 //
-// Created by Mateusz Mikiciuk on 18/07/2025.
+// Created by Mateusz Mikiciuk on 29/12/2025.
 //
 
 #ifndef HELPERS_H
 #define HELPERS_H
 
-#include <iterator>
-#include <set>
-#include <unordered_map>
-#include "BucketPolicy.h"
+#include <map>
+#include <tuple>
+#include <vector>
 
-template <std::forward_iterator TIter>
-struct GroupedBuckets {
-    using IterType = std::set<int>::const_iterator;
-
-    const std::vector<TIter>& at(IterType iter) const { return mBuckets.at(*iter); }
-    const std::vector<TIter>& at(const int bucketNo) const { return mBuckets.at(bucketNo); }
-
-    [[nodiscard]] size_t size() const { return mBucketsNumbers.size(); }
-
-    void insert(int bucketNo, TIter iter)
+template <typename P, typename T>
+concept IsBucketPolicy = requires(P policy, T element) {
     {
-        mBuckets[bucketNo].push_back(iter);
-        mBucketsNumbers.insert(bucketNo);
-    }
-
-    [[nodiscard]] IterType erase(IterType iter)
-    {
-        mBuckets.erase(*iter);
-        return mBucketsNumbers.erase(iter);
-    }
-
-    [[nodiscard]] bool contains(const int bucketNo) const
-    {
-        return mBucketsNumbers.contains(bucketNo);
-    }
-
-    [[nodiscard]] IterType begin() const { return mBucketsNumbers.begin(); }
-    [[nodiscard]] IterType end() const { return mBucketsNumbers.end(); }
-
-    private:
-    std::unordered_map<int, std::vector<TIter>> mBuckets;
-    std::set<int> mBucketsNumbers;
+        policy.getBucket(element)
+    } -> std::convertible_to<int>;
 };
 
-template <std::forward_iterator TIter>
-struct Ranges {
-    Ranges(TIter begin, TIter end) : mBegin(begin), mEnd(end) {}
-    TIter mBegin;
-    TIter mEnd;
-};
-
-template <typename... Ts, typename F>
-auto tupleTransform(const std::tuple<Ts...>& tuple, F&& f)
+template <typename... Types, typename Func>
+auto tupleTransform(const std::tuple<Types...> &t_tuple, Func &&t_fn)
 {
     return std::apply(
-        [&](auto&&... elem) {
-            return std::make_tuple(f(elem)...);
+        [&]<typename... InnerTypes>(InnerTypes &&...elem) {
+            return std::make_tuple(t_fn(std::forward<InnerTypes>(elem))...);
         },
-        tuple
+        t_tuple
     );
 }
 
-template <std::forward_iterator TIter, typename TBucketPolicy>
-    requires is_bucket_policy<TBucketPolicy, TIter>
-[[nodiscard]] auto groupData(
-    TIter start, TIter end, TBucketPolicy bucketPolicy, const std::size_t minCatSize = 1
-)
-{
-    GroupedBuckets<TIter> resultData;
-    for (auto it = start; it != end; ++it) {
-        const int bucketNumber = bucketPolicy.getBucket(*it);
-        resultData.insert(bucketNumber, it);
+// sort of std::map<> specialization type
+template <typename TBucketPolicy, typename TInput>
+    requires IsBucketPolicy<TBucketPolicy, typename TInput::const_iterator>
+struct SingleBlockBuckets {
+    using underlying_iterator_type = typename TInput::const_iterator;
+    // using container_type = std::unordered_map<int, std::vector<underlying_iterator_type>>;
+    using container_type = std::map<int, std::vector<underlying_iterator_type>>;
+    using iterator       = typename container_type::const_iterator;
+    using value_type     = typename container_type::value_type;
+
+    SingleBlockBuckets() = default;
+    explicit SingleBlockBuckets(
+        const TBucketPolicy &t_bucketPolicy, const TInput &t_input, const int t_minCatSize
+    )
+    {
+        createSingle(t_bucketPolicy, t_input, t_minCatSize);
     }
 
-    // We need this second loop,
-    // bc in the one above we do not know when we hit last element in bucket.
-    for (auto it = resultData.begin(); it != resultData.end();) {
-        if (resultData.at(it).size() < minCatSize) {
-            it = resultData.erase(it);
-        } else {
-            ++it;
+    // sync api
+    iterator begin() const { return m_buckets.begin(); }
+    iterator end() const { return m_buckets.end(); }
+    iterator erase(iterator t_it) { return m_buckets.erase(t_it); }
+    value_type at(int t_bucketNum) const { return m_buckets.at(t_bucketNum); }
+    [[nodiscard]] bool contains(int t_bucketNum) const { return m_buckets.contains(t_bucketNum); }
+
+    private:
+    container_type m_buckets;
+
+    // new version of groupData() function
+    void createSingle(
+        const TBucketPolicy &t_bucketPolicy, const TInput &t_input, const size_t t_minCatSize
+    )
+    {
+        for (auto it = t_input.begin(); it != t_input.end(); ++it) {
+            const int bucketNumber = t_bucketPolicy.getBucket(*it);
+            m_buckets[bucketNumber].push_back(it);
+        }
+
+        // We need this second loop,
+        // bc in the one above we do not know when we hit last element in bucket.
+        for (auto it = m_buckets.begin(); it != m_buckets.end();) {
+            if (it->second.size() < t_minCatSize) {
+                it = m_buckets.erase(it);
+            } else {
+                ++it;
+            }
         }
     }
-    return resultData;
-}
+};
 
-template <std::forward_iterator TIter1, std::forward_iterator TIter2>
-void syncHelper(GroupedBuckets<TIter1>& firstData, const GroupedBuckets<TIter2>& comparedData)
-{
-    for (auto it = firstData.begin(); it != firstData.end();) {
-        if (!comparedData.contains(*it)) {
-            it = firstData.erase(it);
-        } else {
-            ++it;
+template <typename TBucketPolicy, typename... TInputs>
+    requires(IsBucketPolicy<TBucketPolicy, typename TInputs::value_type> && ...)
+struct CoupledBlockBuckets {
+    CoupledBlockBuckets() = default;
+    explicit CoupledBlockBuckets(
+        const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const TInputs &...t_inputs
+    )
+    {
+        m_data = tupleTransform(std::forward_as_tuple(t_inputs...), [&](auto &&t_input) {
+            return SingleBlockBuckets(t_bucketPolicy, t_input, t_minCatSize);
+        });
+        syncBuckets();  // syncBuckets() has to be called before initialization of iterators!
+        m_current = tupleTransform(m_data, [&](auto &&t_single) {
+            return t_single.begin();
+        });
+        m_end     = tupleTransform(m_data, [&](auto &&t_single) {
+            return t_single.end();
+        });
+    }
+
+    void nextIterators()
+    {
+        std::apply(
+            [](auto &...t_iters) {
+                (++t_iters, ...);
+            },
+            m_current
+        );
+    }
+
+    [[nodiscard]] bool isEnd() const
+    {
+        return std::get<0>(m_current) ==
+               std::get<0>(m_end);  // if one have finished, then all have finished
+    }
+
+    [[nodiscard]] auto currentBuckets() const
+    {
+        return std::apply(
+            [](auto const &...iters) {
+                return std::forward_as_tuple(iters->second...);
+            },
+            m_current
+        );
+    }
+
+    private:
+    std::tuple<SingleBlockBuckets<TBucketPolicy, TInputs>...> m_data;
+    std::tuple<typename SingleBlockBuckets<TBucketPolicy, TInputs>::iterator...> m_current;
+    std::tuple<typename SingleBlockBuckets<TBucketPolicy, TInputs>::iterator...> m_end;
+
+    void syncHelper(auto &firstData, const auto &comparedData)
+    {
+        for (auto it = firstData.begin(); it != firstData.end();) {
+            if (!comparedData.contains(it->first)) {
+                it = firstData.erase(it);
+            } else {
+                ++it;
+            }
         }
     }
-}
 
-template <std::forward_iterator... TIters>
-void syncBuckets(std::tuple<GroupedBuckets<TIters>...>& groupedData)
-{
-    constexpr size_t N = sizeof...(TIters);
-    auto& firstData    = std::get<0>(groupedData);
-    [&]<std::size_t... Is>(const std::index_sequence<Is...>&) {
-        (syncHelper(firstData, std::get<Is>(groupedData)), ...);
-        (syncHelper(std::get<Is>(groupedData), firstData), ...);
-    }(std::make_index_sequence<N>());
-}
+    void syncBuckets()
+    {
+        constexpr size_t N = sizeof...(TInputs);
+        auto &firstData    = std::get<0>(m_data);
+        [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
+            (syncHelper(firstData, std::get<Is>(m_data)), ...);
+            (syncHelper(std::get<Is>(m_data), firstData), ...);
+        }(std::make_index_sequence<N>());
+    }
+};
 
 #endif  // HELPERS_H
