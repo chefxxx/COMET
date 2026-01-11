@@ -14,15 +14,24 @@ concept IsCombinationsPolicy = requires(P policy) {
     typename P::combinations_value;
     typename P::combinations_reference;
 
-    { policy.isEnd() } -> std::convertible_to<bool>;
-    { policy.addOne() } -> std::same_as<void>;
-    { policy.current() } -> std::same_as<typename P::combinations_type&>;
+    {
+        policy.isEnd()
+    } -> std::convertible_to<bool>;
+    {
+        policy.addOne()
+    } -> std::same_as<void>;
+    {
+        policy.current()
+    } -> std::same_as<typename P::combinations_type &>;
 };
 
 template <typename P, typename... TInputs>
-concept InitializablePolicy = IsCombinationsPolicy<P> && requires(P policy, const TInputs&... inputs) {
-    { policy.setData(inputs...) } -> std::same_as<void>;
-};
+concept InitializablePolicy =
+    IsCombinationsPolicy<P> && requires(P policy, const TInputs &...inputs) {
+        {
+            policy.setData(inputs...)
+        } -> std::same_as<void>;
+    };
 
 template <typename Derived, typename... TInputs>
 struct CombinationsPolicyBase {
@@ -80,7 +89,7 @@ struct CombinationsPolicyBase {
     void addOneHelper(bool &t_wasModified)
     {
         if (t_wasModified) {
-            constexpr auto ind = N - I - 1;
+            constexpr auto ind           = N - I - 1;
             int64_t currentPointersIndex = ++m_currentIndexNumbers[ind];
             ++std::get<ind>(m_current);
             if (currentPointersIndex != m_endIndexNumbers[ind]) {

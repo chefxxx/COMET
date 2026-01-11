@@ -89,7 +89,8 @@ auto makeCombinations(const TInputs &...t_inputs)
 }
 
 template <typename TBucketPolicy, typename TCombinationsPolicy, typename... TInputs>
-requires InitializablePolicy<TCombinationsPolicy, std::vector<typename TInputs::const_iterator>...>
+    requires InitializablePolicy<
+        TCombinationsPolicy, std::vector<typename TInputs::const_iterator>...>
 struct BlockProducer {
     explicit BlockProducer(
         const TBucketPolicy &t_bucketPolicy, TCombinationsPolicy &&t_combinationsPolicy,
