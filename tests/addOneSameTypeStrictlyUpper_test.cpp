@@ -1,5 +1,5 @@
 //
-// Created by mshamrai on 01/06/26.
+// Created by mshamrai on 1/11/26.
 //
 
 #include <gtest/gtest.h>
@@ -10,30 +10,20 @@
 #include "Combinations.h"
 #include "Producers.h"
 
-class SameTypeFullCombinationsTest : public ::testing::Test
+class SameTypeStrictlyUpperCombinationsTest : public ::testing::Test
 {
     public:
     std::vector<int> v_small = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     std::vector<int> v_empty = {};
 };
 
-TEST_F(SameTypeFullCombinationsTest, WindowSizeZero_ReturnsDiagonalOnly)
+TEST_F(SameTypeStrictlyUpperCombinationsTest, WindowSizeZero_ReturnsDiagonalOnly)
 {
     int window = 0;
     auto producer =
-        makeSameTypeCombinations<SameTypeFullCombinationsPolicy>(window, v_small, v_small);
+        makeSameTypeCombinations<SameTypeStrictlyUpperCombinationsPolicy>(window, v_small, v_small);
 
-    std::vector<std::tuple<int, int>> expected = {
-        {1, 1},
-        {2, 2},
-        {3, 3},
-        {4, 4},
-        {5, 5},
-        {6, 6},
-        {7, 7},
-        {8, 8},
-        {9, 9}
-    };
+    std::vector<std::tuple<int, int>> expected = {};
 
     int count = 0;
     for (const auto& [a, b] : producer) {
@@ -45,14 +35,13 @@ TEST_F(SameTypeFullCombinationsTest, WindowSizeZero_ReturnsDiagonalOnly)
     EXPECT_EQ(count, expected.size());
 }
 
-TEST_F(SameTypeFullCombinationsTest, WindowSizeHuge_ReturnsAllUpperCombinations)
+TEST_F(SameTypeStrictlyUpperCombinationsTest, WindowSizeHuge_ReturnsAllUpperCombinations)
 {
     int window = 100;
     auto producer =
-        makeSameTypeCombinations<SameTypeFullCombinationsPolicy>(window, v_small, v_small);
+        makeSameTypeCombinations<SameTypeStrictlyUpperCombinationsPolicy>(window, v_small, v_small);
 
     std::vector<std::tuple<int, int>> expected = {
-        {1, 1},
         {1, 2},
         {1, 3},
         {1, 4},
@@ -61,7 +50,6 @@ TEST_F(SameTypeFullCombinationsTest, WindowSizeHuge_ReturnsAllUpperCombinations)
         {1, 7},
         {1, 8},
         {1, 9},
-        {2, 2},
         {2, 3},
         {2, 4},
         {2, 5},
@@ -69,34 +57,27 @@ TEST_F(SameTypeFullCombinationsTest, WindowSizeHuge_ReturnsAllUpperCombinations)
         {2, 7},
         {2, 8},
         {2, 9},
-        {3, 3},
         {3, 4},
         {3, 5},
         {3, 6},
         {3, 7},
         {3, 8},
         {3, 9},
-        {4, 4},
         {4, 5},
         {4, 6},
         {4, 7},
         {4, 8},
         {4, 9},
-        {5, 5},
         {5, 6},
         {5, 7},
         {5, 8},
         {5, 9},
-        {6, 6},
         {6, 7},
         {6, 8},
         {6, 9},
-        {7, 7},
         {7, 8},
         {7, 9},
-        {8, 8},
         {8, 9},
-        {9, 9},
     };
 
     int count = 0;
@@ -109,11 +90,12 @@ TEST_F(SameTypeFullCombinationsTest, WindowSizeHuge_ReturnsAllUpperCombinations)
     EXPECT_EQ(count, expected.size());
 }
 
-// TEST_F(SameTypeFullCombinationsTest, EmptyVectors_NoIterations)
+// TEST_F(SameTypeStrictlyUpperCombinationsTest, EmptyVectors_NoIterations)
 // {
 //     int window = 5;
 //     auto producer =
-//         makeSameTypeCombinations<SameTypeFullCombinationsPolicy>(window, v_empty, v_empty);
+//         makeSameTypeCombinations<SameTypeStrictlyUpperCombinationsPolicy>(window, v_empty,
+//         v_empty);
 //
 //     int count = 0;
 //     for (const auto& val : producer) {
@@ -124,54 +106,39 @@ TEST_F(SameTypeFullCombinationsTest, WindowSizeHuge_ReturnsAllUpperCombinations)
 //     EXPECT_TRUE(producer.isEnd());
 // }
 
-TEST_F(SameTypeFullCombinationsTest, TripletsWithWindow_GeneratesCubesOnDiagonal)
+TEST_F(SameTypeStrictlyUpperCombinationsTest, TripletsWithWindow)
 {
-    int window = 1;
-    auto producer =
-        makeSameTypeCombinations<SameTypeFullCombinationsPolicy>(window, v_small, v_small, v_small);
+    int window    = 3;
+    auto producer = makeSameTypeCombinations<SameTypeStrictlyUpperCombinationsPolicy>(
+        window, v_small, v_small, v_small
+    );
 
     std::vector<std::tuple<int, int, int>> expected = {
-        {1, 1, 1},
-        {1, 1, 2},
-        {1, 2, 1},
-        {1, 2, 2},
+        {1, 2, 3},
+        {1, 2, 4},
+        {1, 3, 4},
 
-        {2, 2, 2},
-        {2, 2, 3},
-        {2, 3, 2},
-        {2, 3, 3},
+        {2, 3, 4},
+        {2, 3, 5},
+        {2, 4, 5},
 
-        {3, 3, 3},
-        {3, 3, 4},
-        {3, 4, 3},
-        {3, 4, 4},
+        {3, 4, 5},
+        {3, 4, 6},
+        {3, 5, 6},
 
-        {4, 4, 4},
-        {4, 4, 5},
-        {4, 5, 4},
-        {4, 5, 5},
+        {4, 5, 6},
+        {4, 5, 7},
+        {4, 6, 7},
 
-        {5, 5, 5},
-        {5, 5, 6},
-        {5, 6, 5},
-        {5, 6, 6},
+        {5, 6, 7},
+        {5, 6, 8},
+        {5, 7, 8},
 
-        {6, 6, 6},
-        {6, 6, 7},
-        {6, 7, 6},
-        {6, 7, 7},
+        {6, 7, 8},
+        {6, 7, 9},
+        {6, 8, 9},
 
-        {7, 7, 7},
-        {7, 7, 8},
-        {7, 8, 7},
-        {7, 8, 8},
-
-        {8, 8, 8},
-        {8, 8, 9},
-        {8, 9, 8},
-        {8, 9, 9},
-
-        {9, 9, 9},
+        {7, 8, 9},
     };
 
     int count = 0;
@@ -185,23 +152,18 @@ TEST_F(SameTypeFullCombinationsTest, TripletsWithWindow_GeneratesCubesOnDiagonal
     EXPECT_EQ(count, expected.size());
 }
 
-TEST_F(SameTypeFullCombinationsTest, StringTypes_WorksCorrectly)
+TEST_F(SameTypeStrictlyUpperCombinationsTest, StringTypes_WorksCorrectly)
 {
     std::vector<std::string> v = {"A", "B", "C", "D", "E"};
     int window                 = 1;
 
-    auto producer = makeSameTypeCombinations<SameTypeFullCombinationsPolicy>(window, v, v);
+    auto producer = makeSameTypeCombinations<SameTypeStrictlyUpperCombinationsPolicy>(window, v, v);
 
     std::vector<std::tuple<std::string, std::string>> expected = {
-        {"A", "A"},
         {"A", "B"},
-        {"B", "B"},
         {"B", "C"},
-        {"C", "C"},
         {"C", "D"},
-        {"D", "D"},
         {"D", "E"},
-        {"E", "E"}
     };
 
     int count = 0;

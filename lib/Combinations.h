@@ -268,4 +268,70 @@ class SameTypeFullCombinationsPolicy
     }
 };
 
+template <typename... TInputs>
+class SameTypeStrictlyUpperCombinationsPolicy
+    : public SameTypeCombinationsPolicyBase<
+          SameTypeStrictlyUpperCombinationsPolicy<TInputs...>, TInputs...>
+{
+    public:
+    SameTypeStrictlyUpperCombinationsPolicy() = default;
+    explicit SameTypeStrictlyUpperCombinationsPolicy(
+        int categoryNeighbours, const TInputs &...t_inputs
+    )
+    {
+        setData(categoryNeighbours, t_inputs...);
+    }
+
+    void addOne() { this->addOneBaseImpl(); }
+
+    void setData(int categoryNeighbours, const TInputs &...t_inputs)
+    {
+        this->setDataBaseImpl(categoryNeighbours, t_inputs...);
+        setDataPolicyHelper();
+    }
+
+    template <size_t I, size_t N>
+    void addOneImpl(bool &t_wasModified)
+    {
+        bool wasChanged = true;
+        setRanges<I, N>(wasChanged);
+        t_wasModified = !wasChanged;
+    }
+
+    private:
+    void setDataPolicyHelper()
+    {
+        if (!this->m_isEnd) {
+            constexpr auto N = sizeof...(TInputs);
+            bool shouldEnd   = true;
+            setRanges<N - 1, N>(shouldEnd);
+            this->m_isEnd = !shouldEnd;
+        }
+    }
+
+    template <size_t I, size_t N>
+    void setRanges(bool &t_condition)
+    {
+        [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
+            ((resetState<I, Is, N>(t_condition)), ...);
+        }(std::make_index_sequence<I>());
+    }
+
+    template <size_t I, size_t J, size_t N>
+    void resetState(bool &t_condition)
+    {
+        if (t_condition) {
+            constexpr auto ind = N - I + J;
+            int64_t tmpInd     = this->m_currentIndexNumbers[ind - 1] + 1;
+            auto minBorder     = std::min(this->m_endIndexNumbers[ind], this->m_maxIndex + 1);
+            if (tmpInd < minBorder) {
+                std::get<ind>(this->m_current) += tmpInd - this->m_currentIndexNumbers[ind];
+                this->m_currentIndexNumbers[ind] = tmpInd;
+            } else {
+                t_condition = false;
+            }
+        }
+    }
+};
+
 #endif  // COMBINATIONS_H

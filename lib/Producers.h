@@ -114,7 +114,7 @@ struct BlockProducer {
         using value_type        = std::tuple<typename TInputs::value_type...>;
         using pointer           = void;
         using reference         = std::tuple<
-                    typename std::iterator_traits<typename TInputs::const_iterator>::reference...>;
+            typename std::iterator_traits<typename TInputs::const_iterator>::reference...>;
 
         BlockIterator() = default;
         explicit BlockIterator(
