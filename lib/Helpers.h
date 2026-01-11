@@ -11,7 +11,9 @@
 
 template <typename P, typename T>
 concept IsBucketPolicy = requires(P policy, T element) {
-    { policy.getBucket(element) } -> std::convertible_to<int>;
+    {
+        policy.getBucket(element)
+    } -> std::convertible_to<int>;
 };
 
 template <typename... Types, typename Func>
@@ -25,11 +27,12 @@ auto tupleTransform(const std::tuple<Types...> &t_tuple, Func &&t_fn)
     );
 }
 
-// sort of std::unordered_map<> specialization type
+// sort of std::map<> specialization type
 template <typename TBucketPolicy, typename TInput>
     requires IsBucketPolicy<TBucketPolicy, typename TInput::const_iterator>
 struct SingleBlockBuckets {
     using underlying_iterator_type = typename TInput::const_iterator;
+    // using container_type = std::unordered_map<int, std::vector<underlying_iterator_type>>;
     using container_type = std::map<int, std::vector<underlying_iterator_type>>;
     using iterator       = typename container_type::const_iterator;
     using value_type     = typename container_type::value_type;
@@ -75,7 +78,7 @@ struct SingleBlockBuckets {
 };
 
 template <typename TBucketPolicy, typename... TInputs>
-    requires (IsBucketPolicy<TBucketPolicy, typename TInputs::value_type> && ...)
+    requires(IsBucketPolicy<TBucketPolicy, typename TInputs::value_type> && ...)
 struct CoupledBlockBuckets {
     CoupledBlockBuckets() = default;
     explicit CoupledBlockBuckets(
