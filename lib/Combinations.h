@@ -54,6 +54,9 @@ struct CombinationsPolicyBase {
     combinations_type m_current;
 
     private:
+    CombinationsPolicyBase() = default;
+    friend Derived;
+
     template <size_t I, typename TInput>
     void setDataHelper(const TInput &t_input)
     {
@@ -67,7 +70,7 @@ struct CombinationsPolicyBase {
     void addOneHelper(bool &t_wasModified)
     {
         if (t_wasModified) {
-            constexpr auto ind           = N - I - 1;
+            constexpr auto ind = N - I - 1;
             int64_t currentPointersIndex = ++m_currentIndexNumbers[ind];
             ++std::get<ind>(m_current);
             if (currentPointersIndex != m_endIndexNumbers[ind]) {

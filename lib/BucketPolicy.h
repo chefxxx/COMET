@@ -9,6 +9,16 @@
 #include <tuple>
 #include <type_traits>
 
+// Is this specific function callable with this specific element?
+template <typename Func, typename TElement>
+concept InvocableWith = std::invocable<Func, TElement>;
+
+// Does the result of that function match the bucket's type?
+template <typename Func, typename TElement, typename TBucket>
+concept ReturnsBucketCompatibleType = requires(Func f, TElement e) {
+    { f(e) } -> std::convertible_to<typename TBucket::value_type>;
+};
+
 template <typename Container, typename T2>
 int findIndex(Container const &data, T2 const &value, const bool ignoreOverflows)
 {
@@ -34,6 +44,18 @@ struct BucketPolicy final {
     template <typename TElement>
     [[nodiscard]] int getBucket(TElement const &element) const
     {
+        [&]<std::size_t... I>(std::index_sequence<I...>) {
+            static_assert((InvocableWith<std::tuple_element_t<I, CallablesTuple>, TElement> && ...),
+                "ERROR: One of your callables cannot be called with the element you provided for bucketing.");
+
+            static_assert((ReturnsBucketCompatibleType<
+                std::tuple_element_t<I, CallablesTuple>,
+                TElement,
+                std::tuple_element_t<I, BucketsTuple>
+            > && ...),
+                "ERROR: A callable returns a type that doesn't match its corresponding bucket.");
+        }(std::make_index_sequence<N>{});
+
         auto values  = getValues(element);
         auto indices = getUpperIndicesForTuple(values);
         auto bucket  = calculateBucketAtIndices(indices);
@@ -41,8 +63,6 @@ struct BucketPolicy final {
     }
 
     private:
-    // Note: I assumed that user passes equal number of bins and callables.
-    // TODO: Later we will provide concepts restricting types of those.
     static_assert(sizeof...(AllArgs) % 2 == 0);
     static constexpr auto N = sizeof...(AllArgs) / 2;
     using FullTuple         = std::tuple<AllArgs...>;
@@ -63,13 +83,6 @@ struct BucketPolicy final {
         return std::make_tuple(std::get<Offset + I>(std::forward<TFullType>(t_full))...);
     }
 
-    // TODO: ghost function
-    [[nodiscard]] constexpr int getMaximalBucketCount() const
-    {
-        return [&]<std::size_t... I>(std::index_sequence<I...>) {
-            return (1 * ... * (std::get<I>(m_buckets).size() + 1));
-        }(std::make_index_sequence<N>{});
-    }
 
     template <typename TElement>
     [[nodiscard]] auto getValues(TElement const &element) const
@@ -80,7 +93,7 @@ struct BucketPolicy final {
     }
 
     template <typename... Types>
-    [[nodiscard]] auto getUpperIndicesForTuple(std::tuple<Types...> const &values) const
+    [[nodiscard]] auto getUpperIndicesForTuple(std::tuple<Types...> const& values) const
     {
         return [&]<std::size_t... I>(std::index_sequence<I...>) {
             return std::make_tuple(
@@ -106,7 +119,7 @@ struct BucketPolicy final {
     }
 
     template <typename... Types>
-    bool checkUnderOverflows(std::tuple<Types...> arg) const
+    bool checkUnderOverflows(const std::tuple<Types...>& arg) const
     {
         return [&arg]<size_t... I>(std::index_sequence<I...>) {
             return ((std::get<I>(arg) == -1) || ...);

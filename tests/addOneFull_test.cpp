@@ -81,10 +81,10 @@ TEST(AddOneFullTest, twoVectorsSameSize)
 
 TEST(AddOneFullTest, fourVectorsDifferentSizes)
 {
-    const std::vector v1              = {1, 2, 3};
-    const std::vector v2              = {'a', 'b', 'c', 'd', 'e'};
-    const std::vector v3              = {'=', '#', '$', '!'};
-    const std::vector<std::string> v4 = {"Michał", "Mati"};
+    const std::vector v1 = {1, 2, 3};
+    const std::vector v2 = {'a', 'b', 'c', 'd', 'e'};
+    const std::vector v3 = {'=', '#', '$', '!'};
+    const std::vector v4 = {"Michał", "Mati"};
 
     auto combinationsProducer = makeCombinations<FullCombinationsPolicy>(v1, v2, v3, v4);
 
