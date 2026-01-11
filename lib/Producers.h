@@ -194,10 +194,9 @@ struct BlockProducer {
 
 template <
     template <typename...> class TCombinationsPolicy, typename TBucketPolicy, typename... TInputs>
-requires BlockLifecyclePolicy<
+    requires BlockLifecyclePolicy<
         TCombinationsPolicy<std::vector<typename TInputs::const_iterator>...>,
-        std::vector<typename TInputs::const_iterator>...
-    >
+        std::vector<typename TInputs::const_iterator>...>
 auto makeBlockCombinations(
     const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const TInputs &...t_inputs
 )
