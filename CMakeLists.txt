@@ -63,13 +63,14 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
                 -Wall
                 -Wextra
                 -pedantic
+                -fstack-usage
         )
         target_link_options(${LIB_NAME} INTERFACE
                 -fsanitize=undefined
                 -fsanitize=address
         )
     elseif (BUILD_TYPE_UPPER STREQUAL "RELEASE")
-        target_compile_options(${LIB_NAME} INTERFACE -O3;-march=native;-funroll-loops)
+        target_compile_options(${LIB_NAME} INTERFACE -O2;-march=native;-funroll-loops;-fstack-usage)
     else()
         message(FATAL_ERROR "Unknown build type: ${BUILD_TYPE_UPPER}")
     endif ()
@@ -88,3 +89,4 @@ endif()
 
 enable_testing()
 add_subdirectory(tests)
+add_subdirectory(benchmarks)
