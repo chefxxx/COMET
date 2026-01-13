@@ -12,20 +12,16 @@
 
 #include "HeavyStructures.h"
 
-class CombinationsFixtureHeavyweight : public benchmark::Fixture
-{
-    public:
-    std::vector<HeavyGroupingStruct> data;
-    int seed = 42;
-    int meanMultiplicity = 20;
+class CombinationsFixtureLightweight : public benchmark::Fixture {
+public:
+    std::vector<double> data;
 
-    HeavyGroupingStructGenerator<int> generator = HeavyGroupingStructGenerator(seed, meanMultiplicity);
     void SetUp(const ::benchmark::State& state)
     {
         int N = state.range(0);
         data.reserve(N);
         for (int i = 0; i < N; ++i)
-            data.push_back(generator.generate(i));
+            data.push_back(i);
     }
 
     void TearDown(const ::benchmark::State&)  {
@@ -33,16 +29,18 @@ class CombinationsFixtureHeavyweight : public benchmark::Fixture
     }
 };
 
+
 // -----------------------------------------------------------------------------
 // SCENARIO 1: FULL PAIRS COMBINATIONS LIGHT (N * N)
 // -----------------------------------------------------------------------------
-BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LoopCombinationsFullPairs) (benchmark::State &state) {
+BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LoopCombinationsFullPairs) (benchmark::State &state) {
     for (auto _ : state) {
         int64_t count = 0;
         auto size = this->data.size();
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size; ++j) {
-                benchmark::DoNotOptimize(std::forward_as_tuple(this->data[i], this->data[j]));
+                auto [el0, el1] = std::forward_as_tuple(this->data[i], this->data[j]);
+                benchmark::DoNotOptimize(sqrt(el0 + el1));
                 count++;
             }
         }
@@ -52,13 +50,13 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LoopCombinationsFullPairs) (b
 }
 
 
-BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullPairs) (benchmark::State &state) {
+BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LibCombinationsFullPairs) (benchmark::State &state) {
     for (auto _ : state) {
 
         auto combinations = makeCombinations<FullCombinationsPolicy>(this->data, this->data);
         int64_t count = 0;
         for (const auto& [el0, el1]: combinations) {
-            benchmark::DoNotOptimize(el0.globalIndex + el1.globalIndex);
+            benchmark::DoNotOptimize(sqrt(el0 + el1));
         }
         benchmark::DoNotOptimize(count);
     }
@@ -68,14 +66,16 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullPairs) (be
 // -----------------------------------------------------------------------------
 // SCENARIO 2: FULL PAIRS COMBINATIONS LIGHT (N * N * N)
 // -----------------------------------------------------------------------------
-BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LoopCombinationsFullTriples) (benchmark::State &state) {
+BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LoopCombinationsFullTriples) (benchmark::State &state) {
     for (auto _ : state) {
         int64_t count = 0;
         auto size = this->data.size();
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size; ++j) {
                 for (int k = 0; k < size; ++k) {
-                    benchmark::DoNotOptimize(std::forward_as_tuple(this->data[i], this->data[j], this->data[k]));
+                    auto [el0, el1, el2] = std::forward_as_tuple(this->data[i], this->data[j], this->data[k]);
+
+                    benchmark::DoNotOptimize(sqrt(el0 + el1 + el2));
                     count++;
                 }
             }
@@ -86,13 +86,13 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LoopCombinationsFullTriples) 
 }
 
 
-BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullTriples) (benchmark::State &state) {
+BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LibCombinationsFullTriples) (benchmark::State &state) {
     for (auto _ : state) {
 
         auto combinations = makeCombinations<FullCombinationsPolicy>(this->data, this->data, this->data);
         int64_t count = 0;
         for (const auto& [el0, el1, el2]: combinations) {
-            benchmark::DoNotOptimize(el0.globalIndex + el1.globalIndex + el2.globalIndex);
+            benchmark::DoNotOptimize(sqrt(el0 + el1 + el2));
         }
         benchmark::DoNotOptimize(count);
     }
@@ -100,9 +100,9 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullTriples) (
 }
 
 // -----------------------------------------------------------------------------
-// SCENARIO 3: FULL PAIRS COMBINATIONS LIGHT (N * N * N * N)
+// SCENARIO 2: FULL PAIRS COMBINATIONS LIGHT (N * N * N * N)
 // -----------------------------------------------------------------------------
-BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LoopCombinationsFullFours) (benchmark::State &state) {
+BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LoopCombinationsFullFours) (benchmark::State &state) {
     for (auto _ : state) {
         int64_t count = 0;
         auto size = this->data.size();
@@ -110,7 +110,10 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LoopCombinationsFullFours) (b
             for (int j = 0; j < size; ++j) {
                 for (int k = 0; k < size; ++k) {
                     for (int l = 0; l < size; ++l) {
-                        benchmark::DoNotOptimize(std::forward_as_tuple(this->data[i], this->data[j], this->data[k], this->data[l]));
+                        auto [el0, el1, el2, el3] = std::forward_as_tuple(this->data[i], this->data[j], this->data[k], this->data[l]);
+
+                        benchmark::DoNotOptimize(sqrt(el0 + el1 + el2 + el3));
+
                         count++;
                     }
                 }
@@ -122,13 +125,13 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LoopCombinationsFullFours) (b
 }
 
 
-BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullFours) (benchmark::State &state) {
+BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LibCombinationsFullFours) (benchmark::State &state) {
     for (auto _ : state) {
 
         auto combinations = makeCombinations<FullCombinationsPolicy>(this->data, this->data, this->data, this->data);
         int64_t count = 0;
         for (const auto& [el0, el1, el2, el3]: combinations) {
-            benchmark::DoNotOptimize(el0.globalIndex + el1.globalIndex + el2.globalIndex);
+            benchmark::DoNotOptimize(sqrt(el0 + el1 + el2));
         }
         benchmark::DoNotOptimize(count);
     }
@@ -137,15 +140,15 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullFours) (be
 
 
 
-BENCHMARK_REGISTER_F(CombinationsFixtureHeavyweight, LoopCombinationsFullPairs)
+BENCHMARK_REGISTER_F(CombinationsFixtureLightweight, LoopCombinationsFullPairs)
     ->RangeMultiplier(2)->Range(1<<4, 1<<13)->Complexity();
-BENCHMARK_REGISTER_F(CombinationsFixtureHeavyweight, LibCombinationsFullPairs)
+BENCHMARK_REGISTER_F(CombinationsFixtureLightweight, LibCombinationsFullPairs)
     ->RangeMultiplier(2)->Range(1<<4, 1<<13)->Complexity();
-BENCHMARK_REGISTER_F(CombinationsFixtureHeavyweight, LoopCombinationsFullTriples)
+BENCHMARK_REGISTER_F(CombinationsFixtureLightweight, LoopCombinationsFullTriples)
     ->RangeMultiplier(2)->Range(1<<4, 1<<10)->Complexity();
-BENCHMARK_REGISTER_F(CombinationsFixtureHeavyweight, LibCombinationsFullTriples)
+BENCHMARK_REGISTER_F(CombinationsFixtureLightweight, LibCombinationsFullTriples)
     ->RangeMultiplier(2)->Range(1<<4, 1<<10)->Complexity();
-BENCHMARK_REGISTER_F(CombinationsFixtureHeavyweight, LoopCombinationsFullFours)
+BENCHMARK_REGISTER_F(CombinationsFixtureLightweight, LoopCombinationsFullFours)
     ->RangeMultiplier(2)->Range(1<<4, 1<<7)->Complexity();
-BENCHMARK_REGISTER_F(CombinationsFixtureHeavyweight, LibCombinationsFullFours)
-    ->RangeMultiplier(2)->Range(1<<4, 1<<7)->Complexity();
+BENCHMARK_REGISTER_F(CombinationsFixtureLightweight, LibCombinationsFullFours)
+    ->RangeMultiplier(2)->Range(1<<4, 1<<7)->Complexity(benchmark::oNQuads);

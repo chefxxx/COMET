@@ -15,7 +15,7 @@ public:
 
     void SetUp(const ::benchmark::State& state)
     {
-        int N = state.range(0);
+        auto N = state.range(0);
         data.reserve(N);
         for (int i = 0; i < N; ++i)
             data.push_back(i);
@@ -36,7 +36,8 @@ BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LoopCombinationsFullPairs) (b
         auto size = this->data.size();
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size; ++j) {
-                benchmark::DoNotOptimize(std::make_tuple(this->data[i], this->data[j]));
+                auto [el0, el1] = std::forward_as_tuple(this->data[i], this->data[j]);
+                benchmark::DoNotOptimize(el0 + el1);
                 count++;
             }
         }
@@ -69,7 +70,9 @@ BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LoopCombinationsFullTriples) 
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size; ++j) {
                 for (int k = 0; k < size; ++k) {
-                    benchmark::DoNotOptimize(std::make_tuple(this->data[i], this->data[j], this->data[k]));
+                    auto [el0, el1, el2] = std::forward_as_tuple(this->data[i], this->data[j], this->data[k]);
+
+                    benchmark::DoNotOptimize(el0 + el1 + el2);
                     count++;
                 }
             }
@@ -104,7 +107,10 @@ BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LoopCombinationsFullFours) (b
             for (int j = 0; j < size; ++j) {
                 for (int k = 0; k < size; ++k) {
                     for (int l = 0; l < size; ++l) {
-                        benchmark::DoNotOptimize(std::make_tuple(this->data[i], this->data[j], this->data[k], this->data[l]));
+                        auto [el0, el1, el2, el3] = std::forward_as_tuple(this->data[i], this->data[j], this->data[k], this->data[l]);
+
+                        benchmark::DoNotOptimize(el0 + el1 + el2 + el3);
+
                         count++;
                     }
                 }

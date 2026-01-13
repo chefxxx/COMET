@@ -110,7 +110,8 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LoopCombinationsFullFours) (b
             for (int j = 0; j < size; ++j) {
                 for (int k = 0; k < size; ++k) {
                     for (int l = 0; l < size; ++l) {
-                        benchmark::DoNotOptimize(std::forward_as_tuple(this->data[i], this->data[j], this->data[k], this->data[l]));
+                        auto [el0, el1, el2, el3] = std::forward_as_tuple(this->data[i], this->data[j], this->data[k], this->data[l]);
+                        benchmark::DoNotOptimize(sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex + el3.globalIndex));
                         count++;
                     }
                 }
@@ -128,7 +129,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullFours) (be
         auto combinations = makeCombinations<FullCombinationsPolicy>(this->data, this->data, this->data, this->data);
         int64_t count = 0;
         for (const auto& [el0, el1, el2, el3]: combinations) {
-            benchmark::DoNotOptimize(el0.globalIndex + el1.globalIndex + el2.globalIndex);
+            benchmark::DoNotOptimize(sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex));
         }
         benchmark::DoNotOptimize(count);
     }
