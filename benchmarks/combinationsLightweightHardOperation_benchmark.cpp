@@ -151,4 +151,4 @@ BENCHMARK_REGISTER_F(CombinationsFixtureLightweight, LibCombinationsFullTriples)
 BENCHMARK_REGISTER_F(CombinationsFixtureLightweight, LoopCombinationsFullFours)
     ->RangeMultiplier(2)->Range(1<<4, 1<<7)->Complexity();
 BENCHMARK_REGISTER_F(CombinationsFixtureLightweight, LibCombinationsFullFours)
-    ->RangeMultiplier(2)->Range(1<<4, 1<<7)->Complexity(benchmark::oNQuads);
+    ->RangeMultiplier(2)->Range(1<<4, 1<<7)->Complexity();

@@ -9,6 +9,35 @@
 #include "BucketSortView.h"
 #include "Helpers.h"
 
+template <typename P>
+concept IsCombinationsPolicy = requires(P policy) {
+    typename P::combinations_type;
+    typename P::combinations_value;
+    typename P::combinations_reference;
+
+    {
+        policy.isEnd()
+    } -> std::convertible_to<bool>;
+    {
+        policy.addOne()
+    } -> std::same_as<void>;
+    {
+        policy.current()
+    } -> std::same_as<typename P::combinations_type &>;
+};
+
+template <typename P, typename... TInputs>
+concept BasicLifecyclePolicy =
+    IsCombinationsPolicy<P> && std::constructible_from<P, const TInputs &...>;
+
+template <typename P, typename... TInputs>
+concept BlockLifecyclePolicy = IsCombinationsPolicy<P> && std::default_initializable<P> &&
+                               requires(P policy, const TInputs &...inputs) {
+                                   {
+                                       policy.setData(inputs...)
+                                   } -> std::same_as<void>;
+                               };
+
 /**
  * @brief This class just serves as an iterable wrapper around policies.
  * @tparam TCombinationsPolicy policy object that defines behaviour of the iterator
@@ -364,11 +393,11 @@ struct GroupedProducer {
             auto currentCombination = *m_blockIteratorPtr;
             constexpr auto N        = sizeof...(TAssociated);
             return [&]<size_t... Is>(std::index_sequence<Is...>) {
-                return std::tuple_cat(std::make_tuple(
-                    std::get<Is>(currentCombination),
-                    std::get<Is>(*m_viewsPtr)
-                        .getSpanForBucket((*m_callablePtr)(std::get<Is>(currentCombination)))
-                )...);
+                return std::tuple_cat(std::tuple_cat(std::tuple_cat(
+                    std::forward_as_tuple(std::get<Is>(currentCombination)),
+                    std::make_tuple(std::get<Is>(*m_viewsPtr)
+                        .getSpanForBucket((*m_callablePtr)(std::get<Is>(currentCombination))))
+                )...));
             }(std::make_index_sequence<N>{});
         }
 
