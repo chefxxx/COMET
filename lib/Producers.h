@@ -395,8 +395,10 @@ struct GroupedProducer {
             return [&]<size_t... Is>(std::index_sequence<Is...>) {
                 return std::tuple_cat(std::tuple_cat(std::tuple_cat(
                     std::forward_as_tuple(std::get<Is>(currentCombination)),
-                    std::make_tuple(std::get<Is>(*m_viewsPtr)
-                        .getSpanForBucket((*m_callablePtr)(std::get<Is>(currentCombination))))
+                    std::make_tuple(
+                        std::get<Is>(*m_viewsPtr)
+                            .getSpanForBucket((*m_callablePtr)(std::get<Is>(currentCombination)))
+                    )
                 )...));
             }(std::make_index_sequence<N>{});
         }

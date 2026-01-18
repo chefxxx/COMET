@@ -72,9 +72,9 @@ void generate(const std::vector<int>& groupingData, const auto& groupingCallable
     auto groupedCombinations = makeGroupedCombinations<FullCombinationsPolicy>(bp, 1, groupingWrapped, associatedFirstWrapped, associatedSecondWrapped);
     for (const auto& [el0, as0, el1, as1]: groupedCombinations) {
         sqrt(el0 + el1);
-        auto combinations = makeCombinations<FullCombinationsPolicy>(as0, as1);
-        for (const auto& [e0, e1]: combinations) {
-            sqrt(e0.value + e1.value);
+         auto combinations = makeCombinations<FullCombinationsPolicy>(as0, as1);
+         for (const auto& [e0, e1]: combinations) {
+             sqrt(e0.value + e1.value);
         }
     }
 }

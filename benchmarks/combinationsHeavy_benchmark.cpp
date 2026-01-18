@@ -99,41 +99,6 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullTriples) (
     state.SetComplexityN(state.range(0));
 }
 
-// -----------------------------------------------------------------------------
-// SCENARIO 3: FULL PAIRS COMBINATIONS LIGHT (N * N * N * N)
-// -----------------------------------------------------------------------------
-BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LoopCombinationsFullFours) (benchmark::State &state) {
-    for (auto _ : state) {
-        int64_t count = 0;
-        auto size = this->data.size();
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                for (int k = 0; k < size; ++k) {
-                    for (int l = 0; l < size; ++l) {
-                        benchmark::DoNotOptimize(std::forward_as_tuple(this->data[i], this->data[j], this->data[k], this->data[l]));
-                        count++;
-                    }
-                }
-            }
-        }
-        benchmark::DoNotOptimize(count);
-    }
-    state.SetComplexityN(state.range(0));
-}
-
-
-BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullFours) (benchmark::State &state) {
-    for (auto _ : state) {
-
-        auto combinations = makeCombinations<FullCombinationsPolicy>(this->data, this->data, this->data, this->data);
-        int64_t count = 0;
-        for (const auto& [el0, el1, el2, el3]: combinations) {
-            benchmark::DoNotOptimize(el0.globalIndex + el1.globalIndex + el2.globalIndex);
-        }
-        benchmark::DoNotOptimize(count);
-    }
-    state.SetComplexityN(state.range(0));
-}
 
 
 
@@ -145,7 +110,3 @@ BENCHMARK_REGISTER_F(CombinationsFixtureHeavyweight, LoopCombinationsFullTriples
     ->RangeMultiplier(2)->Range(1<<4, 1<<10)->Complexity();
 BENCHMARK_REGISTER_F(CombinationsFixtureHeavyweight, LibCombinationsFullTriples)
     ->RangeMultiplier(2)->Range(1<<4, 1<<10)->Complexity();
-BENCHMARK_REGISTER_F(CombinationsFixtureHeavyweight, LoopCombinationsFullFours)
-    ->RangeMultiplier(2)->Range(1<<4, 1<<7)->Complexity();
-BENCHMARK_REGISTER_F(CombinationsFixtureHeavyweight, LibCombinationsFullFours)
-    ->RangeMultiplier(2)->Range(1<<4, 1<<7)->Complexity();
