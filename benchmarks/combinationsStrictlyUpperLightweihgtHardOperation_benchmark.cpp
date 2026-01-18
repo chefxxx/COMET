@@ -2,6 +2,8 @@
 // Created by mshamrai on 1/18/26.
 //
 #include <benchmark/benchmark.h>
+
+#include <cmath>
 #include <vector>
 
 #include "Combinations.h"
