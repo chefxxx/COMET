@@ -112,7 +112,7 @@ int main(int argc, char** argv)
 
     auto getBucket = [](const int& elem) { return elem & 1; };
 
-    std::array buckets {-1, 0, 1};
+    std::array buckets {0, 1};
     auto nbp = BucketPolicy(false, getBucket, buckets);
 
     auto groupedCombinations = makeGroupedCombinations<FullCombinationsPolicy>(nbp, 1, grouping, assoc, assoc);

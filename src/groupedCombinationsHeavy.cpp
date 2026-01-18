@@ -25,7 +25,7 @@ int main(int, char**)
     HeavyAssociatedFirstStructGenerator firstAssociatedGenerator = HeavyAssociatedFirstStructGenerator(seed);
     HeavyAssociatedSecondStructGenerator secondAssociatedGenerator = HeavyAssociatedSecondStructGenerator();
 
-    int N = 10000;
+    int N = 15000;
     data.reserve(N);
     associatedFirst.reserve(N * meanMultiplicity);
     associatedSecond.reserve(N * meanMultiplicity);

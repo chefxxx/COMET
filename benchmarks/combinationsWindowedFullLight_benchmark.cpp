@@ -1,12 +1,9 @@
 //
-// Created by mshamrai on 1/12/26.
-//
-//
-// Created by mshamrai on 1/12/26.
+// Created by mshamrai on 1/18/26.
 //
 #include <benchmark/benchmark.h>
-#include <cmath>
 #include <vector>
+
 #include "Combinations.h"
 #include "Producers.h"
 
@@ -16,10 +13,11 @@ class CombinationsFixtureLightweight : public benchmark::Fixture
 {
     public:
     std::vector<double> data;
+    int windowSize = 10;
 
     void SetUp(const ::benchmark::State &state)
     {
-        int N = state.range(0);
+        auto N = state.range(0);
         data.reserve(N);
         for (int i = 0; i < N; ++i) data.push_back(i);
     }
@@ -37,7 +35,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LoopCombinationsFullPairs)
         int64_t count = 0;
         auto size     = this->data.size();
         for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
+            for (int j = i; j < size && j < i + windowSize; ++j) {
                 auto [el0, el1] = std::forward_as_tuple(this->data[i], this->data[j]);
                 benchmark::DoNotOptimize(sqrt(el0 + el1));
                 count++;
@@ -52,8 +50,10 @@ BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LibCombinationsFullPairs)
 (benchmark::State &state)
 {
     for (auto _ : state) {
-        auto combinations = makeCombinations<FullCombinationsPolicy>(this->data, this->data);
-        int64_t count     = 0;
+        auto combinations = makeSameKindCombinations<SameTypeFullCombinationsPolicy>(
+            windowSize, this->data, this->data
+        );
+        int64_t count = 0;
         for (const auto &[el0, el1] : combinations) {
             benchmark::DoNotOptimize(sqrt(el0 + el1));
         }
@@ -72,11 +72,10 @@ BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LoopCombinationsFullTriples)
         int64_t count = 0;
         auto size     = this->data.size();
         for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                for (int k = 0; k < size; ++k) {
+            for (int j = i; j < size && j < i + windowSize; ++j) {
+                for (int k = i; k < size && k < i + windowSize; ++k) {
                     auto [el0, el1, el2] =
                         std::forward_as_tuple(this->data[i], this->data[j], this->data[k]);
-
                     benchmark::DoNotOptimize(sqrt(el0 + el1 + el2));
                     count++;
                 }
@@ -91,8 +90,9 @@ BENCHMARK_DEFINE_F(CombinationsFixtureLightweight, LibCombinationsFullTriples)
 (benchmark::State &state)
 {
     for (auto _ : state) {
-        auto combinations =
-            makeCombinations<FullCombinationsPolicy>(this->data, this->data, this->data);
+        auto combinations = makeSameKindCombinations<SameTypeFullCombinationsPolicy>(
+            windowSize, this->data, this->data, this->data
+        );
         int64_t count = 0;
         for (const auto &[el0, el1, el2] : combinations) {
             benchmark::DoNotOptimize(sqrt(el0 + el1 + el2));
