@@ -21,7 +21,8 @@ int main() {
     std::cout << "FullCombinations producer:\n";
     for (const auto& [elem1, elem2, elem3] : combinationsProducer) {
         // Do something with the created combination ...
-        std::cout << "Produced tuple: (" << elem1 << ", " << elem2 << ", " << elem3 << ")\n";
+        std::cout << "Produced tuple: ("
+        << elem1 << ", " << elem2 << ", " << elem3 << ")\n";
     }
 
     auto strictlyUpperCombinationsProducer = makeCombinations<StrictlyUpperCombinationsPolicy>(s1, s2, s3);

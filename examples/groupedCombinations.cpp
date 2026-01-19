@@ -44,26 +44,37 @@ auto generateAssociated(const int N)
 int main() {
     const auto data = generateData(30);
     const auto associated = generateAssociated(100);
-    auto getGroupedId = [](const int& elem) { return elem % 10; };
-    auto getId = [](const Associated& elem) { return elem.id; };
+
+    auto getGroupedId   = [](const int& elem) { return elem % 10; };
+    auto getId          = [](const Associated& elem) { return elem.id; };
     const auto grouping = SourceWithCallable(data, getGroupedId);
-    const auto assoc = SourceWithCallable(associated, getId);
-    auto getBucket = [](const int& elem) { return elem & 1; };
+    const auto assoc    = SourceWithCallable(associated, getId);
+
     std::array buckets {0, 1};
+    auto getBucket = [](const int& elem) { return elem & 1; };
     const auto bucket_policy = BucketPolicy(false, getBucket, buckets);
 
-
     auto groupedCombinations = makeGroupedCombinations<FullCombinationsPolicy>(bucket_policy, 1, grouping, assoc, assoc);
+    std::cout << "FullGrouped producer:\n";
     for (const auto& [el0, sp0, el1, sp1]: groupedCombinations) {
         // Do something with the generated combinations ...
-        std::cout << "Generated combination: (" << el0 << ", " << el1 << ")\n";
-        std::cout << "Associated data with the element: " << el0 << ")\n";
-        for (const auto& el: sp0) {
-            std::cout << "          " << el.id << " " << el.val << '\n';
+        for (const auto& [inner0, inner1] : makeCombinations<FullCombinationsPolicy>(sp0, sp1))
+        {
+            std::cout << "Generated inner combination: [";
+            std::cout << "(" << inner0.id <<  ", " << inner0.val << ") and ";
+            std::cout << "(" << inner1.id <<  ", " << inner1.val << ")]\n";
         }
-        std::cout << "Associated data with the element: " << el1 << ")\n";
-        for (const auto& el: sp1) {
-            std::cout << "          " << el.id << " " << el.val << '\n';
+    }
+
+    auto groupedCombinationsUpper = makeGroupedCombinations<StrictlyUpperCombinationsPolicy>(bucket_policy, 1, grouping, assoc, assoc);
+    std::cout << "StrictlyUpperGrouped producer:\n";
+    for (const auto& [el0, sp0, el1, sp1]: groupedCombinationsUpper) {
+        // Do something with the generated combinations ...
+        for (const auto& [inner0, inner1] : makeCombinations<StrictlyUpperCombinationsPolicy>(sp0, sp1))
+        {
+            std::cout << "Generated inner combination: [";
+            std::cout << "(" << inner0.id <<  ", " << inner0.val << ") and ";
+            std::cout << "(" << inner1.id <<  ", " << inner1.val << ")]\n";
         }
     }
 }
