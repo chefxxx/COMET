@@ -12,6 +12,7 @@ PATH_TO_DIRS="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/.." &> /dev/null && 
 FOLDERS=(
   "$PATH_TO_DIRS/lib"
   "$PATH_TO_DIRS/tests"
+  "$PATH_TO_DIRS/benchmarks"
 )
 
 # ===============================

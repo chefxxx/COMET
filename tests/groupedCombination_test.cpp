@@ -4,7 +4,6 @@
 
 #include "BucketPolicy.h"
 #include "Combinations.h"
-#include "HeavyStructures.h"
 #include "Producers.h"
 #include "gtest/gtest.h"
 
@@ -88,7 +87,6 @@ class GroupedCombinationsTest : public ::testing::Test
 
 TEST_F(GroupedCombinationsTest, CorrectDataAlignment)
 {
-    const HeavyAssociatedSecondStruct str{};
     const auto bucketPolicy = BucketPolicy(false, bucketCallable, buckets);
 
     auto grouped = makeGroupedCombinations<FullCombinationsPolicy>(

@@ -25,16 +25,21 @@ struct Plane
     std::string id;
 };
 
+constexpr float PLANE_COST_COEFFICIENT = 2.0;
+constexpr float PLANE_TIME_COEFFICIENT = 0.5;
+constexpr float CAR_COST_COEFFICIENT   = 0.5;
+constexpr float CAR_TIME_COEFFICIENT   = 2.0;
+
 struct TimeFun
 {
-    double operator()(const Plane& plane) const { return plane.some_trait_1 * 2.0; }
-    double operator()(const Car& car) const { return car.some_trait_1 * 0.5; }
+    double operator()(const Plane& plane) const { return plane.some_trait_1 * PLANE_TIME_COEFFICIENT; }
+    double operator()(const Car& car) const { return car.some_trait_1 * CAR_TIME_COEFFICIENT; }
 };
 
 struct CostFun
 {
-    double operator()(const Plane& plane) const { return plane.some_trait_2 * 1.5; }
-    double operator()(const Car& car) const { return car.some_trait_2 * 0.5; }
+    double operator()(const Plane& plane) const { return plane.some_trait_2 * PLANE_TIME_COEFFICIENT; }
+    double operator()(const Car& car) const { return car.some_trait_2 * CAR_TIME_COEFFICIENT; }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Car& car)
@@ -109,6 +114,8 @@ int main() {
     constexpr std::array timeBuckets  = {0.0, 6.0, 12.0};
 
     const auto bucketPolicy = BucketPolicy(true, CostFun{}, TimeFun{}, costBuckets, timeBuckets);
+    // Note: This buckets assignment can serve use to make combinations
+    // between comparable time and cost efficiency cars and planes.
 
     auto combinationsProducer = makeBlockCombinations<FullCombinationsPolicy>(bucketPolicy, minimumCategorySize, s1, s2);
     std::cout << "Full producer:\n";

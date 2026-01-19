@@ -33,9 +33,9 @@ concept BasicLifecyclePolicy =
 template <typename P, typename... TInputs>
 concept BlockLifecyclePolicy = IsCombinationsPolicy<P> && std::default_initializable<P> &&
                                requires(P policy, const TInputs &...inputs) {
-    {
-        policy.setData(inputs...)
-    } -> std::same_as<void>;
+                                   {
+                                       policy.setData(inputs...)
+                                   } -> std::same_as<void>;
                                };
 
 /**
@@ -393,11 +393,13 @@ struct GroupedProducer {
             auto currentCombination = *m_blockIteratorPtr;
             constexpr auto N        = sizeof...(TAssociated);
             return [&]<size_t... Is>(std::index_sequence<Is...>) {
-                return std::tuple_cat(std::make_tuple(
-                    std::get<Is>(currentCombination),
-                    std::get<Is>(*m_viewsPtr)
-                        .getSpanForBucket((*m_callablePtr)(std::get<Is>(currentCombination)))
-                )...);
+                return std::tuple_cat(std::tuple_cat(std::tuple_cat(
+                    std::forward_as_tuple(std::get<Is>(currentCombination)),
+                    std::make_tuple(
+                        std::get<Is>(*m_viewsPtr)
+                            .getSpanForBucket((*m_callablePtr)(std::get<Is>(currentCombination)))
+                    )
+                )...));
             }(std::make_index_sequence<N>{});
         }
 

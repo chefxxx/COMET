@@ -9,7 +9,6 @@
 #include <iterator>
 #include <tuple>
 
-
 template <typename Derived, typename... TInputs>
 struct CombinationsPolicyBase {
     using combinations_type  = std::tuple<typename TInputs::const_iterator...>;
