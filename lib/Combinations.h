@@ -9,34 +9,6 @@
 #include <iterator>
 #include <tuple>
 
-template <typename P>
-concept IsCombinationsPolicy = requires(P policy) {
-    typename P::combinations_type;
-    typename P::combinations_value;
-    typename P::combinations_reference;
-
-    {
-        policy.isEnd()
-    } -> std::convertible_to<bool>;
-    {
-        policy.addOne()
-    } -> std::same_as<void>;
-    {
-        policy.current()
-    } -> std::same_as<typename P::combinations_type &>;
-};
-
-template <typename P, typename... TInputs>
-concept BasicLifecyclePolicy =
-    IsCombinationsPolicy<P> && std::constructible_from<P, const TInputs &...>;
-
-template <typename P, typename... TInputs>
-concept BlockLifecyclePolicy = IsCombinationsPolicy<P> && std::default_initializable<P> &&
-                               requires(P policy, const TInputs &...inputs) {
-                                   {
-                                       policy.setData(inputs...)
-                                   } -> std::same_as<void>;
-                               };
 
 template <typename Derived, typename... TInputs>
 struct CombinationsPolicyBase {
