@@ -15,6 +15,8 @@ set(PROJECT_AUTHOR "Mateusz Mikiciuk & Mykhailo Shamrai")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
+
 # ------------------------------------------------------------------------------ #
 #                                  Load dirs                                     #
 # ------------------------------------------------------------------------------ #
@@ -47,7 +49,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
                 -fsanitize=address
         )
     elseif (BUILD_TYPE_UPPER STREQUAL "RELEASE")
-        target_compile_options(${LIB_NAME} INTERFACE -O3;-march=native;-funroll-loops;)
+        target_compile_options(${LIB_NAME} INTERFACE -O2;-march=native;-funroll-loops;)
     else()
         message(FATAL_ERROR "Unknown build type: ${BUILD_TYPE_UPPER}")
     endif ()
@@ -90,4 +92,4 @@ endif()
 enable_testing()
 add_subdirectory(examples)
 add_subdirectory(tests)
-#add_subdirectory(benchmarks)
+add_subdirectory(benchmarks)

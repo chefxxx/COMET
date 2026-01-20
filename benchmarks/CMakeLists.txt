@@ -24,3 +24,14 @@ foreach(bench_source ${BENCHMARK_SOURCES})
     )
 
 endforeach()
+
+# 1. Find the Boost package (only headers are needed for static_vector)
+find_package(Boost REQUIRED)
+
+# 2. If Boost is found, add the include directories to your target
+if(Boost_FOUND)
+    target_include_directories(discreture_vs_comet_full_combinations PRIVATE ${Boost_INCLUDE_DIRS})
+    target_include_directories(discreture_vs_comet_strictly_upper PRIVATE ${Boost_INCLUDE_DIRS})
+else()
+    message(FATAL_ERROR "Boost not found! Install it via 'brew install boost'")
+endif()

@@ -19,7 +19,7 @@ class CombinationsFixtureHeavyweight : public benchmark::Fixture
 
     HeavyGroupingStructGenerator<int> generator =
         HeavyGroupingStructGenerator(seed, meanMultiplicity);
-    void SetUp(const ::benchmark::State &state)
+    void SetUp(const::benchmark::State &state)
     {
         int N = state.range(0);
         data.reserve(N);
