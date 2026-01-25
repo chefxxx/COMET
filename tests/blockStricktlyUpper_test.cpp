@@ -23,8 +23,6 @@ class BlockStrictlyUpperCombinationsTest : public ::testing::Test
 
 TEST_F(BlockStrictlyUpperCombinationsTest, SelfCombinationPairs)
 {
-    // Bucket 0 (0.0 - 0.5): {0.1, 0.2, 0.3}
-    // Bucket 1 (0.5 - 1.0): {0.6, 0.7, 0.8, 0.9}
     std::vector<double> data = {0.1, 0.2, 0.3, 0.6, 0.7, 0.8, 0.9};
 
     const auto bp = BucketPolicy(true, callable, buckets);
@@ -49,7 +47,7 @@ TEST_F(BlockStrictlyUpperCombinationsTest, SelfCombinationPairs)
     };
 
     ASSERT_EQ(results.size(), expected.size());
-    for (size_t i = 0; i < expected.size(); ++i) {
+    for (std::size_t i = 0; i < expected.size(); ++i) {
         EXPECT_EQ(results[i], expected[i]);
     }
 }
@@ -108,7 +106,6 @@ TEST_F(BlockStrictlyUpperCombinationsTest, MinCategorySizeRespectsBucketCount)
 
     const auto bp = BucketPolicy(false, callable, buckets);
 
-    // Bucket 1 (Size 3) should be processed.
     auto producer = makeBlockCombinations<StrictlyUpperCombinationsPolicy>(bp, 3, data, data);
 
     std::vector<std::tuple<double, double>> expected = {

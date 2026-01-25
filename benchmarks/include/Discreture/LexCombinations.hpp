@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <numeric>
 #include "ArithmeticProgression.hpp"
 #include "CombinationTree.hpp"
 #include "IndexedViewContainer.hpp"
@@ -7,8 +9,6 @@
 #include "Sequences.hpp"
 #include "VectorHelpers.hpp"
 #include "detail/LexCombinationsDetail.hpp"
-#include <algorithm>
-#include <numeric>
 
 namespace discreture
 {
@@ -36,21 +36,19 @@ namespace discreture
 template <class IntType = int, class RAContainerInt = std::vector<IntType>>
 class LexCombinations
 {
-public:
-    static_assert(std::is_integral<IntType>::value,
-                  "Template parameter IntType must be integral");
-    static_assert(std::is_signed<IntType>::value,
-                  "Template parameter IntType must be signed");
-    using value_type = RAContainerInt;
-    using combination = value_type;
+    public:
+    static_assert(std::is_integral<IntType>::value, "Template parameter IntType must be integral");
+    static_assert(std::is_signed<IntType>::value, "Template parameter IntType must be signed");
+    using value_type      = RAContainerInt;
+    using combination     = value_type;
     using difference_type = std::ptrdiff_t;
-    using size_type = difference_type;
+    using size_type       = difference_type;
     class iterator;
     using const_iterator = iterator;
     class reverse_iterator;
     using const_reverse_iterator = reverse_iterator;
 
-public:
+    public:
     ////////////////////////////////////////////////////////////
     /// \brief Constructor
     ///
@@ -58,9 +56,7 @@ public:
     /// \param k is an integer with 0 <= k <= n
     ///
     ////////////////////////////////////////////////////////////
-    LexCombinations(IntType n, IntType k)
-        : n_(n), k_(k), size_(binomial<size_type>(n, k))
-    {}
+    LexCombinations(IntType n, IntType k) : n_(n), k_(k), size_(binomial<size_type>(n, k)) {}
 
     ////////////////////////////////////////////////////////////
     /// \brief The total number of combinations
@@ -98,37 +94,30 @@ public:
         return comb;
     }
 
-    size_type get_index(const combination& comb) const
-    {
-        return get_index(comb, n_);
-    }
+    size_type get_index(const combination& comb) const { return get_index(comb, n_); }
 
-    iterator get_iterator(const combination& comb) const
-    {
-        return iterator(comb, n_);
-    }
+    iterator get_iterator(const combination& comb) const { return iterator(comb, n_); }
 
     ////////////////////////////////////////////////////////////
     /// \brief Random access iterator class. It's much more efficient as a
     /// bidirectional iterator than purely random access.
     ////////////////////////////////////////////////////////////
-    class iterator
-        : public boost::iterator_facade<iterator, const combination&, boost::random_access_traversal_tag>
+    class iterator : public boost::iterator_facade<
+                         iterator, const combination&, boost::random_access_traversal_tag>
     {
-    public:
-        iterator()
-            : ID_(0LL), n_(0), k_(0), s_(0), data_() {} // empty initializer
+        public:
+        iterator() : ID_(0LL), n_(0), k_(0), s_(0), data_() {}  // empty initializer
 
         iterator(const combination& comb, IntType n)
-            : ID_(LexCombinations<IntType, RAContainerInt>::get_index(comb, n))
-            , n_(n)
-            , k_(comb.size())
-            , s_(n - comb.size())
-            , data_(comb)
-        {} // empty initializer
+            : ID_(LexCombinations<IntType, RAContainerInt>::get_index(comb, n)),
+              n_(n),
+              k_(comb.size()),
+              s_(n - comb.size()),
+              data_(comb)
+        {
+        }  // empty initializer
 
-        iterator(IntType n, IntType k)
-            : ID_(0), n_(n), k_(k), s_(n - k), data_(k)
+        iterator(IntType n, IntType k) : ID_(0), n_(n), k_(k), s_(n - k), data_(k)
         {
             std::iota(data_.begin(), data_.end(), 0);
         }
@@ -142,12 +131,9 @@ public:
             return data_.front() == n_ - k;
         }
 
-        static iterator make_invalid_with_id(size_type id)
-        {
-            return iterator(id);
-        }
+        static iterator make_invalid_with_id(size_type id) { return iterator(id); }
 
-    private:
+        private:
         // ending initializer: for id only. Do not use unless you know what you
         // are doing.
         explicit iterator(size_type id) : ID_(id), n_(), k_(), s_(), data_() {}
@@ -182,16 +168,13 @@ public:
             assert(0 <= n + ID_);
 
             // If n is small, it's actually more efficient to just iterate to it
-            if (std::abs(n) < 30)
-            {
-                while (n > 0)
-                {
+            if (std::abs(n) < 30) {
+                while (n > 0) {
                     increment();
                     --n;
                 }
 
-                while (n < 0)
-                {
+                while (n < 0) {
                     decrement();
                     ++n;
                 }
@@ -205,14 +188,11 @@ public:
             construct_combination(data_, ID_, n_);
         }
 
-        difference_type distance_to(const iterator& other) const
-        {
-            return other.ID() - ID();
-        }
+        difference_type distance_to(const iterator& other) const { return other.ID() - ID(); }
 
         bool equal(const iterator& it) const { return ID_ == it.ID_; }
 
-    private:
+        private:
         size_type ID_{0};
         IntType n_;
         IntType k_;
@@ -221,19 +201,18 @@ public:
 
         friend class LexCombinations;
         friend class boost::iterator_core_access;
-    }; // end class iterator
+    };  // end class iterator
 
     ////////////////////////////////////////////////////////////
     /// \brief Reverse random access iterator class. It's much more efficient as
     /// a bidirectional iterator than purely random access.
     ////////////////////////////////////////////////////////////
     class reverse_iterator
-        : public boost::iterator_facade<reverse_iterator,
-                                        const combination&,
-                                        boost::random_access_traversal_tag>
+        : public boost::iterator_facade<
+              reverse_iterator, const combination&, boost::random_access_traversal_tag>
     {
-    public:
-        reverse_iterator() : n_(0), data_() {} // empty initializer
+        public:
+        reverse_iterator() : n_(0), data_() {}  // empty initializer
         reverse_iterator(IntType n, IntType r) : n_(n), data_(r)
         {
             std::iota(data_.begin(), data_.end(), n - r);
@@ -249,12 +228,12 @@ public:
 
         void reset(IntType n, IntType r)
         {
-            n_ = n;
-            ID_ = 0;
+            n_    = n;
+            ID_   = 0;
             data_ = IntegerInterval<IntType>(n - r, n);
         }
 
-    private:
+        private:
         void increment()
         {
             ++ID_;
@@ -283,16 +262,13 @@ public:
         {
             assert(0 <= m + ID_);
 
-            if (std::abs(m) < 20)
-            {
-                while (m > 0)
-                {
+            if (std::abs(m) < 20) {
+                while (m > 0) {
                     increment();
                     --m;
                 }
 
-                while (m < 0)
-                {
+                while (m < 0) {
                     decrement();
                     ++m;
                 }
@@ -314,10 +290,10 @@ public:
 
         bool equal(const reverse_iterator& it) const { return it.ID() == ID(); }
 
-    private:
+        private:
         explicit reverse_iterator(size_type id)
-            : ID_(id), data_() {} // ending initializer: for id only. Do not
-                                  // use unless you know what you are doing.
+            : ID_(id), data_() {}  // ending initializer: for id only. Do not
+                                   // use unless you know what you are doing.
 
         IntType n_{};
         size_type ID_{};
@@ -326,7 +302,7 @@ public:
         friend class LexCombinations;
         friend class boost::iterator_core_access;
 
-    }; // end class reverse_iterator
+    };  // end class reverse_iterator
 
     ///////////////////////////////////////////////
     /// \brief This is an efficient way to construct a combination of size k
@@ -369,8 +345,7 @@ public:
         combination A;
         A.reserve(k_);
 
-        while (DFSUtil(A, pred))
-        {
+        while (DFSUtil(A, pred)) {
             if (A.size() == static_cast<size_t>(k_))
                 return get_iterator(A);
         }
@@ -448,17 +423,14 @@ public:
     template <class PartialPredicate>
     auto find_all(PartialPredicate pred)
     {
-        return CombinationTree<IntType, PartialPredicate, RAContainerInt>(n_,
-                                                                          k_,
-                                                                          pred);
+        return CombinationTree<IntType, PartialPredicate, RAContainerInt>(n_, k_, pred);
     }
 
     template <class Func>
     void for_each(Func f) const
     {
-        switch (k_)
-        {
-            // clang-format off
+        switch (k_) {
+                // clang-format off
         case 0: detail::for_each_lex_combinations<combination,0>::apply(n_,f); break;
         case 1: detail::for_each_lex_combinations<combination,1>::apply(n_,f); break;
         case 2: detail::for_each_lex_combinations<combination,2>::apply(n_,f); break;
@@ -480,50 +452,42 @@ public:
         case 18: detail::for_each_lex_combinations<combination,18>::apply(n_,f); break;
         case 19: detail::for_each_lex_combinations<combination,19>::apply(n_,f); break;
         case 20: detail::for_each_lex_combinations<combination,20>::apply(n_,f); break;
-            // clang-format on
+                // clang-format on
 
-        default:
-            for (auto&& comb : (*this))
-            {
-                f(comb);
-            }
+            default:
+                for (auto&& comb : (*this)) {
+                    f(comb);
+                }
 
-            break;
+                break;
         }
     }
 
     // **************** Begin static functions
     static inline bool next_combination(combination& data, IntType n)
     {
-        const IntType k = data.size();
+        const IntType k    = data.size();
         const IntType diff = n - k;
         return next_combination(data, n, k, diff);
     }
 
-    static inline bool next_combination(combination& data,
-                                        IntType n,
-                                        IntType k,
-                                        IntType difference)
+    static inline bool next_combination(combination& data, IntType n, IntType k, IntType difference)
     {
         if (k == 0)
             return false;
         assert(difference == n - k);
         const IntType last = k - 1;
-        if (data[last] + 1 < n)
-        {
+        if (data[last] + 1 < n) {
             ++data[last];
             return true;
         }
 
-        for (IntType i = k - 2; i >= 0; --i)
-        {
-            if (data[i] != difference + i)
-            {
+        for (IntType i = k - 2; i >= 0; --i) {
+            if (data[i] != difference + i) {
                 ++data[i];
                 IntType a = data[i] + 1;
                 ++i;
-                for (; i < k; ++i, ++a)
-                {
+                for (; i < k; ++i, ++a) {
                     data[i] = a;
                 }
 
@@ -538,10 +502,8 @@ public:
         if (data.empty())
             return;
         IntType a = n - 1;
-        for (difference_type i = data.size() - 1; i > 0L; --i, --a)
-        {
-            if (data[i] - 1 != data[i - 1])
-            {
+        for (difference_type i = data.size() - 1; i > 0L; --i, --a) {
+            if (data[i] - 1 != data[i - 1]) {
                 --data[i];
                 return;
             }
@@ -553,25 +515,23 @@ public:
     static void construct_combination(combination& data, size_type m, IntType n)
     {
         IntType k = data.size();
-        m = binomial<size_type>(n, k) - m - 1;
+        m         = binomial<size_type>(n, k) - m - 1;
 
-        for (IntType i = 0; i < k; ++i)
-        {
+        for (IntType i = 0; i < k; ++i) {
             IntType r = k - i;
 
             // i <= n-t-1 <= n-r implies that the range is this
             big_integer_interval N(r, n - i);
             auto t = N.partition_point([m, r](auto t) {
                 return binomial<size_type>(t, r) <= m;
-            }) -
-              1;
+            }) - 1;
 
             data[i] = n - t - 1;
             m -= binomial<size_type>(t, r);
         }
     }
 
-    static size_type get_index(const combination& comb, IntType n) // needs n
+    static size_type get_index(const combination& comb, IntType n)  // needs n
     {
         size_type k = comb.size();
 
@@ -594,8 +554,7 @@ public:
         auto itl = lhs.begin();
         auto itr = rhs.begin();
 
-        for (; itl != lhs.end(); ++itl, ++itr)
-        {
+        for (; itl != lhs.end(); ++itl, ++itr) {
             if (*itl > *itr)
                 return false;
 
@@ -607,7 +566,7 @@ public:
     }
     // **************** End static functions
 
-private:
+    private:
     IntType n_;
     IntType k_;
     size_type size_;
@@ -615,10 +574,8 @@ private:
     template <class P>
     bool augment(combination& comb, P pred, IntType start = 0)
     {
-        if (comb.empty())
-        {
-            if (start < n_ - k_ + 1)
-            {
+        if (comb.empty()) {
+            if (start < n_ - k_ + 1) {
                 comb.push_back(start);
                 return true;
             }
@@ -626,13 +583,12 @@ private:
             return false;
         }
 
-        auto last = comb.back();
+        auto last     = comb.back();
         auto guysleft = k_ - comb.size();
 
         start = std::max(static_cast<IntType>(last + 1), start);
 
-        for (size_t i = start; i < n_ - guysleft + 1; ++i)
-        {
+        for (size_t i = start; i < n_ - guysleft + 1; ++i) {
             comb.push_back(i);
 
             if (pred(comb))
@@ -649,8 +605,7 @@ private:
     {
         // 			auto currsize = comb.size();
 
-        if (comb.size() < static_cast<size_t>(k_))
-        {
+        if (comb.size() < static_cast<size_t>(k_)) {
             if (augment(comb, pred))
                 return true;
         }
@@ -659,8 +614,7 @@ private:
 
         // If it can't be augmented, be it because size is already k or else, we
         // have to start backtracking
-        while (!comb.empty())
-        {
+        while (!comb.empty()) {
             last = comb.back();
             comb.pop_back();
 
@@ -671,7 +625,7 @@ private:
         return false;
     }
 
-}; // end class LexCombinations
+};  // end class LexCombinations
 
 template <class IntTypeN, class IntTypeK, typename = EnableIfIntegral<IntTypeN>>
 auto lex_combinations(IntTypeN n, IntTypeK k)
@@ -687,14 +641,13 @@ auto lex_combinations(const Container& X, IntType k)
     return indexed_view_container<Container, comb>(X, comb(X.size(), k));
 }
 
-template <class IntTypeN,
-          class IntTypeK,
-          std::size_t MAX_SIZE = 32,
-          typename = EnableIfIntegral<IntTypeN>>
+template <
+    class IntTypeN, class IntTypeK, std::size_t MAX_SIZE = 32,
+    typename = EnableIfIntegral<IntTypeN>>
 auto lex_combinations_stack(IntTypeN n, IntTypeK k)
 {
     using boost::container::static_vector;
     return LexCombinations<IntTypeN, static_vector<IntTypeN, MAX_SIZE>>(n, k);
 }
 
-} // namespace discreture
+}  // namespace discreture

@@ -59,7 +59,7 @@ class BucketSortView
     private:
     std::vector<BucketType> m_availableBuckets;
     std::vector<AssociatedIteratorType> m_sortedIterators;
-    std::vector<size_t> m_offsets;
+    std::vector<std::size_t> m_offsets;
 };
 
 #endif  // COMET_BUCKETSORTVIEW_H

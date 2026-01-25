@@ -3,18 +3,18 @@
 //
 
 #include <benchmark/benchmark.h>
-#include <vector>
 #include <cmath>
-#include <ranges> // Required for std::views::cartesian_product
+#include <ranges>  // Required for std::views::cartesian_product
+#include <vector>
 
 // Our Library Headers
 #include "Combinations.h"
-#include "Producers.h"
 #include "HeavyStructures.h"
+#include "Producers.h"
 
 class CartesianComparisonFixture : public benchmark::Fixture
 {
-public:
+    public:
     std::vector<HeavyGroupingStruct> data;
     int seed             = 42;
     int meanMultiplicity = 20;
@@ -69,9 +69,11 @@ BENCHMARK_DEFINE_F(CartesianComparisonFixture, StdRanges_FullPairs)(benchmark::S
 BENCHMARK_DEFINE_F(CartesianComparisonFixture, Comet_FullTriples)(benchmark::State& state)
 {
     for (auto _ : state) {
-        auto combinations = makeCombinations<FullCombinationsPolicy>(this->data, this->data, this->data);
+        auto combinations =
+            makeCombinations<FullCombinationsPolicy>(this->data, this->data, this->data);
         for (const auto& [el0, el1, el2] : combinations) {
-            benchmark::DoNotOptimize(std::sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex));
+            benchmark::DoNotOptimize(std::sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex)
+            );
         }
     }
     state.SetComplexityN(state.range(0));
@@ -82,7 +84,8 @@ BENCHMARK_DEFINE_F(CartesianComparisonFixture, StdRanges_FullTriples)(benchmark:
     for (auto _ : state) {
         auto cp = std::views::cartesian_product(this->data, this->data, this->data);
         for (auto&& [el0, el1, el2] : cp) {
-            benchmark::DoNotOptimize(std::sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex));
+            benchmark::DoNotOptimize(std::sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex)
+            );
         }
     }
     state.SetComplexityN(state.range(0));
@@ -92,13 +95,21 @@ BENCHMARK_DEFINE_F(CartesianComparisonFixture, StdRanges_FullTriples)(benchmark:
 // REGISTRATION
 // -----------------------------------------------------------------------------
 BENCHMARK_REGISTER_F(CartesianComparisonFixture, Comet_FullPairs)
-    ->RangeMultiplier(2)->Range(1 << 4, 1 << 10)->Complexity();
+    ->RangeMultiplier(2)
+    ->Range(1 << 4, 1 << 10)
+    ->Complexity();
 BENCHMARK_REGISTER_F(CartesianComparisonFixture, StdRanges_FullPairs)
-    ->RangeMultiplier(2)->Range(1 << 4, 1 << 10)->Complexity();
+    ->RangeMultiplier(2)
+    ->Range(1 << 4, 1 << 10)
+    ->Complexity();
 
 BENCHMARK_REGISTER_F(CartesianComparisonFixture, Comet_FullTriples)
-    ->RangeMultiplier(2)->Range(1 << 4, 1 << 7)->Complexity();
+    ->RangeMultiplier(2)
+    ->Range(1 << 4, 1 << 7)
+    ->Complexity();
 BENCHMARK_REGISTER_F(CartesianComparisonFixture, StdRanges_FullTriples)
-    ->RangeMultiplier(2)->Range(1 << 4, 1 << 7)->Complexity();
+    ->RangeMultiplier(2)
+    ->Range(1 << 4, 1 << 7)
+    ->Complexity();
 
 BENCHMARK_MAIN();

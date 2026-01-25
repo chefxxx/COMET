@@ -24,19 +24,17 @@ namespace discreture
 template <class IntType, class Predicate, class RAContainerInt = std::vector<IntType>>
 class CombinationTree
 {
-public:
-    static_assert(std::is_integral<IntType>::value,
-                  "Template parameter IntType must be integral");
-    static_assert(std::is_signed<IntType>::value,
-                  "Template parameter IntType must be signed");
-    using value_type = RAContainerInt;
-    using combination = value_type;
+    public:
+    static_assert(std::is_integral<IntType>::value, "Template parameter IntType must be integral");
+    static_assert(std::is_signed<IntType>::value, "Template parameter IntType must be signed");
+    using value_type      = RAContainerInt;
+    using combination     = value_type;
     using difference_type = std::ptrdiff_t;
-    using size_type = difference_type;
+    using size_type       = difference_type;
     class iterator;
     using const_iterator = iterator;
 
-public:
+    public:
     ////////////////////////////////////////////////////////////
     /// \brief Constructor
     ///
@@ -62,20 +60,17 @@ public:
     class iterator
         : public boost::iterator_facade<iterator, const combination&, boost::forward_traversal_tag>
     {
-    public:
+        public:
         iterator(Predicate p, bool last)
-            : ID_(0), data_(), at_end_(last), pred_(p)
-        {} // empty initializer
+            : ID_(0), data_(), at_end_(last), pred_(p) {}  // empty initializer
 
         iterator(IntType n, IntType k, Predicate p)
             : ID_(0), n_(n), k_(k), data_(), at_end_(false), pred_(p)
         {
             data_.reserve(k_);
 
-            while (DFSUtil(data_, pred_, n_, k_))
-            {
-                if (data_.size() == static_cast<size_t>(k_))
-                {
+            while (DFSUtil(data_, pred_, n_, k_)) {
+                if (data_.size() == static_cast<size_t>(k_)) {
                     return;
                 }
             }
@@ -89,13 +84,12 @@ public:
             return at_end_;
         }
 
-    private:
+        private:
         // prefix
         void increment()
         {
             // 				cout << "size of pred: " << sizeof(pred_) << endl;
-            while (DFSUtil(data_, pred_, n_, k_))
-            {
+            while (DFSUtil(data_, pred_, n_, k_)) {
                 if (data_.size() == static_cast<size_t>(k_))
                     return;
             }
@@ -116,7 +110,7 @@ public:
             return data_ == it.data_;
         }
 
-    private:
+        private:
         size_type ID_{0};
         IntType n_{0};
         IntType k_{0};
@@ -127,29 +121,25 @@ public:
         friend class CombinationTree;
         friend class boost::iterator_core_access;
 
-    }; // end class iterator
+    };  // end class iterator
 
     const iterator& begin() const { return begin_; }
 
     const iterator& end() const { return end_; }
 
-private:
+    private:
     IntType n_;
     IntType k_;
     iterator begin_;
     iterator end_;
     Predicate pred_;
 
-    static bool augment(combination& comb,
-                        Predicate pred,
-                        IntType n_,
-                        IntType k_,
-                        IntType start = 0)
+    static bool augment(
+        combination& comb, Predicate pred, IntType n_, IntType k_, IntType start = 0
+    )
     {
-        if (comb.empty())
-        {
-            if (start < n_ - k_ + 1)
-            {
+        if (comb.empty()) {
+            if (start < n_ - k_ + 1) {
                 comb.push_back(start);
                 return true;
             }
@@ -157,13 +147,12 @@ private:
             return false;
         }
 
-        auto last = comb.back();
+        auto last     = comb.back();
         auto guysleft = k_ - comb.size();
 
         start = std::max(static_cast<IntType>(last + 1), start);
 
-        for (size_t i = start; i < n_ - guysleft + 1; ++i)
-        {
+        for (size_t i = start; i < n_ - guysleft + 1; ++i) {
             comb.push_back(i);
 
             if (pred(comb))
@@ -178,8 +167,7 @@ private:
     static bool DFSUtil(combination& comb, Predicate pred, IntType n_, IntType k_)
     {
         // 			cout << "n,k = " << n_ << " " << k_ << endl;
-        if (comb.size() < static_cast<size_t>(k_))
-        {
+        if (comb.size() < static_cast<size_t>(k_)) {
             if (augment(comb, pred, n_, k_))
                 return true;
         }
@@ -188,8 +176,7 @@ private:
 
         // If it can't be augmented, be it because size is already k or else, we
         // have to start backtracking
-        while (!comb.empty())
-        {
+        while (!comb.empty()) {
             last = comb.back();
             comb.pop_back();
 
@@ -200,6 +187,6 @@ private:
         return false;
     }
 
-}; // end class CombinationTree
+};  // end class CombinationTree
 
-} // namespace discreture
+}  // namespace discreture

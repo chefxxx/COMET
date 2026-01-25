@@ -17,7 +17,7 @@ class CombinationsFixtureHeavy : public benchmark::Fixture
     int meanMultiplicity = 20;
 
     struct GetBucketCallable {
-        int operator()(const HeavyGroupingStruct& element) const { return 1; }
+        int operator()(const HeavyGroupingStruct&) const { return 1; }
     };
 
     std::mt19937 rng = std::mt19937(seed);
@@ -33,8 +33,6 @@ class CombinationsFixtureHeavy : public benchmark::Fixture
         HeavyAssociatedFirstStructGenerator(seed);
     HeavyAssociatedSecondStructGenerator secondAssociatedGenerator =
         HeavyAssociatedSecondStructGenerator();
-    HeavyAssociatedThirdStructGenerator thirdAssociatedGenerator =
-        HeavyAssociatedThirdStructGenerator();
 
     std::uniform_int_distribution<int> uniform_int_distribution =
         std::uniform_int_distribution(-1000, 1000);
@@ -61,11 +59,6 @@ class CombinationsFixtureHeavy : public benchmark::Fixture
                     secondAssociatedGenerator.generate(i, uniform_int_distribution(rng))
                 );
             }
-            for (int j = 0; j < groupingData[i].multiplicityThird; ++j) {
-                associatedThird.push_back(
-                    thirdAssociatedGenerator.generate(i, uniform_int_distribution(rng))
-                );
-            }
         }
         // 20*N associated elements
     }
@@ -74,7 +67,7 @@ class CombinationsFixtureHeavy : public benchmark::Fixture
 };
 
 // -----------------------------------------------------------------------------
-// SCENARIO 1: FULL PAIRS COMBINATIONS LIGHT (N^2 Log(N))
+// SCENARIO 1: FULL PAIRS COMBINATIONS (N^2 Log(N))
 // -----------------------------------------------------------------------------
 BENCHMARK_DEFINE_F(CombinationsFixtureHeavy, LibCombinationsFullPairs)
 (benchmark::State& state)
@@ -91,7 +84,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavy, LibCombinationsFullPairs)
         auto combinations = makeGroupedCombinations<FullCombinationsPolicy>(
             bp, minCatSize, grouping, associatedFirstWrapper, associatedSecondWrapper
         );
-        size_t count = 0;
+        std::size_t count = 0;
         for (const auto& [el0, as0, el1, as1] : combinations) {
             benchmark::DoNotOptimize(sqrt(el0.globalIndex + el1.globalIndex));
             benchmark::DoNotOptimize(count += as0.size());
@@ -103,7 +96,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavy, LibCombinationsFullPairs)
 }
 
 // -----------------------------------------------------------------------------
-// SCENARIO 2: FULL PAIRS COMBINATIONS LIGHT (N^3 Log(N))
+// SCENARIO 2: FULL TRIPLES COMBINATIONS (N^3 Log(N))
 // -----------------------------------------------------------------------------
 BENCHMARK_DEFINE_F(CombinationsFixtureHeavy, LibCombinationsFullTriples)
 (benchmark::State& state)
@@ -136,7 +129,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavy, LibCombinationsFullTriples)
 }
 
 // -----------------------------------------------------------------------------
-// SCENARIO 3: STRICTLY UPPER PAIRS COMBINATIONS LIGHT (N^2 Log(N))
+// SCENARIO 3: STRICTLY UPPER PAIRS COMBINATIONS (N^2 Log(N))
 // -----------------------------------------------------------------------------
 BENCHMARK_DEFINE_F(CombinationsFixtureHeavy, LibCombinationsStrictlyUpperPairs)
 (benchmark::State& state)
@@ -165,7 +158,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavy, LibCombinationsStrictlyUpperPairs)
 }
 
 // -----------------------------------------------------------------------------
-// SCENARIO 3: STRICTLY UPPER PAIRS COMBINATIONS LIGHT (N^3 Log(N))
+// SCENARIO 3: STRICTLY UPPER TIPLES COMBINATIONS (N^3 Log(N))
 // -----------------------------------------------------------------------------
 BENCHMARK_DEFINE_F(CombinationsFixtureHeavy, LibCombinationsStrictlyUpperTriples)
 (benchmark::State& state)

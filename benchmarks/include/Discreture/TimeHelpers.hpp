@@ -17,13 +17,13 @@ inline double elapsed_seconds(time_point_t from, time_point_t to)
 
 class Chronometer
 {
-public:
+    public:
     Chronometer() : start_(std::chrono::steady_clock::now()) {}
 
     double Reset()
     {
         auto previous = start_;
-        start_ = std::chrono::steady_clock::now();
+        start_        = std::chrono::steady_clock::now();
 
         return elapsed_seconds(previous, start_);
     }
@@ -38,4 +38,4 @@ public:
     time_point_t start_;
 };
 
-} // namespace discreture
+}  // namespace discreture

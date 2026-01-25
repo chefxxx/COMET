@@ -4,7 +4,6 @@
 
 #include <gtest/gtest.h>
 #include <iomanip>
-#include <numeric>
 
 #include "Combinations.h"
 #include "Producers.h"

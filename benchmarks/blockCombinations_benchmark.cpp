@@ -36,7 +36,7 @@ class CombinationsFixtureHeavyweight : public benchmark::Fixture
         HeavyGroupingStructGenerator(seed, meanMultiplicity);
     void SetUp(const ::benchmark::State& state)
     {
-        int N = state.range(0);
+        int N = static_cast<int>(state.range(0));
         data.reserve(N);
         for (int i = 0; i < N; ++i) data.push_back(generator.generate(i));
     }
@@ -45,7 +45,7 @@ class CombinationsFixtureHeavyweight : public benchmark::Fixture
 };
 
 // -----------------------------------------------------------------------------
-// SCENARIO 1: FULL PAIRS COMBINATIONS LIGHT (N^2)
+// SCENARIO 1: FULL PAIRS COMBINATIONS (N^2)
 // -----------------------------------------------------------------------------
 BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullPairs)
 (benchmark::State& state)
@@ -56,7 +56,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullPairs)
         );
         auto combinations =
             makeBlockCombinations<FullCombinationsPolicy>(bp, minCatSize, this->data, this->data);
-        int64_t count = 0;
+        std::size_t count = 0;
         for (const auto& [el0, el1] : combinations) {
             benchmark::DoNotOptimize(sqrt(el0.globalIndex + el1.globalIndex));
         }
@@ -66,7 +66,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullPairs)
 }
 
 // -----------------------------------------------------------------------------
-// SCENARIO 2: FULL PAIRS COMBINATIONS LIGHT (N^3)
+// SCENARIO 2: FULL TRIPLES COMBINATIONS (N^3)
 // -----------------------------------------------------------------------------
 BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullTriples)
 (benchmark::State& state)
@@ -78,7 +78,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullTriples)
         auto combinations = makeBlockCombinations<FullCombinationsPolicy>(
             bp, minCatSize, this->data, this->data, this->data
         );
-        int64_t count = 0;
+        std::size_t count = 0;
         for (const auto& [el0, el1, el2] : combinations) {
             benchmark::DoNotOptimize(sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex));
         }
@@ -88,7 +88,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsFullTriples)
 }
 
 // -----------------------------------------------------------------------------
-// SCENARIO 3: STRICTLY UPPER PAIRS COMBINATIONS LIGHT (N^2)
+// SCENARIO 3: STRICTLY UPPER PAIRS COMBINATIONS (N^2)
 // -----------------------------------------------------------------------------
 BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsStrictlyUpperPairs)
 (benchmark::State& state)
@@ -100,7 +100,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsStrictlyUpperP
         auto combinations = makeBlockCombinations<StrictlyUpperCombinationsPolicy>(
             bp, minCatSize, this->data, this->data
         );
-        int64_t count = 0;
+        std::size_t count = 0;
         for (const auto& [el0, el1] : combinations) {
             benchmark::DoNotOptimize(sqrt(el0.globalIndex + el1.globalIndex));
         }
@@ -110,7 +110,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsStrictlyUpperP
 }
 
 // -----------------------------------------------------------------------------
-// SCENARIO 3: STRICTLY UPPER PAIRS COMBINATIONS LIGHT (N^3)
+// SCENARIO 3: STRICTLY UPPER TRIPLES COMBINATIONS (N^3)
 // -----------------------------------------------------------------------------
 BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsStrictlyUpperTriples)
 (benchmark::State& state)
@@ -122,7 +122,7 @@ BENCHMARK_DEFINE_F(CombinationsFixtureHeavyweight, LibCombinationsStrictlyUpperT
         auto combinations = makeBlockCombinations<StrictlyUpperCombinationsPolicy>(
             bp, minCatSize, this->data, this->data, this->data
         );
-        int64_t count = 0;
+        std::size_t count = 0;
         for (const auto& [el0, el1, el2] : combinations) {
             benchmark::DoNotOptimize(sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex));
         }

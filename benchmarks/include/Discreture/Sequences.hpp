@@ -1,13 +1,13 @@
 #pragma once
-#include "Misc.hpp"
-#include "VectorHelpers.hpp"
 #include <iostream>
 #include <vector>
+#include "Misc.hpp"
+#include "VectorHelpers.hpp"
 namespace discreture
 {
-using llint = long long int; // NOLINT : I want this to be as big as possible,
-                             // not restricted to 64 bits. If in the future
-                             // there are 128 bit ints, that's what I want.
+using llint = long long int;  // NOLINT : I want this to be as big as possible,
+                              // not restricted to 64 bits. If in the future
+                              // there are 128 bit ints, that's what I want.
 
 //////////////////////////////
 /// \brief n!
@@ -93,8 +93,7 @@ inline BigIntType factorial(llint n)
     if (n < 2)
         return toReturn;
 
-    for (llint i = 2; i <= n; ++i)
-        toReturn *= i;
+    for (llint i = 2; i <= n; ++i) toReturn *= i;
 
     return toReturn;
 }
@@ -113,39 +112,42 @@ inline BigIntType binomial(llint n, llint k)
     if (k == 1)
         return n;
 
-    static std::vector<std::vector<BigIntType>> B =
-      {{1}, {1}, {1, 2}, {1, 3}, {1, 4, 6}, {1, 5, 10}, {1, 6, 15, 20}};
+    static std::vector<std::vector<BigIntType>> B = {
+        {1},
+        {1},
+        {1, 2},
+        {1, 3},
+        {1, 4, 6},
+        {1, 5, 10},
+        {1, 6, 15, 20}
+    };
     llint m = B.size();
 
     if (n < m)
         return B[n][k];
 
-    const llint max_saved_size = 66; // this is the maximum n for which
-                                     // binomial(n,k) < 2^63 for any k.
-    if (n > max_saved_size)
-    {
+    const llint max_saved_size = 66;  // this is the maximum n for which
+                                      // binomial(n,k) < 2^63 for any k.
+    if (n > max_saved_size) {
         std::vector<llint> denominator(k - 1);
         std::iota(denominator.begin(), denominator.end(), 2);
         std::vector<llint> numerator(k);
         std::iota(numerator.begin(), numerator.end(), n - k + 1);
-        return reduce_fraction<BigIntType>(std::move(numerator),
-                                           std::move(denominator));
+        return reduce_fraction<BigIntType>(std::move(numerator), std::move(denominator));
     }
 
     B.resize(n + 1, {1});
 
-    for (; m <= n; ++m)
-    {
-        llint last = (m + 2)/2 - 1;
+    for (; m <= n; ++m) {
+        llint last = (m + 2) / 2 - 1;
         B[m].resize(last + 1);
 
-        for (llint r = 1; r < last; ++r)
-        {
+        for (llint r = 1; r < last; ++r) {
             B[m][r] = B[m - 1][r - 1] + B[m - 1][r];
         }
 
-        if (m%2 == 0)
-            B[m][last] = 2*B[m - 1][last - 1];
+        if (m % 2 == 0)
+            B[m][last] = 2 * B[m - 1][last - 1];
         else
             B[m][last] = B[m - 1][last] + B[m - 1][last - 1];
     }
@@ -156,39 +158,41 @@ inline BigIntType binomial(llint n, llint k)
 template <class BigIntType>
 BigIntType catalan(llint n)
 {
-    static const std::vector<llint> C = {1,
-                                         1,
-                                         2,
-                                         5,
-                                         14,
-                                         42,
-                                         132,
-                                         429,
-                                         1430,
-                                         4862,
-                                         16796,
-                                         58786,
-                                         208012,
-                                         742900,
-                                         2674440,
-                                         9694845,
-                                         35357670,
-                                         129644790,
-                                         477638700,
-                                         1767263190,
-                                         6564120420,
-                                         24466267020,
-                                         91482563640,
-                                         343059613650,
-                                         1289904147324,
-                                         4861946401452};
+    static const std::vector<llint> C = {
+        1,
+        1,
+        2,
+        5,
+        14,
+        42,
+        132,
+        429,
+        1430,
+        4862,
+        16796,
+        58786,
+        208012,
+        742900,
+        2674440,
+        9694845,
+        35357670,
+        129644790,
+        477638700,
+        1767263190,
+        6564120420,
+        24466267020,
+        91482563640,
+        343059613650,
+        1289904147324,
+        4861946401452
+    };
 
     llint Csize = C.size();
 
     if (n < Csize)
         return C[n];
 
-    return binomial(2*n, n)/(n + 1);
+    return binomial(2 * n, n) / (n + 1);
 }
 
 template <class BigIntType>
@@ -207,10 +211,9 @@ inline BigIntType motzkin(llint n)
 
     llint oldsize = M.size();
     M.resize(n + 1);
-    for (llint m = oldsize; m <= n; ++m)
-    {
+    for (llint m = oldsize; m <= n; ++m) {
         // quite likely overflow if using llint
-        M[m] = ((2*m + 1)*M[m - 1] + (3*m - 3)*M[m - 2])/(m + 2);
+        M[m] = ((2 * m + 1) * M[m - 1] + (3 * m - 3) * M[m - 2]) / (m + 2);
     }
 
     return M[n];
@@ -219,9 +222,9 @@ inline BigIntType motzkin(llint n)
 template <class BigIntType>
 inline BigIntType generalized_pentagonal(llint n)
 {
-    llint sign = (n%2)*2 - 1;
-    n = sign*(n + 1)/2;
-    return (n*(3*n - 1))/2;
+    llint sign = (n % 2) * 2 - 1;
+    n          = sign * (n + 1) / 2;
+    return (n * (3 * n - 1)) / 2;
 }
 
 template <class BigIntType>
@@ -235,16 +238,13 @@ inline BigIntType partition_number(llint n)
         return P[n];
 
     P.resize(n + 1, 0);
-    for (llint m = oldsize; m <= n; ++m)
-    {
-        llint sign = 1;
+    for (llint m = oldsize; m <= n; ++m) {
+        llint sign  = 1;
         llint count = 0;
-        for (llint k = 1; generalized_pentagonal(k) <= m; ++k)
-        {
-            P[m] += P[m - generalized_pentagonal(k)]*sign;
+        for (llint k = 1; generalized_pentagonal(k) <= m; ++k) {
+            P[m] += P[m - generalized_pentagonal(k)] * sign;
             ++count;
-            if (count == 2)
-            {
+            if (count == 2) {
                 sign *= -1;
                 count = 0;
             }
@@ -257,12 +257,14 @@ inline BigIntType partition_number(llint n)
 template <class BigIntType>
 inline BigIntType partition_number(llint n, llint k)
 {
-    static std::vector<std::vector<llint>> PNK = {{1},
-                                                  {0, 1},
-                                                  {0, 1, 1},
-                                                  {0, 1, 1, 1},
-                                                  {0, 1, 2, 1, 1},
-                                                  {0, 1, 2, 2, 1, 1}};
+    static std::vector<std::vector<llint>> PNK = {
+        {1},
+        {0, 1},
+        {0, 1, 1},
+        {0, 1, 1, 1},
+        {0, 1, 2, 1, 1},
+        {0, 1, 2, 2, 1, 1}
+    };
 
     llint oldsize = PNK.size();
 
@@ -278,11 +280,9 @@ inline BigIntType partition_number(llint n, llint k)
     if (n < oldsize)
         return PNK[n][k];
 
-    for (llint m = oldsize; m <= n; ++m)
-    {
+    for (llint m = oldsize; m <= n; ++m) {
         PNK.emplace_back(m + 1, 0);
-        for (llint l = 1; l <= m; ++l)
-        {
+        for (llint l = 1; l <= m; ++l) {
             llint left = 0;
             if (m - l >= l)
                 left = PNK[m - l][l];
@@ -297,11 +297,13 @@ inline BigIntType partition_number(llint n, llint k)
 template <class BigIntType>
 inline BigIntType stirling_cycle_number(llint n, llint k)
 {
-    static std::vector<std::vector<llint>> S1 = {{1},
-                                                 {0, 1},
-                                                 {0, 1, 1},
-                                                 {0, 2, 3, 1},
-                                                 {0, 6, 11, 6, 1}};
+    static std::vector<std::vector<llint>> S1 = {
+        {1},
+        {0, 1},
+        {0, 1, 1},
+        {0, 2, 3, 1},
+        {0, 6, 11, 6, 1}
+    };
 
     if (k > n || k < 0)
         return 0;
@@ -310,14 +312,12 @@ inline BigIntType stirling_cycle_number(llint n, llint k)
     if (n < oldsize)
         return S1[n][k];
 
-    for (llint m = oldsize; m <= n; ++m)
-    {
+    for (llint m = oldsize; m <= n; ++m) {
         S1.emplace_back(m + 1, 0);
-        for (llint l = 1; l <= m; ++l)
-        {
+        for (llint l = 1; l <= m; ++l) {
             llint left = 0;
             if (l < m)
-                left = (m - 1)*S1[m - 1][l];
+                left = (m - 1) * S1[m - 1][l];
             S1[m][l] = left + S1[m - 1][l - 1];
         }
     }
@@ -328,24 +328,24 @@ inline BigIntType stirling_cycle_number(llint n, llint k)
 template <class BigIntType>
 inline BigIntType stirling_partition_number(llint n, llint k)
 {
-    static std::vector<std::vector<llint>> S2 = {{1},
-                                                 {0, 1},
-                                                 {0, 1, 1},
-                                                 {0, 1, 3, 1},
-                                                 {0, 1, 7, 6, 1}};
+    static std::vector<std::vector<llint>> S2 = {
+        {1},
+        {0, 1},
+        {0, 1, 1},
+        {0, 1, 3, 1},
+        {0, 1, 7, 6, 1}
+    };
 
     llint oldsize = S2.size();
     if (n < oldsize)
         return S2[n][k];
 
-    for (llint m = oldsize; m <= n; ++m)
-    {
+    for (llint m = oldsize; m <= n; ++m) {
         S2.emplace_back(m + 1, 0);
-        for (llint l = 1; l <= m; ++l)
-        {
+        for (llint l = 1; l <= m; ++l) {
             llint left = 0;
             if (l < m)
-                left = l*S2[m - 1][l];
+                left = l * S2[m - 1][l];
             S2[m][l] = left + S2[m - 1][l - 1];
         }
     }
@@ -353,4 +353,4 @@ inline BigIntType stirling_partition_number(llint n, llint k)
     return S2[n][k];
 }
 
-} // namespace discreture
+}  // namespace discreture

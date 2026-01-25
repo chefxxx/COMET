@@ -34,7 +34,6 @@ TEST(FindIndexTest, emptyVectorWithOverflows)
 
 TEST(FindIndexTest, sixRangesWithoutOverflows)
 {
-    // Changed to constexpr array to match Clang hints and first test style
     constexpr std::array v{0.0, 1.0, 2.0, 3.0, 4.0};
     constexpr double value = 3.6;
 

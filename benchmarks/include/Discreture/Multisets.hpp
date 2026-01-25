@@ -1,9 +1,9 @@
 #pragma once
+#include <boost/iterator/iterator_facade.hpp>
 #include "IntegerInterval.hpp"
 #include "Misc.hpp"
 #include "VectorHelpers.hpp"
 #include "detail/MultisetsDetail.hpp"
-#include <boost/iterator/iterator_facade.hpp>
 
 namespace discreture
 {
@@ -48,48 +48,39 @@ namespace discreture
 template <class IntType = int, class RAContainerInt = std::vector<IntType>>
 class Multisets
 {
-public:
-    static_assert(std::is_integral<IntType>::value,
-                  "Template parameter IntType must be integral");
-    static_assert(std::is_signed<IntType>::value,
-                  "Template parameter IntType must be signed");
-    using value_type = RAContainerInt;
-    using multiset = value_type;
+    public:
+    static_assert(std::is_integral<IntType>::value, "Template parameter IntType must be integral");
+    static_assert(std::is_signed<IntType>::value, "Template parameter IntType must be signed");
+    using value_type      = RAContainerInt;
+    using multiset        = value_type;
     using difference_type = std::ptrdiff_t;
-    using size_type = difference_type;
+    using size_type       = difference_type;
     class iterator;
     using const_iterator = iterator;
     class reverse_iterator;
     using const_reverse_iterator = reverse_iterator;
 
-public:
+    public:
     explicit Multisets(const multiset& set) : total_(set), size_(1)
     {
-        for (auto x : set)
-        {
+        for (auto x : set) {
             size_ *= (x + 1);
         }
     }
 
-    explicit Multisets(IntType size, IntType n = 1)
-        : total_(size, n), size_(std::pow(n + 1, size))
-    {}
+    explicit Multisets(IntType size, IntType n = 1) : total_(size, n), size_(std::pow(n + 1, size))
+    {
+    }
 
     size_type size() const { return size_; }
 
     iterator begin() const { return iterator(total_); }
 
-    const iterator end() const
-    {
-        return iterator::make_invalid_with_id(size());
-    }
+    const iterator end() const { return iterator::make_invalid_with_id(size()); }
 
     reverse_iterator rbegin() const { return reverse_iterator(total_); }
 
-    const reverse_iterator rend() const
-    {
-        return reverse_iterator::make_invalid_with_id(size());
-    }
+    const reverse_iterator rend() const { return reverse_iterator::make_invalid_with_id(size()); }
 
     //////////////////////////////
     /// @brief Random Access Capabilities for multiset
@@ -110,35 +101,31 @@ public:
     size_type get_index(const multiset& sub) const
     {
         assert(sub.size() == total_.size());
-        size_type coeff = 1;
+        size_type coeff  = 1;
         size_type result = 0;
-        for (size_t i = 0; i < total_.size(); ++i)
-        {
-            result += coeff*sub[i];
+        for (size_t i = 0; i < total_.size(); ++i) {
+            result += coeff * sub[i];
             coeff *= (total_[i] + 1);
         }
         return result;
     }
 
-    class iterator
-        : public boost::iterator_facade<iterator, const multiset&, boost::random_access_traversal_tag>
+    class iterator : public boost::iterator_facade<
+                         iterator, const multiset&, boost::random_access_traversal_tag>
     {
-
-    public:
+        public:
         iterator() = default;
 
         explicit iterator(const multiset& total)
             : ID_(0), n_(total.size()), submulti_(total.size(), 0), total_(&total)
-        {}
+        {
+        }
 
         size_type ID() const { return ID_; }
 
-        static const iterator make_invalid_with_id(size_type id)
-        {
-            return iterator(id);
-        }
+        static const iterator make_invalid_with_id(size_type id) { return iterator(id); }
 
-    private:
+        private:
         explicit iterator(size_type id) : ID_(id) {}
 
         void increment()
@@ -169,7 +156,7 @@ public:
             return static_cast<difference_type>(it.ID()) - ID();
         }
 
-    private:
+        private:
         size_type ID_{0};
         size_type n_{0};
         multiset submulti_{};
@@ -179,16 +166,16 @@ public:
     };
 
     class reverse_iterator
-        : public boost::iterator_facade<reverse_iterator,
-                                        const multiset&,
-                                        boost::random_access_traversal_tag>
+        : public boost::iterator_facade<
+              reverse_iterator, const multiset&, boost::random_access_traversal_tag>
     {
-    public:
+        public:
         reverse_iterator() = default;
 
         explicit reverse_iterator(const multiset& total)
             : ID_(0), n_(total.size()), submulti_(total), total_(&total)
-        {}
+        {
+        }
 
         size_type ID() const { return ID_; }
 
@@ -197,7 +184,7 @@ public:
             return reverse_iterator(id);
         }
 
-    private:
+        private:
         explicit reverse_iterator(size_type id) : ID_(id) {}
 
         // prefix
@@ -216,8 +203,7 @@ public:
         void advance(difference_type m)
         {
             size_type s = 1;
-            for (auto x : *total_)
-                s *= (x + 1);
+            for (auto x : *total_) s *= (x + 1);
             ID_ += m;
             construct_multiset(submulti_, *total_, s - ID_ - 1);
         }
@@ -232,9 +218,9 @@ public:
             return static_cast<difference_type>(other.ID()) - ID();
         }
 
-    private:
+        private:
         size_type ID_{0};
-        size_type n_{0}; // must have n_ = submulti_.size() = total_->size()
+        size_type n_{0};  // must have n_ = submulti_.size() = total_->size()
         multiset submulti_{};
         multiset const* total_{nullptr};
 
@@ -244,9 +230,8 @@ public:
     template <class Func>
     void for_each(Func f) const
     {
-        switch (total_.size())
-        {
-            // clang-format off
+        switch (total_.size()) {
+                // clang-format off
         case 0: detail::for_each_multiset<multiset,0>::apply(total_,f); break;
         case 1: detail::for_each_multiset<multiset,1>::apply(total_,f); break;
         case 2: detail::for_each_multiset<multiset,2>::apply(total_,f); break;
@@ -268,15 +253,14 @@ public:
         case 18: detail::for_each_multiset<multiset,18>::apply(total_,f); break;
         case 19: detail::for_each_multiset<multiset,19>::apply(total_,f); break;
         case 20: detail::for_each_multiset<multiset,20>::apply(total_,f); break;
-            // clang-format on
+                // clang-format on
 
-        default:
-            for (auto& x : (*this))
-            {
-                f(x);
-            }
+            default:
+                for (auto& x : (*this)) {
+                    f(x);
+                }
 
-            break;
+                break;
         }
     }
 
@@ -289,10 +273,8 @@ public:
     {
         assert(n == sub.size());
         assert(n == total.size());
-        for (auto i : NN(n))
-        {
-            if (can_increment(i, sub, total))
-            {
+        for (auto i : NN(n)) {
+            if (can_increment(i, sub, total)) {
                 ++sub[i];
 
                 return;
@@ -306,10 +288,8 @@ public:
         assert(n == sub.size());
         assert(n == total.size());
 
-        for (auto i : NN(n))
-        {
-            if (sub[i] != 0)
-            {
+        for (auto i : NN(n)) {
+            if (sub[i] != 0) {
                 --sub[i];
                 return;
             }
@@ -317,44 +297,36 @@ public:
         }
     }
 
-    static void construct_multiset(multiset& sub,
-                                   const multiset& total,
-                                   size_type m)
+    static void construct_multiset(multiset& sub, const multiset& total, size_type m)
     {
         assert(sub.size() == total.size());
         size_type n = total.size();
         if (n == 0)
             return;
-        for (auto&& s : sub)
-            s = 0;
+        for (auto&& s : sub) s = 0;
         std::vector<size_type> coeffs(n);
         coeffs[0] = 1;
-        for (auto i : II(1, n))
-        {
-            coeffs[i] = coeffs[i - 1]*(total[i - 1] + 1);
+        for (auto i : II(1, n)) {
+            coeffs[i] = coeffs[i - 1] * (total[i - 1] + 1);
         }
 
-        for (difference_type i = n - 1; i >= 0; --i)
-        {
+        for (difference_type i = n - 1; i >= 0; --i) {
             size_type w = coeffs[i];
-            auto t = big_integer_interval(total[i] + 1)
-                       .partition_point(
-                         [m, w](size_type a) { return a*w <= m; }) -
-              1;
-            sub[i] = t;
-            m -= w*t;
+            auto t      = big_integer_interval(total[i] + 1).partition_point([m, w](size_type a) {
+                return a * w <= m;
+            }) - 1;
+            sub[i]      = t;
+            m -= w * t;
             if (m <= 0)
                 break;
         }
     }
 
-private:
+    private:
     multiset total_;
     size_type size_;
 
-    static bool can_increment(size_t index,
-                              const multiset& sub,
-                              const multiset& total)
+    static bool can_increment(size_t index, const multiset& sub, const multiset& total)
     {
         return sub[index] < total[index];
     }
@@ -362,7 +334,7 @@ private:
 
 using boost::container::static_vector;
 
-using multisets = Multisets<int>;
+using multisets       = Multisets<int>;
 using multisets_stack = Multisets<int, static_vector<int, 48>>;
 
-} // namespace discreture
+}  // namespace discreture

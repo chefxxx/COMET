@@ -1,8 +1,8 @@
 #pragma once
 
+#include <boost/iterator/iterator_facade.hpp>
 #include "Combinations.hpp"
 #include "DyckPaths.hpp"
-#include <boost/iterator/iterator_facade.hpp>
 
 namespace discreture
 {
@@ -53,27 +53,23 @@ namespace discreture
 template <class IntType = int, class RAContainerInt = std::vector<IntType>>
 class MotzkinPaths
 {
-public:
-    static_assert(std::is_integral<IntType>::value,
-                  "Template parameter IntType must be integral");
-    static_assert(std::is_signed<IntType>::value,
-                  "Template parameter IntType must be signed");
-    using value_type = RAContainerInt;
-    using motzkin_path = value_type;
+    public:
+    static_assert(std::is_integral<IntType>::value, "Template parameter IntType must be integral");
+    static_assert(std::is_signed<IntType>::value, "Template parameter IntType must be signed");
+    using value_type      = RAContainerInt;
+    using motzkin_path    = value_type;
     using difference_type = std::ptrdiff_t;
-    using size_type = difference_type;
-    using comb_i = typename Combinations<IntType, RAContainerInt>::iterator;
-    using dyck_i = typename DyckPaths<IntType, RAContainerInt>::iterator;
+    using size_type       = difference_type;
+    using comb_i          = typename Combinations<IntType, RAContainerInt>::iterator;
+    using dyck_i          = typename DyckPaths<IntType, RAContainerInt>::iterator;
     class iterator;
     using const_iterator = iterator;
 
-    static std::string to_string(const motzkin_path& data,
-                                 const std::string& delim = "(-)")
+    static std::string to_string(const motzkin_path& data, const std::string& delim = "(-)")
     {
         std::string toReturn;
 
-        for (auto i : data)
-        {
+        for (auto i : data) {
             auto j = 1 - i;
             toReturn.push_back(delim[j]);
         }
@@ -83,7 +79,7 @@ public:
 
     // **************** End static functions
 
-public:
+    public:
     ////////////////////////////////////////////////////////////
     /// \brief Constructor
     ///
@@ -112,8 +108,8 @@ public:
     class iterator
         : public boost::iterator_facade<iterator, const motzkin_path&, boost::forward_traversal_tag>
     {
-    public:
-        iterator() : data_(), comb_(), dyck_() {} // empty initializer
+        public:
+        iterator() : data_(), comb_(), dyck_() {}  // empty initializer
 
         explicit iterator(IntType n) : data_(n, 0), comb_(n, 0), dyck_(0) {}
 
@@ -126,7 +122,7 @@ public:
             return it;
         }
 
-    private:
+        private:
         void increment()
         {
             ++ID_;
@@ -136,28 +132,26 @@ public:
                 return;
 
             ++comb_;
-            if (comb_.is_at_end(n))
-            {
+            if (comb_.is_at_end(n)) {
                 ++dyck_;
 
-                if (dyck_.is_at_end(num_nonzero_halved_))
-                {
+                if (dyck_.is_at_end(num_nonzero_halved_)) {
                     num_nonzero_halved_ += 1;
 
                     dyck_.reset(num_nonzero_halved_);
                 }
 
-                comb_.reset(n, 2*num_nonzero_halved_);
+                comb_.reset(n, 2 * num_nonzero_halved_);
             }
 
-            ConvertToMotzkin(); // TODO(mraggi): do this laziliy
+            ConvertToMotzkin();  // TODO(mraggi): do this laziliy
         }
 
         const motzkin_path& dereference() const { return data_; }
 
         bool equal(const iterator& it) const { return it.ID() == ID(); }
 
-    private:
+        private:
         size_type ID_{0};
         motzkin_path data_;
         comb_i comb_;
@@ -169,30 +163,28 @@ public:
             // 				cout << "Converting: " << *comb_ << " and " <<
             // *dyck_
             // << endl;
-            for (size_t i = 0; i < data_.size(); ++i)
-            {
+            for (size_t i = 0; i < data_.size(); ++i) {
                 data_[i] = 0;
             }
 
             size_t count = 0;
 
-            for (auto x : (*comb_))
-            {
+            for (auto x : (*comb_)) {
                 data_[x] = (*dyck_)[count];
                 ++count;
             }
         }
 
         friend class boost::iterator_core_access;
-    }; // end class iterator
+    };  // end class iterator
 
-private:
+    private:
     IntType n_;
-}; // end class MotzkinPaths
+};  // end class MotzkinPaths
 
 using boost::container::static_vector;
 
-using motzkin_paths = MotzkinPaths<int>;
+using motzkin_paths       = MotzkinPaths<int>;
 using motzkin_paths_stack = MotzkinPaths<int, static_vector<int, 48>>;
 
-} // namespace discreture
+}  // namespace discreture

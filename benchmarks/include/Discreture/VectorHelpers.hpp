@@ -29,8 +29,7 @@ template <class T>
 std::ostream& operator<<(std::ostream& os, const std::vector<std::vector<T>>& V)
 {
     os << std::endl;
-    for (auto&& v : V)
-        os << v << std::endl;
+    for (auto&& v : V) os << v << std::endl;
 
     return os;
 }
@@ -41,8 +40,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<std::vector<T>>& V)
 /////////////////////////////
 inline std::ostream& operator<<(std::ostream& os, const std::vector<bool>& V)
 {
-    for (bool v : V)
-        os << v;
+    for (bool v : V) os << v;
 
     return os;
 }
@@ -58,8 +56,7 @@ vecT compose(const vecT& f, const std::vector<IntType>& g)
     // 		typename vecT::value_type u(0);
     vecT toReturn(g.size());
 
-    for (size_t i = 0; i < g.size(); ++i)
-    {
+    for (size_t i = 0; i < g.size(); ++i) {
         assert(0 <= g[i] && g[i] < f.size());
         toReturn[i] = f[g[i]];
     }
@@ -67,4 +64,4 @@ vecT compose(const vecT& f, const std::vector<IntType>& g)
     return toReturn;
 }
 
-} // namespace discreture
+}  // namespace discreture

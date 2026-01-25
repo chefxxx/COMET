@@ -13,7 +13,8 @@ namespace discreture
 
 template <typename T>
 void UNUSED(T&& /*unused*/)
-{}
+{
+}
 
 //////////////////////////////////////////
 /// \brief This is what operator% should be but isn't (!).
@@ -25,7 +26,7 @@ void UNUSED(T&& /*unused*/)
 template <class IntType>
 inline IntType modulo(IntType a, IntType b)
 {
-    IntType r = a%b;
+    IntType r = a % b;
     if (r < 0)
         r += b;
     return r;
@@ -50,10 +51,9 @@ inline T pow(T a, std::uint64_t n)
 {
     T r = 1;
 
-    while (n > 0)
-    {
+    while (n > 0) {
         auto division = std::div(n, 2);
-        if (division.rem == 1) // if odd
+        if (division.rem == 1)  // if odd
             r *= a;
 
         n = division.quot;
@@ -67,11 +67,10 @@ inline T pow(T a, std::uint64_t n)
 template <class T>
 T gcd(T a, T b)
 {
-    while (b != 0)
-    {
-        T r = a%b;
-        a = b;
-        b = r;
+    while (b != 0) {
+        T r = a % b;
+        a   = b;
+        b   = r;
     }
     return a;
 }
@@ -79,10 +78,8 @@ T gcd(T a, T b)
 template <class T, class Container>
 T reduce_fraction(Container Numerator, Container Denominator)
 {
-    for (auto& b : Denominator)
-    {
-        for (auto& a : Numerator)
-        {
+    for (auto& b : Denominator) {
+        for (auto& a : Numerator) {
             auto d = gcd(a, b);
             a /= d;
             b /= d;
@@ -92,9 +89,8 @@ T reduce_fraction(Container Numerator, Container Denominator)
     }
 
     T result = 1;
-    for (auto a : Numerator)
-        result *= a;
+    for (auto a : Numerator) result *= a;
     return result;
 }
 
-} // namespace discreture
+}  // namespace discreture

@@ -24,8 +24,6 @@ class BlockSameTypeCombinationsTest : public ::testing::Test
 
 TEST_F(BlockSameTypeCombinationsTest, StrictlyUpper_WindowRespectsBucketBoundaries)
 {
-    // Bucket 0 [0,10):  {1, 2, 3}
-    // Bucket 1 [10,20): {11, 12, 13}
     std::vector<int> data = {1, 2, 3, 11, 12, 13};
 
     const auto bp = BucketPolicy(false, callable, buckets);
@@ -103,10 +101,6 @@ TEST_F(BlockSameTypeCombinationsTest, StrictlyUpper_Triplets3D)
     EXPECT_EQ(count, expected.size());
 }
 
-// --------------------------------------------------------------------------
-// FULL (Windowed) TESTS
-// --------------------------------------------------------------------------
-
 TEST_F(BlockSameTypeCombinationsTest, Full_WindowDiagonalBand)
 {
     std::vector<int> data = {1, 2, 3};
@@ -155,10 +149,6 @@ TEST_F(BlockSameTypeCombinationsTest, Full_MultiBucketSkip)
     }
     EXPECT_EQ(count, expected.size());
 }
-
-// --------------------------------------------------------------------------
-// MIN CATEGORY SIZE INTERACTION
-// --------------------------------------------------------------------------
 
 TEST_F(BlockSameTypeCombinationsTest, SkipsBucketsSmallerThanMinSize)
 {

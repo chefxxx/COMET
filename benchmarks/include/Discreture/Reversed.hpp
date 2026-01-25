@@ -8,16 +8,16 @@ namespace discreture
 template <class Container>
 class Reversed
 {
-public:
-    using Cont_t = std::remove_cv_t<std::remove_reference_t<Container>>;
-    using value_type = typename Cont_t::value_type;
+    public:
+    using Cont_t          = std::remove_cv_t<std::remove_reference_t<Container>>;
+    using value_type      = typename Cont_t::value_type;
     using difference_type = typename Cont_t::difference_type;
-    using size_type = typename Cont_t::size_type;
+    using size_type       = typename Cont_t::size_type;
 
-    using iterator = typename Cont_t::reverse_iterator;
+    using iterator       = typename Cont_t::reverse_iterator;
     using const_iterator = typename Cont_t::const_reverse_iterator;
 
-    using reverse_iterator = typename Cont_t::iterator;
+    using reverse_iterator       = typename Cont_t::iterator;
     using const_reverse_iterator = typename Cont_t::const_iterator;
 
     explicit Reversed(Container&& C) : original_(C) {}
@@ -40,14 +40,14 @@ public:
 
     size_type size() const { return original_.size(); }
 
-private:
+    private:
     add_const_to_value_t<Container> original_;
 };
 
 #if __cplusplus > 201703L
 // deduction guide only for c++17 :(
 template <class Container>
-Reversed(Container &&)->Reversed<Container>;
+Reversed(Container&&) -> Reversed<Container>;
 #endif
 
 // Utility function for C++14 and below, like make_shared. Deprecated in C++17.
@@ -57,4 +57,4 @@ auto reversed(Container&& C)
     return Reversed<Container>{std::forward<Container>(C)};
 }
 
-} // namespace discreture
+}  // namespace discreture

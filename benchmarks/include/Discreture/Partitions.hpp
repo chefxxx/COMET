@@ -1,12 +1,12 @@
 #pragma once
 
+#include <boost/iterator/iterator_facade.hpp>
 #include "ArithmeticProgression.hpp"
 #include "Misc.hpp"
 #include "Reversed.hpp"
 #include "Sequences.hpp"
 #include "VectorHelpers.hpp"
 #include "detail/PartitionsDetail.hpp"
-#include <boost/iterator/iterator_facade.hpp>
 
 namespace discreture
 {
@@ -28,15 +28,13 @@ namespace discreture
 template <class IntType = int, class RAContainerInt = std::vector<IntType>>
 class Partitions
 {
-public:
-    static_assert(std::is_integral<IntType>::value,
-                  "Template parameter IntType must be integral");
-    static_assert(std::is_signed<IntType>::value,
-                  "Template parameter IntType must be signed");
-    using value_type = RAContainerInt;
-    using partition = value_type;
+    public:
+    static_assert(std::is_integral<IntType>::value, "Template parameter IntType must be integral");
+    static_assert(std::is_signed<IntType>::value, "Template parameter IntType must be signed");
+    using value_type      = RAContainerInt;
+    using partition       = value_type;
     using difference_type = std::ptrdiff_t;
-    using size_type = difference_type;
+    using size_type       = difference_type;
     class iterator;
     using const_iterator = iterator;
     class reverse_iterator;
@@ -50,7 +48,8 @@ public:
     ////////////////////////////////////////////////////////////
     explicit Partitions(IntType n)
         : n_(n), min_num_parts_(1), max_num_parts_(n), size_(calc_size(n))
-    {}
+    {
+    }
 
     ////////////////////////////////////////////////////////////
     /// \brief Constructor
@@ -60,11 +59,9 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     Partitions(IntType n, IntType numparts)
-        : n_(n)
-        , min_num_parts_(numparts)
-        , max_num_parts_(numparts)
-        , size_(calc_size(n, numparts))
-    {}
+        : n_(n), min_num_parts_(numparts), max_num_parts_(numparts), size_(calc_size(n, numparts))
+    {
+    }
 
     ////////////////////////////////////////////////////////////
     /// \brief Constructor
@@ -75,11 +72,12 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     Partitions(IntType n, IntType minnumparts, IntType maxnumparts)
-        : n_(n)
-        , min_num_parts_(minnumparts)
-        , max_num_parts_(maxnumparts)
-        , size_(calc_size(n, minnumparts, maxnumparts))
-    {}
+        : n_(n),
+          min_num_parts_(minnumparts),
+          max_num_parts_(maxnumparts),
+          size_(calc_size(n, minnumparts, maxnumparts))
+    {
+    }
 
     ////////////////////////////////////////////////////////////
     /// \brief The total number of partitions
@@ -93,26 +91,16 @@ public:
 
     iterator begin() const { return iterator(n_, max_num_parts_); }
 
-    const iterator end() const
-    {
-        return iterator::make_invalid_with_id(size());
-    }
+    const iterator end() const { return iterator::make_invalid_with_id(size()); }
 
-    reverse_iterator rbegin() const
-    {
-        return reverse_iterator(n_, min_num_parts_);
-    }
+    reverse_iterator rbegin() const { return reverse_iterator(n_, min_num_parts_); }
 
-    const reverse_iterator rend() const
-    {
-        return reverse_iterator::make_invalid_with_id(size());
-    }
+    const reverse_iterator rend() const { return reverse_iterator::make_invalid_with_id(size()); }
 
     template <class Func>
     void for_each(Func f) const
     {
-        for (auto k : reversed(II(min_num_parts_, max_num_parts_ + 1)))
-        {
+        for (auto k : reversed(II(min_num_parts_, max_num_parts_ + 1))) {
             for_each(f, k);
         }
     }
@@ -120,14 +108,13 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Bidirectional iterator class.
     ////////////////////////////////////////////////////////////
-    class iterator
-        : public boost::iterator_facade<iterator, const partition&, boost::bidirectional_traversal_tag>
+    class iterator : public boost::iterator_facade<
+                         iterator, const partition&, boost::bidirectional_traversal_tag>
     {
-    public:
+        public:
         iterator() : n_(0), data_() {}
 
-        explicit iterator(IntType n, IntType numparts)
-            : n_(n), data_(numparts, 1)
+        explicit iterator(IntType n, IntType numparts) : n_(n), data_(numparts, 1)
         {
             if (numparts > 0)
                 data_[0] = n - numparts + 1;
@@ -145,7 +132,7 @@ public:
             return it;
         }
 
-    private:
+        private:
         void increment()
         {
             ++ID_;
@@ -169,23 +156,22 @@ public:
             return static_cast<difference_type>(lhs.ID()) - ID();
         }
 
-    private:
+        private:
         size_type ID_{0};
         IntType n_;
         partition data_;
 
         friend class boost::iterator_core_access;
-    }; // end class iterator
+    };  // end class iterator
 
     ////////////////////////////////////////////////////////////
     /// \brief Bidirectional iterator class.
     ////////////////////////////////////////////////////////////
     class reverse_iterator
-        : public boost::iterator_facade<reverse_iterator,
-                                        const partition&,
-                                        boost::bidirectional_traversal_tag>
+        : public boost::iterator_facade<
+              reverse_iterator, const partition&, boost::bidirectional_traversal_tag>
     {
-    public:
+        public:
         reverse_iterator() : n_(0), data_() {}
 
         explicit reverse_iterator(IntType n, IntType numparts) : n_(n), data_()
@@ -205,7 +191,7 @@ public:
             return it;
         }
 
-    private:
+        private:
         void increment()
         {
             ++ID_;
@@ -229,25 +215,24 @@ public:
             return static_cast<difference_type>(lhs.ID()) - ID();
         }
 
-    private:
+        private:
         size_type ID_{0};
         IntType n_;
         partition data_;
 
         friend class boost::iterator_core_access;
-    }; // end class reverse_iterator
+    };  // end class reverse_iterator
 
     // **************** Begin static functions
     static void next_partition(partition& data, IntType n)
     {
         size_t t = data.size();
 
-        if (t < 2)
-        {
+        if (t < 2) {
             return;
         }
 
-        if (data.front() - data.back() < 2) // We must change size!
+        if (data.front() - data.back() < 2)  // We must change size!
         {
             first_with_given_number_of_parts(data, n, t - 1);
             return;
@@ -258,18 +243,13 @@ public:
         // Starting from the end, we look at the first whose difference is at
         // least 2 in order to transfer one unit from that one and then divide
         // unevenly among the other ones.
-        IntType smallest = data.back();
+        IntType smallest          = data.back();
         difference_type suffixSum = smallest;
 
-        for (difference_type i = t - 2; i >= 0; --i)
-        {
-            if (data[i] - smallest > 1)
-            {
+        for (difference_type i = t - 2; i >= 0; --i) {
+            if (data[i] - smallest > 1) {
                 --data[i];
-                distribute_unevenly(data.begin() + i + 1,
-                                    data.end(),
-                                    suffixSum + 1,
-                                    data[i]);
+                distribute_unevenly(data.begin() + i + 1, data.end(), suffixSum + 1, data[i]);
                 return;
             }
             suffixSum += data[i];
@@ -281,19 +261,15 @@ public:
         size_type t = data.size();
         if (t == 0)
             return;
-        if (t == 1 || data[1] == 1)
-        {
+        if (t == 1 || data[1] == 1) {
             last_with_given_number_of_parts(data, n, t + 1);
             return;
         }
 
         difference_type suffixSum = data.back();
 
-        for (IntType i = t - 2; i >= 0; --i)
-        {
-
-            if (can_increase(data, i))
-            {
+        for (IntType i = t - 2; i >= 0; --i) {
+            if (can_increase(data, i)) {
                 ++data[i];
                 distribute_evenly(data.begin() + i + 1, data.end(), suffixSum - 1);
                 return;
@@ -302,12 +278,9 @@ public:
         }
     }
 
-    static void first_with_given_number_of_parts(partition& data,
-                                                 IntType n,
-                                                 IntType k)
+    static void first_with_given_number_of_parts(partition& data, IntType n, IntType k)
     {
-        if (n == 0)
-        {
+        if (n == 0) {
             data.clear();
             return;
         }
@@ -319,12 +292,9 @@ public:
         data[0] = n - k + 1;
     }
 
-    static void last_with_given_number_of_parts(partition& data,
-                                                IntType n,
-                                                IntType k)
+    static void last_with_given_number_of_parts(partition& data, IntType n, IntType k)
     {
-        if (n == 0)
-        {
+        if (n == 0) {
             data.clear();
             return;
         }
@@ -341,10 +311,8 @@ public:
 
         result[0] = n;
 
-        for (size_t i = 1; i < n; ++i)
-        {
-            auto t =
-              std::lower_bound(P.begin(), P.end(), i, std::greater<IntType>());
+        for (size_t i = 1; i < n; ++i) {
+            auto t = std::lower_bound(P.begin(), P.end(), i, std::greater<IntType>());
 
             int r = t - P.begin();
 
@@ -357,7 +325,7 @@ public:
 
     // **************** End static functions
 
-private:
+    private:
     IntType n_;
     IntType min_num_parts_;
     IntType max_num_parts_;
@@ -373,8 +341,7 @@ private:
     static size_type calc_size(IntType n, IntType minnumparts, IntType maxnumparts)
     {
         size_type toReturn = 0;
-        for (size_type k = minnumparts; k <= maxnumparts; ++k)
-            toReturn += partition_number(n, k);
+        for (size_type k = minnumparts; k <= maxnumparts; ++k) toReturn += partition_number(n, k);
         return toReturn;
     }
 
@@ -410,15 +377,11 @@ private:
     }
 
     template <class Iter>
-    static void distribute_unevenly(Iter first,
-                                    const Iter& last,
-                                    IntType n,
-                                    IntType maximum)
+    static void distribute_unevenly(Iter first, const Iter& last, IntType n, IntType maximum)
     {
-        auto k = last - first;
+        auto k         = last - first;
         IntType excess = n - k;
-        for (; first != last; ++first)
-        {
+        for (; first != last; ++first) {
             *first = std::min<IntType>(maximum, excess + 1);
             excess += (1 - *first);
         }
@@ -429,8 +392,7 @@ private:
     {
         // I'm really sorry about this. I don't know how to improve it. If you
         // do, by all means, tell me about it.
-        switch (k)
-        {
+        switch (k) {
             // clang-format off
         using part = partition;
         case 0: detail::for_each_partition<part, 0>::apply(n_, f); break;
@@ -451,25 +413,23 @@ private:
         case 15: detail::for_each_partition<part, 15>::apply(n_, f); break;
         case 16: detail::for_each_partition<part, 16>::apply(n_, f); break;
 
-            // clang-format on
+                // clang-format on
 
-        default:
-        {
-            for (auto&& x : Partitions<IntType, RAContainerInt>(n_, k))
-            {
-                f(x);
+            default: {
+                for (auto&& x : Partitions<IntType, RAContainerInt>(n_, k)) {
+                    f(x);
+                }
+
+                break;
             }
-
-            break;
-        }
-        } // end switch(k)
+        }  // end switch(k)
     }
 
-}; // end class Partitions
+};  // end class Partitions
 
 using boost::container::static_vector;
 
-using partitions = Partitions<int>;
+using partitions       = Partitions<int>;
 using partitions_stack = Partitions<int, static_vector<int, 128>>;
 
-} // namespace discreture
+}  // namespace discreture

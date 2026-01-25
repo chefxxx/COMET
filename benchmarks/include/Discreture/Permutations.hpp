@@ -45,21 +45,19 @@ namespace discreture
 template <class IntType = int, class RAContainerInt = std::vector<IntType>>
 class Permutations
 {
-public:
-    static_assert(std::is_integral<IntType>::value,
-                  "Template parameter IntType must be integral");
-    static_assert(std::is_signed<IntType>::value,
-                  "Template parameter IntType must be signed");
-    using value_type = RAContainerInt;
-    using permutation = value_type;
+    public:
+    static_assert(std::is_integral<IntType>::value, "Template parameter IntType must be integral");
+    static_assert(std::is_signed<IntType>::value, "Template parameter IntType must be signed");
+    using value_type      = RAContainerInt;
+    using permutation     = value_type;
     using difference_type = std::ptrdiff_t;
-    using size_type = difference_type;
+    using size_type       = difference_type;
     class iterator;
     using const_iterator = iterator;
     class reverse_iterator;
     using const_reverse_iterator = reverse_iterator;
 
-public:
+    public:
     ////////////////////////////////////////////////////////////
     /// \brief Constructor
     ///
@@ -78,17 +76,11 @@ public:
 
     iterator begin() const { return iterator(n_); }
 
-    const iterator end() const
-    {
-        return iterator::make_invalid_with_id(size());
-    }
+    const iterator end() const { return iterator::make_invalid_with_id(size()); }
 
     reverse_iterator rbegin() const { return reverse_iterator(n_); }
 
-    const reverse_iterator rend() const
-    {
-        return reverse_iterator::make_invalid_with_id(size());
-    }
+    const reverse_iterator rend() const { return reverse_iterator::make_invalid_with_id(size()); }
 
     ////////////////////////////////////////////////////////////
     /// \brief Access to the m-th permutation (slow for iteration)
@@ -153,10 +145,8 @@ public:
         std::sort(sortedperm.begin(), sortedperm.end());
         size_type i = 0;
 
-        while (start < n)
-        {
-            if (perm[start] != sortedperm[i])
-            {
+        while (start < n) {
+            if (perm[start] != sortedperm[i]) {
                 break;
             }
 
@@ -168,11 +158,10 @@ public:
             return 0;
 
         size_type b = n - start - 1;
-        auto w =
-          std::lower_bound(sortedperm.begin(), sortedperm.end(), perm[start]) -
-          sortedperm.begin() - i;
+        auto w      = std::lower_bound(sortedperm.begin(), sortedperm.end(), perm[start]) -
+                 sortedperm.begin() - i;
 
-        return factorial(b)*(w) + get_index(perm, start + 1);
+        return factorial(b) * (w) + get_index(perm, start + 1);
     }
 
     ////////////////////////////////////////////////////////////
@@ -187,24 +176,24 @@ public:
     /// \brief Random access iterator class. It's much more efficient as a
     /// bidirectional iterator than purely random access.
     ////////////////////////////////////////////////////////////
-    class iterator
-        : public boost::iterator_facade<iterator, const permutation&, boost::random_access_traversal_tag>
+    class iterator : public boost::iterator_facade<
+                         iterator, const permutation&, boost::random_access_traversal_tag>
     {
-    public:
+        public:
         explicit iterator(IntType n = 0) : ID_(0), last_(n - 1), data_(n)
         {
             std::iota(data_.begin(), data_.end(), 0);
         }
 
-        explicit iterator(const permutation& p)
-            : ID_(get_index(p)), last_(p.size() - 1), data_(p)
-        {}
+        explicit iterator(const permutation& p) : ID_(get_index(p)), last_(p.size() - 1), data_(p)
+        {
+        }
 
         inline bool is_at_end() const { return ID_ == factorial(last_ + 1); }
 
         void reset(IntType r)
         {
-            ID_ = 0;
+            ID_   = 0;
             last_ = r - 1;
             data_.resize(r);
             std::iota(data_.begin(), data_.end(), 0);
@@ -219,15 +208,12 @@ public:
             return it;
         }
 
-    private:
+        private:
         void increment()
         {
-            if (ID_ > 1 && ID_%2 == 0)
-            {
+            if (ID_ > 1 && ID_ % 2 == 0) {
                 std::swap(data_[last_], data_[last_ - 1]);
-            }
-            else
-            {
+            } else {
                 std::next_permutation(data_.begin(), data_.end());
             }
             ++ID_;
@@ -254,16 +240,13 @@ public:
         {
             assert(0 <= n + ID_);
 
-            if (std::abs(n) < 20)
-            {
-                while (n > 0)
-                {
+            if (std::abs(n) < 20) {
+                while (n > 0) {
                     increment();
                     --n;
                 }
 
-                while (n < 0)
-                {
+                while (n < 0) {
                     decrement();
                     ++n;
                 }
@@ -284,21 +267,20 @@ public:
 
         bool equal(const iterator& other) const { return ID_ == other.ID_; }
 
-    private:
+        private:
         size_type ID_{0};
         size_type last_{0};
         permutation data_{};
 
         friend class boost::iterator_core_access;
-    }; // end class iterator
+    };  // end class iterator
 
     class reverse_iterator
-        : public boost::iterator_facade<reverse_iterator,
-                                        const permutation&,
-                                        boost::random_access_traversal_tag>
+        : public boost::iterator_facade<
+              reverse_iterator, const permutation&, boost::random_access_traversal_tag>
     {
-    public:
-        reverse_iterator() : data_() {} // empty initializer
+        public:
+        reverse_iterator() : data_() {}  // empty initializer
         explicit reverse_iterator(IntType n) : ID_(0), data_(n)
         {
             std::iota(data_.begin(), data_.end(), 0);
@@ -309,7 +291,7 @@ public:
 
         void reset(IntType n)
         {
-            ID_ = 0;
+            ID_   = 0;
             data_ = IntegerInterval<IntType>(n);
             std::reverse(data_.begin(), data_.end());
         }
@@ -321,7 +303,7 @@ public:
             return it;
         }
 
-    private:
+        private:
         void increment()
         {
             ++ID_;
@@ -351,16 +333,14 @@ public:
         {
             assert(0 <= m + ID_);
 
-            if (std::abs(m) < 10) // found experimentally
+            if (std::abs(m) < 10)  // found experimentally
             {
-                while (m > 0)
-                {
+                while (m > 0) {
                     increment();
                     --m;
                 }
 
-                while (m < 0)
-                {
+                while (m < 0) {
                     decrement();
                     ++m;
                 }
@@ -380,12 +360,12 @@ public:
             return static_cast<difference_type>(other.ID()) - ID();
         }
 
-    private:
+        private:
         size_type ID_{0};
         permutation data_;
 
         friend class boost::iterator_core_access;
-    }; // end class iterator
+    };  // end class iterator
 
     // Static functions
     static void construct_permutation(permutation& data, size_type m)
@@ -394,28 +374,24 @@ public:
         std::iota(data.begin(), data.end(), 0);
         size_type start = 0;
 
-        for (; m > 0 && start < n; ++start)
-        {
+        for (; m > 0 && start < n; ++start) {
             // 					cout << "starting with start = " << start <<
             // endl;
             auto f = factorial(n - start - 1);
 
             // 					int u = 0;
-            if (f > m)
-            {
+            if (f > m) {
                 continue;
             }
 
-            for (size_type u = 1; u < n + 1; ++u)
-            {
-                if (u*f > m)
-                {
+            for (size_type u = 1; u < n + 1; ++u) {
+                if (u * f > m) {
                     --u;
 
-                    m -= u*f;
+                    m -= u * f;
 
-                    auto temp = data[start];
-                    data[start] = data[u + start];
+                    auto temp       = data[start];
+                    data[start]     = data[u + start];
                     data[u + start] = temp;
 
                     std::sort(data.begin() + start + 1, data.end());
@@ -425,7 +401,7 @@ public:
         }
     }
 
-private:
+    private:
     IntType n_;
 
     size_type get_index(const permutation& perm, int first, int last)
@@ -441,17 +417,15 @@ private:
         // 			size_type result = 0;
         difference_type firstdiffer = 0;
 
-        for (; firstdiffer + 1 < n; ++firstdiffer)
-        {
+        for (; firstdiffer + 1 < n; ++firstdiffer) {
             if (perm[firstdiffer + first] != A[firstdiffer])
                 break;
         }
 
-        return factorial(n - firstdiffer - 1) +
-          get_index(perm, firstdiffer + 1, last);
+        return factorial(n - firstdiffer - 1) + get_index(perm, firstdiffer + 1, last);
     }
 
-}; // end class Permutations
+};  // end class Permutations
 
 using boost::container::static_vector;
 
@@ -471,4 +445,4 @@ auto permutations(T X)
     return Permutations<T>(X);
 }
 
-} // namespace discreture
+}  // namespace discreture

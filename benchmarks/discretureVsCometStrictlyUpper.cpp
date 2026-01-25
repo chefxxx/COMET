@@ -1,18 +1,18 @@
 #include <benchmark/benchmark.h>
-#include <vector>
 #include <cmath>
+#include <vector>
 
 // Our Library Headers
 #include "Combinations.h"
-#include "Producers.h"
 #include "HeavyStructures.h"
+#include "Producers.h"
 
 // Discreture Header
 #include <../include/discreture.hpp>
 
 class StrictlyUpperComparisonFixture : public benchmark::Fixture
 {
-public:
+    public:
     std::vector<HeavyGroupingStruct> data;
     int seed             = 42;
     int meanMultiplicity = 20;
@@ -35,19 +35,23 @@ public:
 // TRIPLES: Strictly Upper (nCr where r=3)
 // -----------------------------------------------------------------------------
 
-BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Comet_StrictlyUpperTriples)(benchmark::State& state)
+BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Comet_StrictlyUpperTriples)
+(benchmark::State& state)
 {
     for (auto _ : state) {
         // Generates (i, j, k) where i < j < k
-        auto combinations = makeCombinations<StrictlyUpperCombinationsPolicy>(this->data, this->data, this->data);
+        auto combinations =
+            makeCombinations<StrictlyUpperCombinationsPolicy>(this->data, this->data, this->data);
         for (const auto& [el0, el1, el2] : combinations) {
-            benchmark::DoNotOptimize(std::sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex));
+            benchmark::DoNotOptimize(std::sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex)
+            );
         }
     }
     state.SetComplexityN(state.range(0));
 }
 
-BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Discreture_CombinationsTriples)(benchmark::State& state)
+BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Discreture_CombinationsTriples)
+(benchmark::State& state)
 {
     for (auto _ : state) {
         int n = static_cast<int>(this->data.size());
@@ -57,7 +61,8 @@ BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Discreture_CombinationsTriple
             const auto& el0 = this->data[indices[0]];
             const auto& el1 = this->data[indices[1]];
             const auto& el2 = this->data[indices[2]];
-            benchmark::DoNotOptimize(std::sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex));
+            benchmark::DoNotOptimize(std::sqrt(el0.globalIndex + el1.globalIndex + el2.globalIndex)
+            );
         }
     }
     state.SetComplexityN(state.range(0));
@@ -67,10 +72,12 @@ BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Discreture_CombinationsTriple
 // PAIRS (Included for a complete comparison)
 // -----------------------------------------------------------------------------
 
-BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Comet_StrictlyUpperPairs)(benchmark::State& state)
+BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Comet_StrictlyUpperPairs)
+(benchmark::State& state)
 {
     for (auto _ : state) {
-        auto combinations = makeCombinations<StrictlyUpperCombinationsPolicy>(this->data, this->data);
+        auto combinations =
+            makeCombinations<StrictlyUpperCombinationsPolicy>(this->data, this->data);
         for (const auto& [el0, el1] : combinations) {
             benchmark::DoNotOptimize(std::sqrt(el0.globalIndex + el1.globalIndex));
         }
@@ -78,10 +85,11 @@ BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Comet_StrictlyUpperPairs)(ben
     state.SetComplexityN(state.range(0));
 }
 
-BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Discreture_CombinationsPairs)(benchmark::State& state)
+BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Discreture_CombinationsPairs)
+(benchmark::State& state)
 {
     for (auto _ : state) {
-        int n = static_cast<int>(this->data.size());
+        int n             = static_cast<int>(this->data.size());
         auto combinations = discreture::combinations(n, 2);
         for (const auto& indices : combinations) {
             const auto& el0 = this->data[indices[0]];
@@ -96,16 +104,22 @@ BENCHMARK_DEFINE_F(StrictlyUpperComparisonFixture, Discreture_CombinationsPairs)
 // REGISTRATION
 // -----------------------------------------------------------------------------
 
-// Pairs registration (N ranges up to 1024)
 BENCHMARK_REGISTER_F(StrictlyUpperComparisonFixture, Comet_StrictlyUpperPairs)
-    ->RangeMultiplier(2)->Range(1 << 4, 1 << 10)->Complexity();
+    ->RangeMultiplier(2)
+    ->Range(1 << 4, 1 << 10)
+    ->Complexity();
 BENCHMARK_REGISTER_F(StrictlyUpperComparisonFixture, Discreture_CombinationsPairs)
-    ->RangeMultiplier(2)->Range(1 << 4, 1 << 10)->Complexity();
+    ->RangeMultiplier(2)
+    ->Range(1 << 4, 1 << 10)
+    ->Complexity();
 
-// Triples registration (N is smaller due to O(N^3) complexity)
 BENCHMARK_REGISTER_F(StrictlyUpperComparisonFixture, Comet_StrictlyUpperTriples)
-    ->RangeMultiplier(2)->Range(1 << 4, 1 << 8)->Complexity();
+    ->RangeMultiplier(2)
+    ->Range(1 << 4, 1 << 8)
+    ->Complexity();
 BENCHMARK_REGISTER_F(StrictlyUpperComparisonFixture, Discreture_CombinationsTriples)
-    ->RangeMultiplier(2)->Range(1 << 4, 1 << 8)->Complexity();
+    ->RangeMultiplier(2)
+    ->Range(1 << 4, 1 << 8)
+    ->Complexity();
 
 BENCHMARK_MAIN();

@@ -38,10 +38,6 @@ concept BlockLifecyclePolicy = IsCombinationsPolicy<P> && std::default_initializ
                                    } -> std::same_as<void>;
                                };
 
-/**
- * @brief This class just serves as an iterable wrapper around policies.
- * @tparam TCombinationsPolicy policy object that defines behaviour of the iterator
- */
 template <typename TCombinationsPolicy>
 struct CombinationsProducer {
     // This constructor is used in makeCombinations func
@@ -269,7 +265,6 @@ auto makeSameKindBlockCombinations(
 
 template <typename TSource, typename TCallable>
 struct SourceWithCallable {
-    // TODO: Change the whole wrapper, so it accepts the rvalue?
     using source   = TSource;
     using callable = TCallable;
     const source &ProvidedSource;
@@ -305,7 +300,6 @@ struct GroupedProducer {
         const TBucketPolicy &t_bucketPolicy, const int t_minCatSize, const TGrouping &grouping,
         const TAssociated &...associated
     )
-        // TODO: Inspect what is going on with the views on creating
         : m_views(std::make_tuple(BucketSortView(
               grouping.ProvidedSource, grouping.ProvidedCallable, associated.ProvidedSource,
               associated.ProvidedCallable
@@ -355,9 +349,7 @@ struct GroupedProducer {
         using difference_type   = std::ptrdiff_t;
         using value_type        = ResultTupleType;
         using pointer           = void;
-        // TODO: Here is something bad with objects lifetime, the value_type is safer but may eat
-        // more memory
-        using reference = ResultTupleTypeRef;
+        using reference         = ResultTupleTypeRef;
 
         using BlockIteratorType    = typename TProducerType::iterator;
         using GroupingCallableType = typename TGrouping::callable;
@@ -389,10 +381,9 @@ struct GroupedProducer {
 
         auto operator*() const
         {
-            // TODO: Check if std::forward_as_tuple works here
             auto currentCombination = *m_blockIteratorPtr;
             constexpr auto N        = sizeof...(TAssociated);
-            return [&]<size_t... Is>(std::index_sequence<Is...>) {
+            return [&]<std::size_t... Is>(std::index_sequence<Is...>) {
                 return std::tuple_cat(std::tuple_cat(std::tuple_cat(
                     std::forward_as_tuple(std::get<Is>(currentCombination)),
                     std::make_tuple(
@@ -437,7 +428,7 @@ auto makeGroupedCombinations(
 )
 {
     constexpr int N     = sizeof...(TAssociated);
-    using TProducerType = decltype([&]<size_t... Is>(std::index_sequence<Is...>) {
+    using TProducerType = decltype([&]<std::size_t... Is>(std::index_sequence<Is...>) {
         return makeBlockCombinations<TCombinationsPolicy>(
             t_bucketPolicy, t_minCatSize, (static_cast<void>(Is), grouping.ProvidedSource)...
         );

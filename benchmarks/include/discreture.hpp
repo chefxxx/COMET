@@ -21,5 +21,5 @@
 #include "Discreture/TimeHelpers.hpp"
 #include "Discreture/VectorHelpers.hpp"
 
-namespace dscr = discreture; // for backward compatibility
-namespace ds = discreture;
+namespace dscr = discreture;  // for backward compatibility
+namespace ds   = discreture;

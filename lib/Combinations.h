@@ -24,8 +24,8 @@ struct CombinationsPolicyBase {
     void addOneBaseImpl()
     {
         if (!m_isEnd) {
-            constexpr size_t N = sizeof...(TInputs);
-            bool wasModified   = true;
+            constexpr std::size_t N = sizeof...(TInputs);
+            bool wasModified        = true;
             [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
                 (addOneHelper<Is, N>(wasModified), ...);
             }(std::make_index_sequence<N>());
@@ -42,8 +42,8 @@ struct CombinationsPolicyBase {
     }
 
     bool m_isEnd = false;
-    std::array<int64_t, sizeof...(TInputs)> m_endIndexNumbers;
-    std::array<int64_t, sizeof...(TInputs)> m_currentIndexNumbers;
+    std::array<std::size_t, sizeof...(TInputs)> m_endIndexNumbers;
+    std::array<std::size_t, sizeof...(TInputs)> m_currentIndexNumbers;
     combinations_type m_sentinel;
     combinations_type m_current;
 
@@ -51,7 +51,7 @@ struct CombinationsPolicyBase {
     CombinationsPolicyBase() = default;
     friend Derived;
 
-    template <size_t I, typename TInput>
+    template <std::size_t I, typename TInput>
     void setDataHelper(const TInput &t_input)
     {
         std::get<I>(m_current)   = t_input.begin();
@@ -60,12 +60,12 @@ struct CombinationsPolicyBase {
         m_endIndexNumbers[I]     = std::distance(t_input.begin(), t_input.end());
     }
 
-    template <size_t I, size_t N>
+    template <std::size_t I, std::size_t N>
     void addOneHelper(bool &t_wasModified)
     {
         if (t_wasModified) {
-            constexpr auto ind           = N - I - 1;
-            int64_t currentPointersIndex = ++m_currentIndexNumbers[ind];
+            constexpr auto ind               = N - I - 1;
+            std::size_t currentPointersIndex = ++m_currentIndexNumbers[ind];
             ++std::get<ind>(m_current);
             if (currentPointersIndex != m_endIndexNumbers[ind]) {
                 static_cast<Derived *>(this)->template addOneImpl<I, N>(t_wasModified);
@@ -86,7 +86,7 @@ class FullCombinationsPolicy
 
     void addOne() { this->addOneBaseImpl(); }
 
-    template <size_t I, size_t N>
+    template <std::size_t I, std::size_t N>
     void addOneImpl(bool &t_wasModified)
     {
         [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
@@ -99,7 +99,7 @@ class FullCombinationsPolicy
     // N - number of data sources
     // I - which position from the right side is considered
     // J - loop iterator, which pointer is set to 0 from the N - I to right position
-    template <size_t I, size_t J, size_t N>
+    template <std::size_t I, std::size_t J, std::size_t N>
     void resetState()
     {
         constexpr auto ind = N - I + J;
@@ -124,7 +124,7 @@ class StrictlyUpperCombinationsPolicy
 
     void addOne() { this->addOneBaseImpl(); }
 
-    template <size_t I, size_t N>
+    template <std::size_t I, std::size_t N>
     void addOneImpl(bool &t_wasModified)
     {
         bool wasChanged = true;
@@ -145,7 +145,7 @@ class StrictlyUpperCombinationsPolicy
         }
     }
 
-    template <size_t I, size_t N>
+    template <std::size_t I, std::size_t N>
     void setRanges(bool &t_condition)
     {
         [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
@@ -158,12 +158,12 @@ class StrictlyUpperCombinationsPolicy
     // N - number of data sources
     // I - which position from the right side is considered
     // J - loop iterator, which pointer is set to 0 from the N - I to right position
-    template <size_t I, size_t J, size_t N>
+    template <std::size_t I, std::size_t J, std::size_t N>
     void resetState(bool &t_condition)
     {
         if (t_condition) {
             constexpr auto ind = N - I + J;
-            int64_t tmpInd     = this->m_currentIndexNumbers[ind - 1] + 1;
+            std::size_t tmpInd = this->m_currentIndexNumbers[ind - 1] + 1;
             if (tmpInd < this->m_endIndexNumbers[ind]) {
                 std::get<ind>(this->m_current) += tmpInd - this->m_currentIndexNumbers[ind];
                 this->m_currentIndexNumbers[ind] = tmpInd;
@@ -197,11 +197,11 @@ class SameTypeFullCombinationsPolicy
 
     void setData(const TInputs &...t_inputs) { this->setDataBaseImpl(t_inputs...); };
 
-    template <size_t I, size_t N>
+    template <std::size_t I, std::size_t N>
     void addOneImpl(bool &t_wasModified)
     {
-        constexpr auto ind           = N - I - 1;
-        int64_t currentPointersIndex = this->m_currentIndexNumbers[ind];
+        constexpr auto ind               = N - I - 1;
+        std::size_t currentPointersIndex = this->m_currentIndexNumbers[ind];
         if constexpr (ind == 0) {
             m_maxIndex = currentPointersIndex + m_categoryNeighbours;
             m_minIndex = currentPointersIndex;
@@ -216,13 +216,13 @@ class SameTypeFullCombinationsPolicy
 
     private:
     int m_categoryNeighbours = 0;
-    int64_t m_maxIndex       = 0;
-    int64_t m_minIndex       = 0;
+    std::size_t m_maxIndex   = 0;
+    std::size_t m_minIndex   = 0;
 
     // N - number of data sources
     // I - which position from the right side is considered
     // J - loop iterator, which pointer is set to 0 from the N - I to right position
-    template <size_t I, size_t J, size_t N>
+    template <std::size_t I, std::size_t J, std::size_t N>
     void resetState()
     {
         constexpr auto ind = N - I + J;
@@ -258,11 +258,11 @@ class SameTypeStrictlyUpperCombinationsPolicy
         setDataPolicyHelper();
     }
 
-    template <size_t I, size_t N>
+    template <std::size_t I, std::size_t N>
     void addOneImpl(bool &t_wasModified)
     {
-        constexpr auto ind           = N - I - 1;
-        int64_t currentPointersIndex = this->m_currentIndexNumbers[ind];
+        constexpr auto ind               = N - I - 1;
+        std::size_t currentPointersIndex = this->m_currentIndexNumbers[ind];
         if constexpr (ind == 0) {
             m_maxIndex = currentPointersIndex + m_categoryNeighbours;
         }
@@ -277,7 +277,7 @@ class SameTypeStrictlyUpperCombinationsPolicy
 
     private:
     int m_categoryNeighbours = 0;
-    int64_t m_maxIndex       = 0;
+    std::size_t m_maxIndex   = 0;
 
     void setDataPolicyHelper()
     {
@@ -290,7 +290,7 @@ class SameTypeStrictlyUpperCombinationsPolicy
         }
     }
 
-    template <size_t I, size_t N>
+    template <std::size_t I, std::size_t N>
     void setRanges(bool &t_condition)
     {
         [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
@@ -298,12 +298,12 @@ class SameTypeStrictlyUpperCombinationsPolicy
         }(std::make_index_sequence<I>());
     }
 
-    template <size_t I, size_t J, size_t N>
+    template <std::size_t I, std::size_t J, std::size_t N>
     void resetState(bool &t_condition)
     {
         if (t_condition) {
             constexpr auto ind = N - I + J;
-            int64_t tmpInd     = this->m_currentIndexNumbers[ind - 1] + 1;
+            std::size_t tmpInd = this->m_currentIndexNumbers[ind - 1] + 1;
             auto minBorder     = std::min(this->m_endIndexNumbers[ind], this->m_maxIndex + 1);
             if (tmpInd < minBorder) {
                 std::get<ind>(this->m_current) += tmpInd - this->m_currentIndexNumbers[ind];

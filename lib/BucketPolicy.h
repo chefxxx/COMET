@@ -114,7 +114,7 @@ struct BucketPolicy final {
         auto indexSeq    = std::make_index_sequence<N - 1>();
         return m_ignoreOverflows && checkUnderOverflows(indices)
                    ? -1
-                   : [&]<size_t... I>(std::index_sequence<I...>) {
+                   : [&]<std::size_t... I>(std::index_sequence<I...>) {
                          return (
                              std::get<0>(indices) + ... +
                              (std::get<I + 1>(indices) *
@@ -126,7 +126,7 @@ struct BucketPolicy final {
     template <typename... Types>
     bool checkUnderOverflows(const std::tuple<Types...> &arg) const
     {
-        return [&arg]<size_t... I>(std::index_sequence<I...>) {
+        return [&arg]<std::size_t... I>(std::index_sequence<I...>) {
             return ((std::get<I>(arg) == -1) || ...);
         }(std::make_index_sequence<sizeof...(Types)>{});
     }
