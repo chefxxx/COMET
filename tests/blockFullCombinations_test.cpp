@@ -2,8 +2,8 @@
 // Created by Mateusz Mikiciuk on 17/09/2025.
 //
 
-#include <include/Combinations.h>
 #include <gtest/gtest.h>
+#include <include/Combinations.h>
 #include <numeric>
 
 #include "include/BucketPolicy.h"

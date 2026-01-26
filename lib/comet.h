@@ -13,4 +13,4 @@
 #include "include/Producers.h"
 #include "include/SpanView.h"
 
-#endif //COMET_H
+#endif  // COMET_H

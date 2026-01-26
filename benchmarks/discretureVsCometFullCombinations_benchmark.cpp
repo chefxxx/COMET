@@ -3,8 +3,8 @@
 #include <vector>
 
 // Our Library Headers
-#include "include/Combinations.h"
 #include "HeavyStructures.h"
+#include "include/Combinations.h"
 #include "include/Producers.h"
 
 // Discreture Header
