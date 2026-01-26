@@ -1,11 +1,11 @@
 
-# COMET - Combinatorial Enumeration Toolkit
+# 🚀 COMET - Combinatorial Enumeration Toolkit
 
 **COMET** (COmbinatorial Enumeration Toolkit) is a generic, header-only **C++20** library designed for the efficient generation of various types of combinations from large and diverse data sources.
 
 Originally developed to address specific requirements of the **ALICE experiment at CERN** (specifically for "event-mixing" techniques used in combinatorial background calculation), COMET provides a flexible, zero-copy architecture.
 
-## Key Features
+## 🌟 Key Features
 
 *   **Header-Only & Generic**: Easy integration into existing C++ projects; works with any container satisfying the `std::random_access_iterator` concept.
 *   **Zero-Copy Overhead**: Uses iterators and `std::span` views to manipulate data without copying elements, keeping memory usage minimal even for heavy data structures.
@@ -16,7 +16,7 @@ Originally developed to address specific requirements of the **ALICE experiment 
     *   **Sliding Window**: Restrict combinations to elements within a specific range.
 *   **Policy-Based Design**: Highly customizable behavior via template policies.
 
-## Requirements
+## 🔎 Requirements
 
 *   **C++ Standard**: C++20 or later.
 *   **Compiler**: GCC 11+, Clang 14+, or AppleClang (supporting C++20).
@@ -26,7 +26,7 @@ Originally developed to address specific requirements of the **ALICE experiment 
 *   Google Test (for unit tests)
 *   Google Benchmark (for performance benchmarks)
 
-## Integration
+## 🔜 Integration
 
 Since COMET is header-only, integration is straightforward.
 
@@ -41,7 +41,9 @@ add_subdirectory(COMET)
 target_link_libraries(your_target PRIVATE COMET_lib)
 ```
 
-## Usage
+After that you only need to add the ```#include "comet.h"``` into the file where you want to use the library.
+
+## ✅ Usage
 
 The library provides factory functions (e.g., `makeCombinations`, `makeBlockCombinations`) that return producer objects. These producers are iterable and compatible with C++ range-based for loops.
 
@@ -127,13 +129,15 @@ int main() {
 }
 ```
 
-## Building Tests and Benchmarks
+## 🛠️ Building Tests and Benchmarks
 
-Before the build run the command to fetch *discreture* library
+Before the build run the following command to fetch the *discreture* library, without running it, the whole solution does not build.
+
 ```bash
 git submodule update --init --recursive
 ```
 
+Then you can build directly from the command line using commands below.
 
 ```bash
 mkdir build && cd build
@@ -141,34 +145,40 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 ```
 
+To run the tests paste this command. 
+
 ```bash
-# Run Unit Tests
 ./tests/COMET_test
 ```
 
+To run the benchmarks paste one of the followings commands - each for different kind of benchmark.
+
 ```bash
-# Run Benchmarks - there are more of them
 ./benchmarks/combinationsFull_benchmark
 ./benchmarks/blockCombinations_benchmark
 ./benchmarks/groupedCombinations_benchmark
 ```
 
-## Performance
+## 📊 Performance
 
 COMET is optimized for high-performance computing environments. Benchmarks (included in `benchmarks/`) demonstrate that:
 1.  **Memory Usage**: Remains constant and low (allocating only iterators) regardless of the size of the underlying data structures ("Heavy" vs "Light" structures).
-2.  **Execution Time**: Comparable to raw, hand-written nested loops, often outperforming standard library solutions like `std::ranges::views::cartesian_product` in specific compiler configurations (e.g., AppleClang) or offering functionality not present in the standard library (Block/Grouped combinations).
+2.  **Execution Time**: Comparable to raw, hand-written nested loops, often standing an equal match to the standard library solutions like `std::ranges::views::cartesian_product` in specific compiler configurations or offering functionality not present in the standard library (Block/Grouped combinations).
 
-## Project Structure
+## 🏗 Project Structure
 
-*   `lib/`: Core header-only library source code.
-*   `examples/`: Compilation-ready examples demonstrating basic, block, and grouped combinations.
-*   `tests/`: Google Test unit tests covering various policies and edge cases.
-*   `benchmarks/`: Performance comparisons against loops and other libraries.
+```text
+.
+├── CMakeLists.txt   # Unified build configuration.
+├── dependencies/    # Project dependencies folder.
+├── scripts/         # Scripts folder, formatting etc.
+├── lib/             # Core header-only library source code.
+├── examples/        # Compilation-ready examples demonstrating basic, block, and grouped combinations.
+├── tests/           # Google Test unit tests covering various policies and edge cases.
+├── benchmarks/      # Performance comparisons against loops and other libraries.
+└── LICENSE          # Full LICENSE text.
+```
 
-## Authors
+## 📑 License
 
-*   **Mateusz Mikiciuk**
-*   **Mykhailo Shamrai**
-
-Developed as part of a Bachelor's Thesis for Warsaw University of Technology, 2026.
+This project is licensed under GPL-3.0 license. See the [LICENSE](LICENSE) file for the full license text.
