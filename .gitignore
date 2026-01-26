@@ -77,6 +77,7 @@
 
 # CMake
 cmake-build-*/
+build/
 
 # Mongo Explorer plugin
 .idea/**/mongoSettings.xml
@@ -269,3 +270,7 @@ Temporary Items
 
 # classic .idea folder
 .idea
+
+# Src folder with test mains
+src/*
+!src/**/*.cpp

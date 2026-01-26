@@ -1,0 +1,3 @@
+[submodule "benchmarks/discreture"]
+	path = benchmarks/discreture
+	url = https://github.com/mraggi/discreture.git

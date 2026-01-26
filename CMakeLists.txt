@@ -19,72 +19,51 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #                                  Load dirs                                     #
 # ------------------------------------------------------------------------------ #
 
-add_subdirectory(lib)
+add_subdirectory(lib/include)
 add_subdirectory(dependencies)
 
 # ------------------------------------------------------------------------------ #
 #                               Compile options                                  #
 # ------------------------------------------------------------------------------ #
 
+
+# Set build type to Release by default:
+if (NOT CMAKE_BUILD_TYPE)
+    message(STATUS "No build type provided, default to Release.")
+    set(CMAKE_BUILD_TYPE "Release")
+endif ()
+
+# Set cmake build type variable
 string(TOUPPER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_UPPER)
+
 message("Build type: " "${CMAKE_BUILD_TYPE}")
+message("Using host compiler " ${CMAKE_CXX_COMPILER_ID})
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    message("Using AppleClang...")
-    if(BUILD_TYPE_UPPER STREQUAL "DEBUG")
-        target_compile_options(${LIB_NAME} INTERFACE
-                -g
-                -fsanitize=undefined
-                -fsanitize=address
-                -O0
-                -Wall
-                -Wextra
-                -pedantic
-                -Werror
-        )
-        target_link_options(${LIB_NAME} INTERFACE
-                -fsanitize=undefined
-                -fsanitize=address
-        )
-    elseif (BUILD_TYPE_UPPER STREQUAL "RELEASE")
-        target_compile_options(${LIB_NAME} INTERFACE -O3;-march=native;-funroll-loops;)
-    else()
-        message(FATAL_ERROR "Unknown build type: ${BUILD_TYPE_UPPER}")
-    endif ()
-
+    target_compile_options(${LIB_NAME} INTERFACE
+            $<$<CONFIG:Debug>: -g -fsanitize=undefined  -fsanitize=address -O0 -Wall -Wextra -pedantic -Werror>
+            $<$<CONFIG:Release>: -O2 -march=native -funroll-loops>
+    )
+    target_link_options(${LIB_NAME} INTERFACE
+            $<$<CONFIG:Debug>: -fsanitize=undefined -fsanitize=address>
+    )
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    message("Using GNU..")
-    if(BUILD_TYPE_UPPER STREQUAL "DEBUG")
-        target_compile_options(${LIB_NAME} INTERFACE
-                -g
-                -fsanitize=undefined
-                -fsanitize=address
-                -O0
-                -Wall
-                -Wextra
-                -pedantic
-        )
-        target_link_options(${LIB_NAME} INTERFACE
-                -fsanitize=undefined
-                -fsanitize=address
-        )
-    elseif (BUILD_TYPE_UPPER STREQUAL "RELEASE")
-        target_compile_options(${LIB_NAME} INTERFACE -O3;-march=native;-funroll-loops)
-    else()
-        message(FATAL_ERROR "Unknown build type: ${BUILD_TYPE_UPPER}")
-    endif ()
-
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel" OR CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM")
-    message(FATAL_ERROR "Intel compiler is not supported...")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    message(FATAL_ERROR "MSVC is not supported...")
-else()
-    message(FATAL_ERROR "Unknown compiler: ${CMAKE_CXX_COMPILER_ID}")
-endif()
+    target_compile_options(${LIB_NAME} INTERFACE
+            $<$<CONFIG:Debug>: -g -fsanitize=undefined  -fsanitize=address -O0 -Wall -Wextra -pedantic -Werror>
+            $<$<CONFIG:Release>: -O2 -march=native -funroll-loops>
+    )
+    target_link_options(${LIB_NAME} INTERFACE
+            $<$<CONFIG:Debug>: -fsanitize=undefined -fsanitize=address>
+    )
+else ()
+    message(FATAL_ERROR "Compiler ${BUILD_TYPE_UPPER} not supported!")
+endif ()
 
 # ------------------------------------------------------------------------------ #
 #                                   Load tests                                   #
 # ------------------------------------------------------------------------------ #
 
 enable_testing()
+add_subdirectory(examples)
 add_subdirectory(tests)
+add_subdirectory(benchmarks)
