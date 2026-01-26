@@ -1,4 +1,4 @@
-message(STATUS "Loading benchmarks targets...")
+message(STATUS "Loading the benchmarks targets...")
 
 file(GLOB BENCHMARK_SOURCES "*benchmark.cpp")
 
@@ -31,5 +31,5 @@ if(Boost_FOUND)
     target_include_directories(discretureVsCometFullCombinations_benchmark PRIVATE ${Boost_INCLUDE_DIRS})
     target_include_directories(discretureVsCometStrictlyUpper_benchmark PRIVATE ${Boost_INCLUDE_DIRS})
 else()
-    message("Boost not found! Boost is required for the discreture benchmarks!")
+    message("The Boost not found, it is required to ryn thegit  discreture benchmarks!")
 endif()
