@@ -1,0 +1,5 @@
+if(EXISTS "/home/msh/CLionProjects/EventMixing2/build/tests/COMET_test[1]_tests.cmake")
+  include("/home/msh/CLionProjects/EventMixing2/build/tests/COMET_test[1]_tests.cmake")
+else()
+  add_test(COMET_test_NOT_BUILT COMET_test_NOT_BUILT)
+endif()
