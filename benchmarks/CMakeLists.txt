@@ -2,15 +2,18 @@ message(STATUS "Loading the benchmarks targets...")
 
 find_package(Boost)
 file(GLOB BENCHMARK_SOURCES "*benchmark.cpp")
+set(IS_OLD_GCC (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "13.0"))
 
 foreach(bench_source ${BENCHMARK_SOURCES})
     get_filename_component(bench_name ${bench_source} NAME_WE)
     set(TARGET_NAME ${bench_name})
 
-    if (${TARGET_NAME} STREQUAL "stdVsCometFullCombinations_benchmark" AND (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "13.0")))
-        message("The std::ranges::views::cartesian_product is not supported on the AppleClang!")
-        message("Skipping the benchmark build...")
-        continue()
+    if (${TARGET_NAME} STREQUAL "stdVsCometFullCombinations_benchmark")
+        if (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR IS_OLD_GCC)
+            message("The std::ranges::views::cartesian_product is not supported on the AppleClang!")
+            message("Skipping the benchmark build...")
+            continue()
+        endif ()
     endif ()
 
     if (${TARGET_NAME} STREQUAL "discretureVsCometFullCombinations_benchmark" OR ${TARGET_NAME} STREQUAL "discretureVsCometStrictlyUpper_benchmark" AND NOT Boost_FOUND)
