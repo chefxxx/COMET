@@ -2,12 +2,12 @@
 // Created by Mateusz Mikiciuk on 17/09/2025.
 //
 
-#include <Combinations.h>
 #include <gtest/gtest.h>
+#include <include/Combinations.h>
 #include <numeric>
 
-#include "BucketPolicy.h"
-#include "Producers.h"
+#include "include/BucketPolicy.h"
+#include "include/Producers.h"
 
 class BlockFullCombinationsTest : public ::testing::Test
 {
@@ -85,29 +85,3 @@ TEST_F(BlockFullCombinationsTest, complexIterationElementsAreCorrect)
         ASSERT_EQ(elem2, ex2);
     }
 }
-
-#if 0
-
-using DoubleMicros = std::chrono::duration<double, std::micro>;
-
-TEST(BlockPerformanceTest, bigVectorsOneBucket)
-{
-    constexpr size_t SIZE = 1e7;
-    std::vector<size_t> v1(SIZE);
-    std::vector<size_t> v2(SIZE);
-    std::iota(v1.begin(), v1.end(), 0);
-    std::iota(v2.begin(), v2.end(), 1);
-    auto lambda = [](const int &a) { return a; };
-    std::vector<double> buckets(SIZE + 1);
-    for (size_t i = 0; i <= SIZE / 10; ++i) {
-        buckets[i] = i * 10.0;
-    }
-    const auto bp = BucketPolicy(std::make_tuple(lambda), {buckets}, false);
-    const auto start          = std::chrono::high_resolution_clock::now();
-    auto bc  = makeBlockCombinations<FullCombinationsPolicy>(bp, 1, v1, v2);
-    const auto stop             = std::chrono::high_resolution_clock::now();
-    const DoubleMicros duration = stop - start;
-    std::cout << std::format("Time taken {} s\n", duration.count() / 1e6);
-}
-
-#endif

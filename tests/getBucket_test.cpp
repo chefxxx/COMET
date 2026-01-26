@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "BucketPolicy.h"
+#include "include/BucketPolicy.h"
 
 class GetBucketTest : public ::testing::Test
 {

@@ -4,11 +4,10 @@
 
 #include <gtest/gtest.h>
 #include <iomanip>
-#include <numeric>
 
-#include "Combinations.h"
-#include "Producers.h"
-#include "SpanView.h"
+#include "include/Combinations.h"
+#include "include/Producers.h"
+#include "include/SpanView.h"
 
 TEST(AddOneFullTest, twoVectorsSameSize)
 {

@@ -36,11 +36,11 @@ int getIndexFromBucket(const std::vector<BucketType>& availableBuckets, const Bu
 }
 
 template <typename BucketType, typename T, typename Callable>
-std::vector<size_t> getAmountsInsideAvailableBuckets(
+std::vector<std::size_t> getAmountsInsideAvailableBuckets(
     const T& container, const Callable& callable, const std::vector<BucketType>& availableBuckets
 )
 {
-    std::vector<size_t> amounts(availableBuckets.size(), 0);
+    std::vector<std::size_t> amounts(availableBuckets.size(), 0);
     for (const auto& element : container) {
         auto id = callable(element);
 
@@ -51,9 +51,9 @@ std::vector<size_t> getAmountsInsideAvailableBuckets(
     return amounts;
 }
 
-inline std::vector<size_t> getOffsetsFromAmounts(const std::vector<size_t>& amounts)
+inline std::vector<std::size_t> getOffsetsFromAmounts(const std::vector<std::size_t>& amounts)
 {
-    std::vector<size_t> offsets(amounts.size() + 1, 0);
+    std::vector<std::size_t> offsets(amounts.size() + 1, 0);
     std::inclusive_scan(amounts.begin(), amounts.end(), offsets.begin() + 1);
     return offsets;
 }
@@ -67,8 +67,8 @@ concept HasSize = requires(const T& element) {
 
 template <typename BucketType, HasSize T, typename Callable>
 auto getIteratorsSorted(
-    const T& container, const Callable& callable, const std::vector<size_t>& offsets,
-    const std::vector<BucketType>& availableBuckets, std::vector<size_t>& amounts
+    const T& container, const Callable& callable, const std::vector<std::size_t>& offsets,
+    const std::vector<BucketType>& availableBuckets, std::vector<std::size_t>& amounts
 )
 {
     // The last value in offsets tells how many elements will be placed in the sorted vector

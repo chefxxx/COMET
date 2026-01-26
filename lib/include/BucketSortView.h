@@ -49,7 +49,6 @@ class BucketSortView
     {
         auto index       = getIndexFromBucket(m_availableBuckets, bucketId);
         auto sortedStart = m_sortedIterators.begin();
-        // TODO: Something very bad happens here with copies.
         return index != -1
                    ? SpanView(OriginalViewSpanType(
                          sortedStart + m_offsets[index], m_offsets[index + 1] - m_offsets[index]
@@ -60,7 +59,7 @@ class BucketSortView
     private:
     std::vector<BucketType> m_availableBuckets;
     std::vector<AssociatedIteratorType> m_sortedIterators;
-    std::vector<size_t> m_offsets;
+    std::vector<std::size_t> m_offsets;
 };
 
 #endif  // COMET_BUCKETSORTVIEW_H

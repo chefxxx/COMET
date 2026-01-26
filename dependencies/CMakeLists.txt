@@ -2,7 +2,7 @@
 #                              Load dependencies                                 #
 # ------------------------------------------------------------------------------ #
 
-message("Fetching dependencies...")
+message("Fetching the dependencies...")
 
 file(GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
 

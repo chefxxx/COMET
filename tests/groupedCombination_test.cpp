@@ -2,11 +2,10 @@
 // Created by mshamrai on 1/3/26.
 //
 
-#include "BucketPolicy.h"
-#include "Combinations.h"
-#include "HeavyStructures.h"
-#include "Producers.h"
 #include "gtest/gtest.h"
+#include "include/BucketPolicy.h"
+#include "include/Combinations.h"
+#include "include/Producers.h"
 
 struct GroupingElement {
     int Id;
@@ -88,7 +87,6 @@ class GroupedCombinationsTest : public ::testing::Test
 
 TEST_F(GroupedCombinationsTest, CorrectDataAlignment)
 {
-    const HeavyAssociatedSecondStruct str{};
     const auto bucketPolicy = BucketPolicy(false, bucketCallable, buckets);
 
     auto grouped = makeGroupedCombinations<FullCombinationsPolicy>(

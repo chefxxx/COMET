@@ -57,7 +57,7 @@ struct SingleBlockBuckets {
 
     // new version of groupData() function
     void createSingle(
-        const TBucketPolicy &t_bucketPolicy, const TInput &t_input, const size_t t_minCatSize
+        const TBucketPolicy &t_bucketPolicy, const TInput &t_input, const std::size_t t_minCatSize
     )
     {
         for (auto it = t_input.begin(); it != t_input.end(); ++it) {
@@ -141,8 +141,8 @@ struct CoupledBlockBuckets {
 
     void syncBuckets()
     {
-        constexpr size_t N = sizeof...(TInputs);
-        auto &firstData    = std::get<0>(m_data);
+        constexpr std::size_t N = sizeof...(TInputs);
+        auto &firstData         = std::get<0>(m_data);
         [&]<std::size_t... Is>(const std::index_sequence<Is...> &) {
             (syncHelper(firstData, std::get<Is>(m_data)), ...);
             (syncHelper(std::get<Is>(m_data), firstData), ...);

@@ -6,7 +6,7 @@
 
 #include <list>
 
-#include "BucketSortHelpers.h"
+#include "include/BucketSortHelpers.h"
 
 auto testLambda = [](auto const &arg) {
     return arg.id;
@@ -89,8 +89,8 @@ TEST_F(BucketSortHelpersTest, GetAmountsIsCorrect)
 
 TEST_F(BucketSortHelpersTest, GetOffsetsFollowsCSR)
 {
-    std::vector<size_t> amounts = {2, 1, 3};
-    auto offsets                = getOffsetsFromAmounts(amounts);
+    std::vector<std::size_t> amounts = {2, 1, 3};
+    auto offsets                     = getOffsetsFromAmounts(amounts);
 
     ASSERT_EQ(offsets.size(), 4);
     EXPECT_EQ(offsets[0], 0);
@@ -107,9 +107,9 @@ TEST_F(BucketSortHelpersTest, FullPipelineIntegration)
 
     EXPECT_EQ(offsets.back(), data.size());
 
-    for (size_t i = 0; i < buckets.size(); ++i) {
-        size_t start = offsets[i];
-        size_t end   = offsets[i + 1];
+    for (std::size_t i = 0; i < buckets.size(); ++i) {
+        std::size_t start = offsets[i];
+        std::size_t end   = offsets[i + 1];
         EXPECT_EQ(end - start, amounts[i]);
     }
 }
