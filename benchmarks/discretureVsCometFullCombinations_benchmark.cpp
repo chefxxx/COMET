@@ -8,7 +8,7 @@
 #include "Producers.h"
 
 // Discreture Header
-#include <../include/discreture.hpp>
+#include <../discreture/include/discreture.hpp>
 
 class CombinationsComparisonFixture : public benchmark::Fixture
 {
