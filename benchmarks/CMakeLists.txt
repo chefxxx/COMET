@@ -10,7 +10,7 @@ foreach(bench_source ${BENCHMARK_SOURCES})
 
     if (${TARGET_NAME} STREQUAL "stdVsCometFullCombinations_benchmark")
         if (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR IS_OLD_GCC)
-            message("The std::ranges::views::cartesian_product is not supported on the AppleClang!")
+            message("The std::ranges::views::cartesian_product is not supported with you architecture!")
             message("Skipping the benchmark build...")
             continue()
         endif ()
