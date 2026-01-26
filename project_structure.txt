@@ -1,0 +1,2178 @@
+ benchmarks
+ cmake-build-debug
+ cmake-build-release
+ CMakeLists.txt
+ dependencies
+ examples
+ lib
+ LICENSE
+ project_structure.txt
+ scripts
+ tests
+
+./benchmarks:
+ blockCombinations_benchmark.cpp
+ CMakeLists.txt
+ combinationsFull_benchmark.cpp
+ combinationsStrictlyUpper_benchmark.cpp
+ combinationsWindowedStrictlyUpper_benchmark.cpp
+ discreture
+ discretureVsCometFullCombinations_benchmark.cpp
+ discretureVsCometStrictlyUpper_benchmark.cpp
+ groupedCombinations_benchmark.cpp
+ helpers
+ stdVsCometFullCombinations_benchmark.cpp
+
+./benchmarks/discreture:
+ benchmarks
+ benchmarks.png
+ benchmarks_parallel.png
+ clang-format-helper.sh
+ clang-tidy-helper.sh
+ cmake
+ CMakeLists.txt
+ combvsgsl.png
+ coverage-build.sh
+ cppcheck-helper.sh
+ debug-build.sh
+ Doxyfile.in
+ examples
+ external
+ include
+ LICENSE
+󰕙 logotere.svg
+ logoterelimpio.pdf
+ logoterelimpio.png
+󰕙 logoterelimpio.svg
+ meson.build
+ meson_options.txt
+ PKGBUILD
+󰂺 README.md
+ release-build.sh
+ subprojects
+ Talk
+ tests
+ timeresultscombination.sage
+
+./benchmarks/discreture/benchmarks:
+ bench_declarations.hpp
+ benchmarker.hpp
+ benchtable.hpp
+ CMakeLists.txt
+ combs.cpp
+ do_not_optimize.hpp
+ dyckmotzkin.cpp
+ external
+ external_benches.hpp
+ main.cpp
+ meson.build
+ multisets.cpp
+ parallel
+ partitions.cpp
+ perms.cpp
+ testing
+
+./benchmarks/discreture/benchmarks/external:
+ euler314_combination_iterator.hpp
+ rang.hpp
+
+./benchmarks/discreture/benchmarks/parallel:
+ parallel_benchmarks.cpp
+
+./benchmarks/discreture/benchmarks/testing:
+ combinations_benchmark.hpp
+ multiset_benchmark.hpp
+ permutations_benchmark.hpp
+
+./benchmarks/discreture/cmake:
+ CodeCoverage.cmake
+ Colors.cmake
+ ConfigSafeGuards.cmake
+
+./benchmarks/discreture/examples:
+ arithmetic_progression.cpp
+ CMakeLists.txt
+ combinations.cpp
+ combinations_reverse.cpp
+ dyck.cpp
+ lex_combinations.cpp
+ lex_combinations_reverse.cpp
+ meson.build
+ motzkin.cpp
+ multisets.cpp
+ partitions.cpp
+ partitions_reverse.cpp
+ permutations.cpp
+ playground.cpp
+ set_partitions.cpp
+ tutorial.cpp
+ tutorial_parallel.cpp
+
+./benchmarks/discreture/external:
+ googletest
+
+./benchmarks/discreture/external/googletest:
+
+./benchmarks/discreture/include:
+ Discreture
+ discreture.hpp
+
+./benchmarks/discreture/include/Discreture:
+ ArithmeticProgression.hpp
+ Combinations.hpp
+ CombinationTree.hpp
+ detail
+ DyckPaths.hpp
+ hedley.h
+ IndexedView.hpp
+ IndexedViewContainer.hpp
+ IntegerInterval.hpp
+ LexCombinations.hpp
+ Misc.hpp
+ Motzkin.hpp
+ Multisets.hpp
+ old
+ Parallel.hpp
+ Partitions.hpp
+ Permutations.hpp
+ Probability.hpp
+ Reversed.hpp
+ Sequences.hpp
+ SetPartitions.hpp
+ TemplateHelpers.hpp
+ TimeHelpers.hpp
+ VectorHelpers.hpp
+
+./benchmarks/discreture/include/Discreture/detail:
+ CombinationsDetail.hpp
+ LexCombinationsDetail.hpp
+ MultisetsDetail.hpp
+ PartitionsDetail.hpp
+
+./benchmarks/discreture/include/Discreture/old:
+ oldstuff.hpp
+
+./benchmarks/discreture/subprojects:
+ gtest.wrap
+
+./benchmarks/discreture/Talk:
+ combvsgsl.png
+ combvsgsl.xcf
+ discreture-english.pdf
+ discreture-english.tex
+ discreture-english.vrb
+ discreture.pdf
+ discreture.tex
+ discreture.vrb
+ dyck.pdf
+󰕙 dyck.svg
+ logoteregrande.png
+ motzkin.pdf
+󰕙 motzkin.svg
+ sagecomb.sage
+
+./benchmarks/discreture/tests:
+ arithmetic_progression_tests.cpp
+ CMakeLists.txt
+ combination_tests.cpp
+ common_tests.hpp
+ dyck_tests.cpp
+ generate_strings.hpp
+ idxview_container_tests.cpp
+ idxview_tests.cpp
+ integer_interval_tests.cpp
+ lex_combinations_tests.cpp
+ main.cpp
+ meson.build
+ motzkin_tests.cpp
+ multiset_tests.cpp
+ partition_tests.cpp
+ permutation_tests.cpp
+ reversed_tests.cpp
+ sequence_tests.cpp
+ set_partition_tests.cpp
+
+./benchmarks/helpers:
+ HeavyStructures.h
+
+./cmake-build-debug:
+ _deps
+ benchmarks
+ bin
+󰝴 build.ninja
+ cmake_install.cmake
+ CMakeCache.txt
+ CMakeFiles
+ coverage
+ CTestTestfile.cmake
+ dependencies
+ examples
+ lib
+󰣞 src
+ Testing
+ tests
+
+./cmake-build-debug/_deps:
+ googlebenchmark-build
+ googlebenchmark-src
+ googlebenchmark-tmp
+ googletest-build
+ googletest-src
+ googletest-tmp
+
+./cmake-build-debug/_deps/googlebenchmark-build:
+ benchmark.pc
+ benchmark_main.pc
+ benchmarkConfig.cmake
+ benchmarkConfigVersion.cmake
+ benchmarkTargets.cmake
+ cmake_install.cmake
+ CMakeFiles
+󰣞 src
+
+./cmake-build-debug/_deps/googlebenchmark-build/CMakeFiles:
+
+./cmake-build-debug/_deps/googlebenchmark-build/src:
+ cmake_install.cmake
+ CMakeFiles
+ libbenchmark.a
+ libbenchmark_main.a
+
+./cmake-build-debug/_deps/googlebenchmark-build/src/CMakeFiles:
+ benchmark.dir
+ benchmark_main.dir
+
+./cmake-build-debug/_deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir:
+ benchmark.cc.o
+ benchmark_api_internal.cc.o
+ benchmark_name.cc.o
+ benchmark_register.cc.o
+ benchmark_runner.cc.o
+ check.cc.o
+ colorprint.cc.o
+ commandlineflags.cc.o
+ complexity.cc.o
+ console_reporter.cc.o
+ counter.cc.o
+ csv_reporter.cc.o
+ json_reporter.cc.o
+ perf_counters.cc.o
+ reporter.cc.o
+ statistics.cc.o
+ string_util.cc.o
+ sysinfo.cc.o
+ timers.cc.o
+
+./cmake-build-debug/_deps/googlebenchmark-build/src/CMakeFiles/benchmark_main.dir:
+ benchmark_main.cc.o
+
+./cmake-build-debug/_deps/googlebenchmark-src:
+ _config.yml
+ appveyor.yml
+ AUTHORS
+ bazel
+ bindings
+ BUILD.bazel
+ cmake
+ CMakeLists.txt
+ CONTRIBUTING.md
+󰡯 CONTRIBUTORS
+ docs
+ include
+ LICENSE
+ MODULE.bazel
+ pyproject.toml
+󰂺 README.md
+ setup.py
+󰣞 src
+ test
+ tools
+󰡯 WORKSPACE
+ WORKSPACE.bzlmod
+
+./cmake-build-debug/_deps/googlebenchmark-src/bazel:
+ benchmark_deps.bzl
+
+./cmake-build-debug/_deps/googlebenchmark-src/bindings:
+ python
+
+./cmake-build-debug/_deps/googlebenchmark-src/bindings/python:
+ google_benchmark
+
+./cmake-build-debug/_deps/googlebenchmark-src/bindings/python/google_benchmark:
+ __init__.py
+ benchmark.cc
+󰡯 BUILD
+ example.py
+
+./cmake-build-debug/_deps/googlebenchmark-src/cmake:
+ AddCXXCompilerFlag.cmake
+ benchmark.pc.in
+ benchmark_main.pc.in
+ Config.cmake.in
+ CXXFeatureCheck.cmake
+ GetGitVersion.cmake
+ gnu_posix_regex.cpp
+ GoogleTest.cmake
+ GoogleTest.cmake.in
+ llvm-toolchain.cmake
+ Modules
+ posix_regex.cpp
+ pthread_affinity.cpp
+ split_list.cmake
+ std_regex.cpp
+ steady_clock.cpp
+ thread_safety_attributes.cpp
+
+./cmake-build-debug/_deps/googlebenchmark-src/cmake/Modules:
+ FindLLVMAr.cmake
+ FindLLVMNm.cmake
+ FindLLVMRanLib.cmake
+ FindPFM.cmake
+
+./cmake-build-debug/_deps/googlebenchmark-src/docs:
+ _config.yml
+ AssemblyTests.md
+ assets
+ dependencies.md
+ index.md
+ perf_counters.md
+ platform_specific_build_instructions.md
+ python_bindings.md
+ random_interleaving.md
+ reducing_variance.md
+ releasing.md
+ tools.md
+ user_guide.md
+
+./cmake-build-debug/_deps/googlebenchmark-src/docs/assets:
+ images
+
+./cmake-build-debug/_deps/googlebenchmark-src/docs/assets/images:
+ icon.png
+ icon.xcf
+ icon_black.png
+ icon_black.xcf
+
+./cmake-build-debug/_deps/googlebenchmark-src/include:
+ benchmark
+
+./cmake-build-debug/_deps/googlebenchmark-src/include/benchmark:
+ benchmark.h
+ export.h
+
+./cmake-build-debug/_deps/googlebenchmark-src/src:
+ arraysize.h
+ benchmark.cc
+ benchmark_api_internal.cc
+ benchmark_api_internal.h
+ benchmark_main.cc
+ benchmark_name.cc
+ benchmark_register.cc
+ benchmark_register.h
+ benchmark_runner.cc
+ benchmark_runner.h
+ check.cc
+ check.h
+ CMakeLists.txt
+ colorprint.cc
+ colorprint.h
+ commandlineflags.cc
+ commandlineflags.h
+ complexity.cc
+ complexity.h
+ console_reporter.cc
+ counter.cc
+ counter.h
+ csv_reporter.cc
+ cycleclock.h
+ internal_macros.h
+ json_reporter.cc
+ log.h
+ mutex.h
+ perf_counters.cc
+ perf_counters.h
+ re.h
+ reporter.cc
+ statistics.cc
+ statistics.h
+ string_util.cc
+ string_util.h
+ sysinfo.cc
+ thread_manager.h
+ thread_timer.h
+ timers.cc
+ timers.h
+
+./cmake-build-debug/_deps/googlebenchmark-src/test:
+ args_product_test.cc
+ AssemblyTests.cmake
+ basic_test.cc
+ benchmark_gtest.cc
+ benchmark_min_time_flag_iters_test.cc
+ benchmark_min_time_flag_time_test.cc
+ benchmark_name_gtest.cc
+ benchmark_random_interleaving_gtest.cc
+ benchmark_setup_teardown_cb_types_gtest.cc
+ benchmark_setup_teardown_test.cc
+ benchmark_test.cc
+󰡯 BUILD
+ clobber_memory_assembly_test.cc
+ CMakeLists.txt
+ commandlineflags_gtest.cc
+ complexity_test.cc
+ cxx11_test.cc
+ diagnostics_test.cc
+ display_aggregates_only_test.cc
+ donotoptimize_assembly_test.cc
+ donotoptimize_test.cc
+ filter_test.cc
+ fixture_test.cc
+ internal_threading_test.cc
+ link_main_test.cc
+ locale_impermeability_test.cc
+ manual_threading_test.cc
+ map_test.cc
+ memory_manager_test.cc
+ memory_results_gtest.cc
+ min_time_parse_gtest.cc
+ multiple_ranges_test.cc
+ options_test.cc
+ output_test.h
+ output_test_helper.cc
+ overload_test.cc
+ perf_counters_gtest.cc
+ perf_counters_test.cc
+ profiler_manager_gtest.cc
+ profiler_manager_iterations_test.cc
+ profiler_manager_test.cc
+ register_benchmark_test.cc
+ repetitions_test.cc
+ report_aggregates_only_test.cc
+ reporter_output_test.cc
+ skip_with_error_test.cc
+ spec_arg_test.cc
+ spec_arg_verbosity_test.cc
+ state_assembly_test.cc
+ statistics_gtest.cc
+ string_util_gtest.cc
+ templated_fixture_method_test.cc
+ templated_fixture_test.cc
+ time_unit_gtest.cc
+ user_counters_tabular_test.cc
+ user_counters_test.cc
+ user_counters_thousands_test.cc
+ user_counters_threads_test.cc
+
+./cmake-build-debug/_deps/googlebenchmark-src/tools:
+ BUILD.bazel
+ compare.py
+ gbench
+ libpfm.BUILD.bazel
+ requirements.txt
+ strip_asm.py
+
+./cmake-build-debug/_deps/googlebenchmark-src/tools/gbench:
+ __init__.py
+ Inputs
+ report.py
+ util.py
+
+./cmake-build-debug/_deps/googlebenchmark-src/tools/gbench/Inputs:
+ test1_run1.json
+ test1_run2.json
+ test2_run.json
+ test3_run0.json
+ test3_run1.json
+ test4_run.json
+ test4_run0.json
+ test4_run1.json
+ test5_run0.json
+ test5_run1.json
+
+./cmake-build-debug/_deps/googlebenchmark-tmp:
+
+./cmake-build-debug/_deps/googletest-build:
+ cmake_install.cmake
+ CMakeFiles
+ CTestTestfile.cmake
+ googlemock
+ googletest
+
+./cmake-build-debug/_deps/googletest-build/CMakeFiles:
+
+./cmake-build-debug/_deps/googletest-build/googlemock:
+ cmake_install.cmake
+ CMakeFiles
+ CTestTestfile.cmake
+
+./cmake-build-debug/_deps/googletest-build/googlemock/CMakeFiles:
+ gmock.dir
+ gmock_main.dir
+
+./cmake-build-debug/_deps/googletest-build/googlemock/CMakeFiles/gmock.dir:
+󰣞 src
+
+./cmake-build-debug/_deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src:
+ gmock-all.cc.o
+
+./cmake-build-debug/_deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir:
+󰣞 src
+
+./cmake-build-debug/_deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src:
+ gmock_main.cc.o
+
+./cmake-build-debug/_deps/googletest-build/googletest:
+ cmake_install.cmake
+ CMakeFiles
+ CTestTestfile.cmake
+ generated
+
+./cmake-build-debug/_deps/googletest-build/googletest/CMakeFiles:
+ Export
+ gtest.dir
+ gtest_main.dir
+
+./cmake-build-debug/_deps/googletest-build/googletest/CMakeFiles/Export:
+ 0c08b8e77dd885bfe55a19a9659d9fc1
+
+./cmake-build-debug/_deps/googletest-build/googletest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1:
+ GTestTargets-debug.cmake
+ GTestTargets.cmake
+
+./cmake-build-debug/_deps/googletest-build/googletest/CMakeFiles/gtest.dir:
+󰣞 src
+
+./cmake-build-debug/_deps/googletest-build/googletest/CMakeFiles/gtest.dir/src:
+ gtest-all.cc.o
+
+./cmake-build-debug/_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir:
+󰣞 src
+
+./cmake-build-debug/_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src:
+ gtest_main.cc.o
+
+./cmake-build-debug/_deps/googletest-build/googletest/generated:
+ gmock.pc
+ gmock_main.pc
+ gtest.pc
+ gtest_main.pc
+ GTestConfig.cmake
+ GTestConfigVersion.cmake
+
+./cmake-build-debug/_deps/googletest-src:
+ BUILD.bazel
+ ci
+ CMakeLists.txt
+ CONTRIBUTING.md
+󰡯 CONTRIBUTORS
+ docs
+ fake_fuchsia_sdk.bzl
+ googlemock
+ googletest
+ googletest_deps.bzl
+ LICENSE
+ MODULE.bazel
+󰂺 README.md
+󰡯 WORKSPACE
+ WORKSPACE.bzlmod
+
+./cmake-build-debug/_deps/googletest-src/ci:
+ linux-presubmit.sh
+ macos-presubmit.sh
+ windows-presubmit.bat
+
+./cmake-build-debug/_deps/googletest-src/docs:
+ _config.yml
+ _data
+ _layouts
+ _sass
+ advanced.md
+ assets
+ community_created_documentation.md
+ faq.md
+ gmock_cheat_sheet.md
+ gmock_cook_book.md
+ gmock_faq.md
+ gmock_for_dummies.md
+ index.md
+ pkgconfig.md
+ platforms.md
+ primer.md
+ quickstart-bazel.md
+ quickstart-cmake.md
+ reference
+ samples.md
+
+./cmake-build-debug/_deps/googletest-src/docs/_data:
+ navigation.yml
+
+./cmake-build-debug/_deps/googletest-src/docs/_layouts:
+ default.html
+
+./cmake-build-debug/_deps/googletest-src/docs/_sass:
+ main.scss
+
+./cmake-build-debug/_deps/googletest-src/docs/assets:
+ css
+
+./cmake-build-debug/_deps/googletest-src/docs/assets/css:
+ style.scss
+
+./cmake-build-debug/_deps/googletest-src/docs/reference:
+ actions.md
+ assertions.md
+ matchers.md
+ mocking.md
+ testing.md
+
+./cmake-build-debug/_deps/googletest-src/googlemock:
+ cmake
+ CMakeLists.txt
+ docs
+ include
+󰂺 README.md
+󰣞 src
+ test
+
+./cmake-build-debug/_deps/googletest-src/googlemock/cmake:
+ gmock.pc.in
+ gmock_main.pc.in
+
+./cmake-build-debug/_deps/googletest-src/googlemock/docs:
+󰂺 README.md
+
+./cmake-build-debug/_deps/googletest-src/googlemock/include:
+ gmock
+
+./cmake-build-debug/_deps/googletest-src/googlemock/include/gmock:
+ gmock-actions.h
+ gmock-cardinalities.h
+ gmock-function-mocker.h
+ gmock-matchers.h
+ gmock-more-actions.h
+ gmock-more-matchers.h
+ gmock-nice-strict.h
+ gmock-spec-builders.h
+ gmock.h
+ internal
+
+./cmake-build-debug/_deps/googletest-src/googlemock/include/gmock/internal:
+ custom
+ gmock-internal-utils.h
+ gmock-port.h
+ gmock-pp.h
+
+./cmake-build-debug/_deps/googletest-src/googlemock/include/gmock/internal/custom:
+ gmock-generated-actions.h
+ gmock-matchers.h
+ gmock-port.h
+󰂺 README.md
+
+./cmake-build-debug/_deps/googletest-src/googlemock/src:
+ gmock-all.cc
+ gmock-cardinalities.cc
+ gmock-internal-utils.cc
+ gmock-matchers.cc
+ gmock-spec-builders.cc
+ gmock.cc
+ gmock_main.cc
+
+./cmake-build-debug/_deps/googletest-src/googlemock/test:
+ BUILD.bazel
+ gmock-actions_test.cc
+ gmock-cardinalities_test.cc
+ gmock-function-mocker_test.cc
+ gmock-internal-utils_test.cc
+ gmock-matchers-arithmetic_test.cc
+ gmock-matchers-comparisons_test.cc
+ gmock-matchers-containers_test.cc
+ gmock-matchers-misc_test.cc
+ gmock-matchers_test.h
+ gmock-more-actions_test.cc
+ gmock-nice-strict_test.cc
+ gmock-port_test.cc
+ gmock-pp-string_test.cc
+ gmock-pp_test.cc
+ gmock-spec-builders_test.cc
+ gmock_all_test.cc
+ gmock_ex_test.cc
+ gmock_leak_test.py
+ gmock_leak_test_.cc
+ gmock_link2_test.cc
+ gmock_link_test.cc
+ gmock_link_test.h
+ gmock_output_test.py
+ gmock_output_test_.cc
+ gmock_output_test_golden.txt
+ gmock_stress_test.cc
+ gmock_test.cc
+ gmock_test_utils.py
+
+./cmake-build-debug/_deps/googletest-src/googletest:
+ cmake
+ CMakeLists.txt
+ docs
+ include
+󰂺 README.md
+ samples
+󰣞 src
+ test
+
+./cmake-build-debug/_deps/googletest-src/googletest/cmake:
+ Config.cmake.in
+ gtest.pc.in
+ gtest_main.pc.in
+ internal_utils.cmake
+ libgtest.la.in
+
+./cmake-build-debug/_deps/googletest-src/googletest/docs:
+󰂺 README.md
+
+./cmake-build-debug/_deps/googletest-src/googletest/include:
+ gtest
+
+./cmake-build-debug/_deps/googletest-src/googletest/include/gtest:
+ gtest-assertion-result.h
+ gtest-death-test.h
+ gtest-matchers.h
+ gtest-message.h
+ gtest-param-test.h
+ gtest-printers.h
+ gtest-spi.h
+ gtest-test-part.h
+ gtest-typed-test.h
+ gtest.h
+ gtest_pred_impl.h
+ gtest_prod.h
+ internal
+
+./cmake-build-debug/_deps/googletest-src/googletest/include/gtest/internal:
+ custom
+ gtest-death-test-internal.h
+ gtest-filepath.h
+ gtest-internal.h
+ gtest-param-util.h
+ gtest-port-arch.h
+ gtest-port.h
+ gtest-string.h
+ gtest-type-util.h
+
+./cmake-build-debug/_deps/googletest-src/googletest/include/gtest/internal/custom:
+ gtest-port.h
+ gtest-printers.h
+ gtest.h
+󰂺 README.md
+
+./cmake-build-debug/_deps/googletest-src/googletest/samples:
+ prime_tables.h
+ sample1.cc
+ sample1.h
+ sample1_unittest.cc
+ sample2.cc
+ sample2.h
+ sample2_unittest.cc
+ sample3-inl.h
+ sample3_unittest.cc
+ sample4.cc
+ sample4.h
+ sample4_unittest.cc
+ sample5_unittest.cc
+ sample6_unittest.cc
+ sample7_unittest.cc
+ sample8_unittest.cc
+ sample9_unittest.cc
+ sample10_unittest.cc
+
+./cmake-build-debug/_deps/googletest-src/googletest/src:
+ gtest-all.cc
+ gtest-assertion-result.cc
+ gtest-death-test.cc
+ gtest-filepath.cc
+ gtest-internal-inl.h
+ gtest-matchers.cc
+ gtest-port.cc
+ gtest-printers.cc
+ gtest-test-part.cc
+ gtest-typed-test.cc
+ gtest.cc
+ gtest_main.cc
+
+./cmake-build-debug/_deps/googletest-src/googletest/test:
+ BUILD.bazel
+ googletest-break-on-failure-unittest.py
+ googletest-break-on-failure-unittest_.cc
+ googletest-catch-exceptions-test.py
+ googletest-catch-exceptions-test_.cc
+ googletest-color-test.py
+ googletest-color-test_.cc
+ googletest-death-test-test.cc
+ googletest-death-test_ex_test.cc
+ googletest-env-var-test.py
+ googletest-env-var-test_.cc
+ googletest-fail-if-no-test-linked-test-with-disabled-test_.cc
+ googletest-fail-if-no-test-linked-test-with-enabled-test_.cc
+ googletest-fail-if-no-test-linked-test.py
+ googletest-fail-if-no-test-selected-test.py
+ googletest-failfast-unittest.py
+ googletest-failfast-unittest_.cc
+ googletest-filepath-test.cc
+ googletest-filter-unittest.py
+ googletest-filter-unittest_.cc
+ googletest-global-environment-unittest.py
+ googletest-global-environment-unittest_.cc
+ googletest-json-outfiles-test.py
+ googletest-json-output-unittest.py
+ googletest-list-tests-unittest.py
+ googletest-list-tests-unittest_.cc
+ googletest-listener-test.cc
+ googletest-message-test.cc
+ googletest-options-test.cc
+ googletest-output-test-golden-lin.txt
+ googletest-output-test.py
+ googletest-output-test_.cc
+ googletest-param-test-invalid-name1-test.py
+ googletest-param-test-invalid-name1-test_.cc
+ googletest-param-test-invalid-name2-test.py
+ googletest-param-test-invalid-name2-test_.cc
+ googletest-param-test-test.cc
+ googletest-param-test-test.h
+ googletest-param-test2-test.cc
+ googletest-port-test.cc
+ googletest-printers-test.cc
+ googletest-setuptestsuite-test.py
+ googletest-setuptestsuite-test_.cc
+ googletest-shuffle-test.py
+ googletest-shuffle-test_.cc
+ googletest-test-part-test.cc
+ googletest-throw-on-failure-test.py
+ googletest-throw-on-failure-test_.cc
+ googletest-uninitialized-test.py
+ googletest-uninitialized-test_.cc
+ gtest-typed-test2_test.cc
+ gtest-typed-test_test.cc
+ gtest-typed-test_test.h
+ gtest-unittest-api_test.cc
+ gtest_all_test.cc
+ gtest_assert_by_exception_test.cc
+ gtest_dirs_test.cc
+ gtest_environment_test.cc
+ gtest_help_test.py
+ gtest_help_test_.cc
+ gtest_json_test_utils.py
+ gtest_list_output_unittest.py
+ gtest_list_output_unittest_.cc
+ gtest_main_unittest.cc
+ gtest_no_test_unittest.cc
+ gtest_pred_impl_unittest.cc
+ gtest_premature_exit_test.cc
+ gtest_prod_test.cc
+ gtest_repeat_test.cc
+ gtest_skip_check_output_test.py
+ gtest_skip_environment_check_output_test.py
+ gtest_skip_in_environment_setup_test.cc
+ gtest_skip_test.cc
+ gtest_sole_header_test.cc
+ gtest_stress_test.cc
+ gtest_test_macro_stack_footprint_test.cc
+ gtest_test_utils.py
+ gtest_testbridge_test.py
+ gtest_testbridge_test_.cc
+ gtest_throw_on_failure_ex_test.cc
+ gtest_unittest.cc
+ gtest_xml_outfile1_test_.cc
+ gtest_xml_outfile2_test_.cc
+ gtest_xml_outfiles_test.py
+ gtest_xml_output_unittest.py
+ gtest_xml_output_unittest_.cc
+ gtest_xml_test_utils.py
+ production.cc
+ production.h
+
+./cmake-build-debug/_deps/googletest-tmp:
+
+./cmake-build-debug/benchmarks:
+ cmake_install.cmake
+ CMakeFiles
+ CTestTestfile.cmake
+
+./cmake-build-debug/benchmarks/CMakeFiles:
+ blockCombinations_benchmark.dir
+ blockCombinationsHeavy_benchmark.dir
+ blockCombinationsLight_benchmark.dir
+ combinationsFull_benchmark.dir
+ combinationsHeavyHardOperation_benchmark.dir
+ combinationsLightweightHardOperation_benchmark.dir
+ combinationsStrictlyUpper_benchmark.dir
+ combinationsStrictlyUpperHeavyHardOperation_benchmark.dir
+ combinationsStrictlyUpperLightweihgtHardOperation_benchmark.dir
+ combinationsWindowedStrictlyUpper_benchmark.dir
+ combinationsWindowedStrictlyUpperHeavy_benchmark.dir
+ combinationsWindowedStrictlyUpperLight_benchmark.dir
+ discreture_vs_comet.dir
+ discreture_vs_comet_full_combinations.dir
+ discreture_vs_comet_strictly_upper.dir
+ discretureVsCometFullCombinations_benchmark.dir
+ discretureVsCometStrictlyUpper_benchmark.dir
+ groupedCombinations_benchmark.dir
+ groupedCombinationsHeavy_benchmark.dir
+ groupedCombinationsLight_benchmark.dir
+ std_vs_comet_full_combinations.dir
+ stdVsCometFullCombinations_benchmark.dir
+
+./cmake-build-debug/benchmarks/CMakeFiles/blockCombinations_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/blockCombinationsHeavy_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/blockCombinationsLight_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/combinationsFull_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/combinationsHeavyHardOperation_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/combinationsLightweightHardOperation_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/combinationsStrictlyUpper_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/combinationsStrictlyUpperHeavyHardOperation_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/combinationsStrictlyUpperLightweihgtHardOperation_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/combinationsWindowedStrictlyUpper_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/combinationsWindowedStrictlyUpperHeavy_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/combinationsWindowedStrictlyUpperLight_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/discreture_vs_comet.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/discreture_vs_comet_full_combinations.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/discreture_vs_comet_strictly_upper.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/discretureVsCometFullCombinations_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/discretureVsCometStrictlyUpper_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/groupedCombinations_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/groupedCombinationsHeavy_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/groupedCombinationsLight_benchmark.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/std_vs_comet_full_combinations.dir:
+
+./cmake-build-debug/benchmarks/CMakeFiles/stdVsCometFullCombinations_benchmark.dir:
+
+./cmake-build-debug/bin:
+
+./cmake-build-debug/CMakeFiles:
+ 3.30.5
+ clion-Debug-log.txt
+ clion-environment.txt
+ cmake.check_cache
+ CMakeConfigureLog.yaml
+ CMakeTmp
+ fc-stamp
+ fc-tmp
+ pkgRedirects
+󰝴 rules.ninja
+ TargetDirectories.txt
+
+./cmake-build-debug/CMakeFiles/3.30.5:
+ CMakeCCompiler.cmake
+ CMakeCXXCompiler.cmake
+ CMakeDetermineCompilerABI_C.bin
+ CMakeDetermineCompilerABI_CXX.bin
+ CMakeSystem.cmake
+ CompilerIdC
+ CompilerIdCXX
+
+./cmake-build-debug/CMakeFiles/3.30.5/CompilerIdC:
+ CMakeCCompilerId.c
+ CMakeCCompilerId.o
+ tmp
+
+./cmake-build-debug/CMakeFiles/3.30.5/CompilerIdC/tmp:
+
+./cmake-build-debug/CMakeFiles/3.30.5/CompilerIdCXX:
+ CMakeCXXCompilerId.cpp
+ CMakeCXXCompilerId.o
+ tmp
+
+./cmake-build-debug/CMakeFiles/3.30.5/CompilerIdCXX/tmp:
+
+./cmake-build-debug/CMakeFiles/CMakeTmp:
+
+./cmake-build-debug/CMakeFiles/fc-stamp:
+ googlebenchmark
+ googletest
+
+./cmake-build-debug/CMakeFiles/fc-stamp/googlebenchmark:
+ download.stamp
+ googlebenchmark-gitclone-lastrun.txt
+ googlebenchmark-gitinfo.txt
+ googlebenchmark-patch-info.txt
+ googlebenchmark-update-info.txt
+ patch.stamp
+ update.stamp
+
+./cmake-build-debug/CMakeFiles/fc-stamp/googletest:
+ download.stamp
+ googletest-gitclone-lastrun.txt
+ googletest-gitinfo.txt
+ googletest-patch-info.txt
+ googletest-update-info.txt
+ patch.stamp
+ update.stamp
+
+./cmake-build-debug/CMakeFiles/fc-tmp:
+ googlebenchmark
+ googletest
+
+./cmake-build-debug/CMakeFiles/fc-tmp/googlebenchmark:
+ download.cmake
+ googlebenchmark-gitclone.cmake
+ googlebenchmark-gitupdate.cmake
+ patch.cmake
+ update.cmake
+
+./cmake-build-debug/CMakeFiles/fc-tmp/googletest:
+ download.cmake
+ googletest-gitclone.cmake
+ googletest-gitupdate.cmake
+ patch.cmake
+ update.cmake
+
+./cmake-build-debug/CMakeFiles/pkgRedirects:
+
+./cmake-build-debug/coverage:
+
+./cmake-build-debug/dependencies:
+ cmake_install.cmake
+ CMakeFiles
+ gbenchmark
+ gtest
+
+./cmake-build-debug/dependencies/CMakeFiles:
+
+./cmake-build-debug/dependencies/gbenchmark:
+ cmake_install.cmake
+ CMakeFiles
+
+./cmake-build-debug/dependencies/gbenchmark/CMakeFiles:
+
+./cmake-build-debug/dependencies/gtest:
+ cmake_install.cmake
+ CMakeFiles
+
+./cmake-build-debug/dependencies/gtest/CMakeFiles:
+
+./cmake-build-debug/examples:
+ cmake_install.cmake
+ CMakeFiles
+ CTestTestfile.cmake
+
+./cmake-build-debug/examples/CMakeFiles:
+ blockCombinations.dir
+ combinations.dir
+ groupedCombinations.dir
+
+./cmake-build-debug/examples/CMakeFiles/blockCombinations.dir:
+
+./cmake-build-debug/examples/CMakeFiles/combinations.dir:
+
+./cmake-build-debug/examples/CMakeFiles/groupedCombinations.dir:
+
+./cmake-build-debug/lib:
+ cmake_install.cmake
+ CMakeFiles
+ libgmock.a
+ libgmock_main.a
+ libgtest.a
+ libgtest_main.a
+
+./cmake-build-debug/lib/CMakeFiles:
+
+./cmake-build-debug/src:
+ cmake_install.cmake
+ CMakeFiles
+
+./cmake-build-debug/src/CMakeFiles:
+
+./cmake-build-debug/Testing:
+ Temporary
+
+./cmake-build-debug/Testing/Temporary:
+ CTestCostData.txt
+ LastTest.log
+ LastTestsFailed.log
+
+./cmake-build-debug/tests:
+ cmake_install.cmake
+ CMakeFiles
+󰡯 COMET_test
+ COMET_test[1]_include.cmake
+ COMET_test[1]_tests.cmake
+ CTestTestfile.cmake
+󰡯 EventMixing2_test
+ EventMixing2_test[1]_include.cmake
+ EventMixing2_test[1]_tests.cmake
+
+./cmake-build-debug/tests/CMakeFiles:
+ COMET_test.dir
+ EventMixing2_test.dir
+
+./cmake-build-debug/tests/CMakeFiles/COMET_test.dir:
+ addOneFull_test.cpp.o
+ addOneSameTypeFull_test.cpp.o
+ addOneSameTypeStrictlyUpper_test.cpp.o
+ addOneStrictlyUpper_test.cpp.o
+ blockFullCombinations_test.cpp.o
+ blockSameKind_test.cpp.o
+ blockStricktlyUpper_test.cpp.o
+ bucketSortHelpers_test.cpp.o
+ bucketSortView_test.cpp.o
+ findIndex_test.cpp.o
+ getBucket_test.cpp.o
+ getUpperIndicesForTuple_test.cpp.o
+ groupedCombination_test.cpp.o
+
+./cmake-build-debug/tests/CMakeFiles/EventMixing2_test.dir:
+ addOneFull_test.cpp.o
+ addOneStrictlyUpper_test.cpp-699f30eb.o.tmp
+ addOneStrictlyUpper_test.cpp.o
+ binary_search_test.cpp.o
+ blockCombinations_test.cpp.o
+ blockFullCombinations_test.cpp.o
+ calculateBucketAtIndex_test.cpp.o
+ combinations_test.cpp.o
+ example.cpp.o
+ findIndex_test.cpp.o
+ get_bucket_at_index_test.cpp.o
+ get_bucket_test.cpp.o
+ getBucket_test.cpp.o
+ getUpperIndicesForTuple_test.cpp.o
+ groupData_test.cpp.o
+ o2_overlays_tests.cpp.o
+ sketch_notes.cpp.o
+
+./cmake-build-release:
+ _deps
+ benchmarks
+ bin
+󰝴 build.ninja
+ cmake_install.cmake
+ CMakeCache.txt
+ CMakeFiles
+ CTestTestfile.cmake
+ dependencies
+ examples
+ lib
+ Testing
+ tests
+
+./cmake-build-release/_deps:
+ googlebenchmark-build
+ googlebenchmark-src
+ googlebenchmark-tmp
+ googletest-build
+ googletest-src
+ googletest-tmp
+
+./cmake-build-release/_deps/googlebenchmark-build:
+ benchmark.pc
+ benchmark_main.pc
+ benchmarkConfig.cmake
+ benchmarkConfigVersion.cmake
+ benchmarkTargets.cmake
+ cmake_install.cmake
+ CMakeFiles
+󰣞 src
+
+./cmake-build-release/_deps/googlebenchmark-build/CMakeFiles:
+
+./cmake-build-release/_deps/googlebenchmark-build/src:
+ cmake_install.cmake
+ CMakeFiles
+ libbenchmark.a
+ libbenchmark_main.a
+
+./cmake-build-release/_deps/googlebenchmark-build/src/CMakeFiles:
+ benchmark.dir
+ benchmark_main.dir
+
+./cmake-build-release/_deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir:
+ benchmark.cc.o
+ benchmark_api_internal.cc.o
+ benchmark_name.cc.o
+ benchmark_register.cc.o
+ benchmark_runner.cc.o
+ check.cc.o
+ colorprint.cc.o
+ commandlineflags.cc.o
+ complexity.cc.o
+ console_reporter.cc.o
+ counter.cc.o
+ csv_reporter.cc.o
+ json_reporter.cc.o
+ perf_counters.cc.o
+ reporter.cc.o
+ statistics.cc.o
+ string_util.cc.o
+ sysinfo.cc.o
+ timers.cc.o
+
+./cmake-build-release/_deps/googlebenchmark-build/src/CMakeFiles/benchmark_main.dir:
+ benchmark_main.cc.o
+
+./cmake-build-release/_deps/googlebenchmark-src:
+ _config.yml
+ appveyor.yml
+ AUTHORS
+ bazel
+ bindings
+ BUILD.bazel
+ cmake
+ CMakeLists.txt
+ CONTRIBUTING.md
+󰡯 CONTRIBUTORS
+ docs
+ include
+ LICENSE
+ MODULE.bazel
+ pyproject.toml
+󰂺 README.md
+ setup.py
+󰣞 src
+ test
+ tools
+󰡯 WORKSPACE
+ WORKSPACE.bzlmod
+
+./cmake-build-release/_deps/googlebenchmark-src/bazel:
+ benchmark_deps.bzl
+
+./cmake-build-release/_deps/googlebenchmark-src/bindings:
+ python
+
+./cmake-build-release/_deps/googlebenchmark-src/bindings/python:
+ google_benchmark
+
+./cmake-build-release/_deps/googlebenchmark-src/bindings/python/google_benchmark:
+ __init__.py
+ benchmark.cc
+󰡯 BUILD
+ example.py
+
+./cmake-build-release/_deps/googlebenchmark-src/cmake:
+ AddCXXCompilerFlag.cmake
+ benchmark.pc.in
+ benchmark_main.pc.in
+ Config.cmake.in
+ CXXFeatureCheck.cmake
+ GetGitVersion.cmake
+ gnu_posix_regex.cpp
+ GoogleTest.cmake
+ GoogleTest.cmake.in
+ llvm-toolchain.cmake
+ Modules
+ posix_regex.cpp
+ pthread_affinity.cpp
+ split_list.cmake
+ std_regex.cpp
+ steady_clock.cpp
+ thread_safety_attributes.cpp
+
+./cmake-build-release/_deps/googlebenchmark-src/cmake/Modules:
+ FindLLVMAr.cmake
+ FindLLVMNm.cmake
+ FindLLVMRanLib.cmake
+ FindPFM.cmake
+
+./cmake-build-release/_deps/googlebenchmark-src/docs:
+ _config.yml
+ AssemblyTests.md
+ assets
+ dependencies.md
+ index.md
+ perf_counters.md
+ platform_specific_build_instructions.md
+ python_bindings.md
+ random_interleaving.md
+ reducing_variance.md
+ releasing.md
+ tools.md
+ user_guide.md
+
+./cmake-build-release/_deps/googlebenchmark-src/docs/assets:
+ images
+
+./cmake-build-release/_deps/googlebenchmark-src/docs/assets/images:
+ icon.png
+ icon.xcf
+ icon_black.png
+ icon_black.xcf
+
+./cmake-build-release/_deps/googlebenchmark-src/include:
+ benchmark
+
+./cmake-build-release/_deps/googlebenchmark-src/include/benchmark:
+ benchmark.h
+ export.h
+
+./cmake-build-release/_deps/googlebenchmark-src/src:
+ arraysize.h
+ benchmark.cc
+ benchmark_api_internal.cc
+ benchmark_api_internal.h
+ benchmark_main.cc
+ benchmark_name.cc
+ benchmark_register.cc
+ benchmark_register.h
+ benchmark_runner.cc
+ benchmark_runner.h
+ check.cc
+ check.h
+ CMakeLists.txt
+ colorprint.cc
+ colorprint.h
+ commandlineflags.cc
+ commandlineflags.h
+ complexity.cc
+ complexity.h
+ console_reporter.cc
+ counter.cc
+ counter.h
+ csv_reporter.cc
+ cycleclock.h
+ internal_macros.h
+ json_reporter.cc
+ log.h
+ mutex.h
+ perf_counters.cc
+ perf_counters.h
+ re.h
+ reporter.cc
+ statistics.cc
+ statistics.h
+ string_util.cc
+ string_util.h
+ sysinfo.cc
+ thread_manager.h
+ thread_timer.h
+ timers.cc
+ timers.h
+
+./cmake-build-release/_deps/googlebenchmark-src/test:
+ args_product_test.cc
+ AssemblyTests.cmake
+ basic_test.cc
+ benchmark_gtest.cc
+ benchmark_min_time_flag_iters_test.cc
+ benchmark_min_time_flag_time_test.cc
+ benchmark_name_gtest.cc
+ benchmark_random_interleaving_gtest.cc
+ benchmark_setup_teardown_cb_types_gtest.cc
+ benchmark_setup_teardown_test.cc
+ benchmark_test.cc
+󰡯 BUILD
+ clobber_memory_assembly_test.cc
+ CMakeLists.txt
+ commandlineflags_gtest.cc
+ complexity_test.cc
+ cxx11_test.cc
+ diagnostics_test.cc
+ display_aggregates_only_test.cc
+ donotoptimize_assembly_test.cc
+ donotoptimize_test.cc
+ filter_test.cc
+ fixture_test.cc
+ internal_threading_test.cc
+ link_main_test.cc
+ locale_impermeability_test.cc
+ manual_threading_test.cc
+ map_test.cc
+ memory_manager_test.cc
+ memory_results_gtest.cc
+ min_time_parse_gtest.cc
+ multiple_ranges_test.cc
+ options_test.cc
+ output_test.h
+ output_test_helper.cc
+ overload_test.cc
+ perf_counters_gtest.cc
+ perf_counters_test.cc
+ profiler_manager_gtest.cc
+ profiler_manager_iterations_test.cc
+ profiler_manager_test.cc
+ register_benchmark_test.cc
+ repetitions_test.cc
+ report_aggregates_only_test.cc
+ reporter_output_test.cc
+ skip_with_error_test.cc
+ spec_arg_test.cc
+ spec_arg_verbosity_test.cc
+ state_assembly_test.cc
+ statistics_gtest.cc
+ string_util_gtest.cc
+ templated_fixture_method_test.cc
+ templated_fixture_test.cc
+ time_unit_gtest.cc
+ user_counters_tabular_test.cc
+ user_counters_test.cc
+ user_counters_thousands_test.cc
+ user_counters_threads_test.cc
+
+./cmake-build-release/_deps/googlebenchmark-src/tools:
+ BUILD.bazel
+ compare.py
+ gbench
+ libpfm.BUILD.bazel
+ requirements.txt
+ strip_asm.py
+
+./cmake-build-release/_deps/googlebenchmark-src/tools/gbench:
+ __init__.py
+ Inputs
+ report.py
+ util.py
+
+./cmake-build-release/_deps/googlebenchmark-src/tools/gbench/Inputs:
+ test1_run1.json
+ test1_run2.json
+ test2_run.json
+ test3_run0.json
+ test3_run1.json
+ test4_run.json
+ test4_run0.json
+ test4_run1.json
+ test5_run0.json
+ test5_run1.json
+
+./cmake-build-release/_deps/googlebenchmark-tmp:
+
+./cmake-build-release/_deps/googletest-build:
+ cmake_install.cmake
+ CMakeFiles
+ CTestTestfile.cmake
+ googlemock
+ googletest
+
+./cmake-build-release/_deps/googletest-build/CMakeFiles:
+
+./cmake-build-release/_deps/googletest-build/googlemock:
+ cmake_install.cmake
+ CMakeFiles
+ CTestTestfile.cmake
+
+./cmake-build-release/_deps/googletest-build/googlemock/CMakeFiles:
+ gmock.dir
+ gmock_main.dir
+
+./cmake-build-release/_deps/googletest-build/googlemock/CMakeFiles/gmock.dir:
+󰣞 src
+
+./cmake-build-release/_deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src:
+ gmock-all.cc.o
+
+./cmake-build-release/_deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir:
+󰣞 src
+
+./cmake-build-release/_deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src:
+ gmock_main.cc.o
+
+./cmake-build-release/_deps/googletest-build/googletest:
+ cmake_install.cmake
+ CMakeFiles
+ CTestTestfile.cmake
+ generated
+
+./cmake-build-release/_deps/googletest-build/googletest/CMakeFiles:
+ Export
+ gtest.dir
+ gtest_main.dir
+
+./cmake-build-release/_deps/googletest-build/googletest/CMakeFiles/Export:
+ 0c08b8e77dd885bfe55a19a9659d9fc1
+
+./cmake-build-release/_deps/googletest-build/googletest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1:
+ GTestTargets-release.cmake
+ GTestTargets.cmake
+
+./cmake-build-release/_deps/googletest-build/googletest/CMakeFiles/gtest.dir:
+󰣞 src
+
+./cmake-build-release/_deps/googletest-build/googletest/CMakeFiles/gtest.dir/src:
+ gtest-all.cc.o
+
+./cmake-build-release/_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir:
+󰣞 src
+
+./cmake-build-release/_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src:
+ gtest_main.cc.o
+
+./cmake-build-release/_deps/googletest-build/googletest/generated:
+ gmock.pc
+ gmock_main.pc
+ gtest.pc
+ gtest_main.pc
+ GTestConfig.cmake
+ GTestConfigVersion.cmake
+
+./cmake-build-release/_deps/googletest-src:
+ BUILD.bazel
+ ci
+ CMakeLists.txt
+ CONTRIBUTING.md
+󰡯 CONTRIBUTORS
+ docs
+ fake_fuchsia_sdk.bzl
+ googlemock
+ googletest
+ googletest_deps.bzl
+ LICENSE
+ MODULE.bazel
+󰂺 README.md
+󰡯 WORKSPACE
+ WORKSPACE.bzlmod
+
+./cmake-build-release/_deps/googletest-src/ci:
+ linux-presubmit.sh
+ macos-presubmit.sh
+ windows-presubmit.bat
+
+./cmake-build-release/_deps/googletest-src/docs:
+ _config.yml
+ _data
+ _layouts
+ _sass
+ advanced.md
+ assets
+ community_created_documentation.md
+ faq.md
+ gmock_cheat_sheet.md
+ gmock_cook_book.md
+ gmock_faq.md
+ gmock_for_dummies.md
+ index.md
+ pkgconfig.md
+ platforms.md
+ primer.md
+ quickstart-bazel.md
+ quickstart-cmake.md
+ reference
+ samples.md
+
+./cmake-build-release/_deps/googletest-src/docs/_data:
+ navigation.yml
+
+./cmake-build-release/_deps/googletest-src/docs/_layouts:
+ default.html
+
+./cmake-build-release/_deps/googletest-src/docs/_sass:
+ main.scss
+
+./cmake-build-release/_deps/googletest-src/docs/assets:
+ css
+
+./cmake-build-release/_deps/googletest-src/docs/assets/css:
+ style.scss
+
+./cmake-build-release/_deps/googletest-src/docs/reference:
+ actions.md
+ assertions.md
+ matchers.md
+ mocking.md
+ testing.md
+
+./cmake-build-release/_deps/googletest-src/googlemock:
+ cmake
+ CMakeLists.txt
+ docs
+ include
+󰂺 README.md
+󰣞 src
+ test
+
+./cmake-build-release/_deps/googletest-src/googlemock/cmake:
+ gmock.pc.in
+ gmock_main.pc.in
+
+./cmake-build-release/_deps/googletest-src/googlemock/docs:
+󰂺 README.md
+
+./cmake-build-release/_deps/googletest-src/googlemock/include:
+ gmock
+
+./cmake-build-release/_deps/googletest-src/googlemock/include/gmock:
+ gmock-actions.h
+ gmock-cardinalities.h
+ gmock-function-mocker.h
+ gmock-matchers.h
+ gmock-more-actions.h
+ gmock-more-matchers.h
+ gmock-nice-strict.h
+ gmock-spec-builders.h
+ gmock.h
+ internal
+
+./cmake-build-release/_deps/googletest-src/googlemock/include/gmock/internal:
+ custom
+ gmock-internal-utils.h
+ gmock-port.h
+ gmock-pp.h
+
+./cmake-build-release/_deps/googletest-src/googlemock/include/gmock/internal/custom:
+ gmock-generated-actions.h
+ gmock-matchers.h
+ gmock-port.h
+󰂺 README.md
+
+./cmake-build-release/_deps/googletest-src/googlemock/src:
+ gmock-all.cc
+ gmock-cardinalities.cc
+ gmock-internal-utils.cc
+ gmock-matchers.cc
+ gmock-spec-builders.cc
+ gmock.cc
+ gmock_main.cc
+
+./cmake-build-release/_deps/googletest-src/googlemock/test:
+ BUILD.bazel
+ gmock-actions_test.cc
+ gmock-cardinalities_test.cc
+ gmock-function-mocker_test.cc
+ gmock-internal-utils_test.cc
+ gmock-matchers-arithmetic_test.cc
+ gmock-matchers-comparisons_test.cc
+ gmock-matchers-containers_test.cc
+ gmock-matchers-misc_test.cc
+ gmock-matchers_test.h
+ gmock-more-actions_test.cc
+ gmock-nice-strict_test.cc
+ gmock-port_test.cc
+ gmock-pp-string_test.cc
+ gmock-pp_test.cc
+ gmock-spec-builders_test.cc
+ gmock_all_test.cc
+ gmock_ex_test.cc
+ gmock_leak_test.py
+ gmock_leak_test_.cc
+ gmock_link2_test.cc
+ gmock_link_test.cc
+ gmock_link_test.h
+ gmock_output_test.py
+ gmock_output_test_.cc
+ gmock_output_test_golden.txt
+ gmock_stress_test.cc
+ gmock_test.cc
+ gmock_test_utils.py
+
+./cmake-build-release/_deps/googletest-src/googletest:
+ cmake
+ CMakeLists.txt
+ docs
+ include
+󰂺 README.md
+ samples
+󰣞 src
+ test
+
+./cmake-build-release/_deps/googletest-src/googletest/cmake:
+ Config.cmake.in
+ gtest.pc.in
+ gtest_main.pc.in
+ internal_utils.cmake
+ libgtest.la.in
+
+./cmake-build-release/_deps/googletest-src/googletest/docs:
+󰂺 README.md
+
+./cmake-build-release/_deps/googletest-src/googletest/include:
+ gtest
+
+./cmake-build-release/_deps/googletest-src/googletest/include/gtest:
+ gtest-assertion-result.h
+ gtest-death-test.h
+ gtest-matchers.h
+ gtest-message.h
+ gtest-param-test.h
+ gtest-printers.h
+ gtest-spi.h
+ gtest-test-part.h
+ gtest-typed-test.h
+ gtest.h
+ gtest_pred_impl.h
+ gtest_prod.h
+ internal
+
+./cmake-build-release/_deps/googletest-src/googletest/include/gtest/internal:
+ custom
+ gtest-death-test-internal.h
+ gtest-filepath.h
+ gtest-internal.h
+ gtest-param-util.h
+ gtest-port-arch.h
+ gtest-port.h
+ gtest-string.h
+ gtest-type-util.h
+
+./cmake-build-release/_deps/googletest-src/googletest/include/gtest/internal/custom:
+ gtest-port.h
+ gtest-printers.h
+ gtest.h
+󰂺 README.md
+
+./cmake-build-release/_deps/googletest-src/googletest/samples:
+ prime_tables.h
+ sample1.cc
+ sample1.h
+ sample1_unittest.cc
+ sample2.cc
+ sample2.h
+ sample2_unittest.cc
+ sample3-inl.h
+ sample3_unittest.cc
+ sample4.cc
+ sample4.h
+ sample4_unittest.cc
+ sample5_unittest.cc
+ sample6_unittest.cc
+ sample7_unittest.cc
+ sample8_unittest.cc
+ sample9_unittest.cc
+ sample10_unittest.cc
+
+./cmake-build-release/_deps/googletest-src/googletest/src:
+ gtest-all.cc
+ gtest-assertion-result.cc
+ gtest-death-test.cc
+ gtest-filepath.cc
+ gtest-internal-inl.h
+ gtest-matchers.cc
+ gtest-port.cc
+ gtest-printers.cc
+ gtest-test-part.cc
+ gtest-typed-test.cc
+ gtest.cc
+ gtest_main.cc
+
+./cmake-build-release/_deps/googletest-src/googletest/test:
+ BUILD.bazel
+ googletest-break-on-failure-unittest.py
+ googletest-break-on-failure-unittest_.cc
+ googletest-catch-exceptions-test.py
+ googletest-catch-exceptions-test_.cc
+ googletest-color-test.py
+ googletest-color-test_.cc
+ googletest-death-test-test.cc
+ googletest-death-test_ex_test.cc
+ googletest-env-var-test.py
+ googletest-env-var-test_.cc
+ googletest-fail-if-no-test-linked-test-with-disabled-test_.cc
+ googletest-fail-if-no-test-linked-test-with-enabled-test_.cc
+ googletest-fail-if-no-test-linked-test.py
+ googletest-fail-if-no-test-selected-test.py
+ googletest-failfast-unittest.py
+ googletest-failfast-unittest_.cc
+ googletest-filepath-test.cc
+ googletest-filter-unittest.py
+ googletest-filter-unittest_.cc
+ googletest-global-environment-unittest.py
+ googletest-global-environment-unittest_.cc
+ googletest-json-outfiles-test.py
+ googletest-json-output-unittest.py
+ googletest-list-tests-unittest.py
+ googletest-list-tests-unittest_.cc
+ googletest-listener-test.cc
+ googletest-message-test.cc
+ googletest-options-test.cc
+ googletest-output-test-golden-lin.txt
+ googletest-output-test.py
+ googletest-output-test_.cc
+ googletest-param-test-invalid-name1-test.py
+ googletest-param-test-invalid-name1-test_.cc
+ googletest-param-test-invalid-name2-test.py
+ googletest-param-test-invalid-name2-test_.cc
+ googletest-param-test-test.cc
+ googletest-param-test-test.h
+ googletest-param-test2-test.cc
+ googletest-port-test.cc
+ googletest-printers-test.cc
+ googletest-setuptestsuite-test.py
+ googletest-setuptestsuite-test_.cc
+ googletest-shuffle-test.py
+ googletest-shuffle-test_.cc
+ googletest-test-part-test.cc
+ googletest-throw-on-failure-test.py
+ googletest-throw-on-failure-test_.cc
+ googletest-uninitialized-test.py
+ googletest-uninitialized-test_.cc
+ gtest-typed-test2_test.cc
+ gtest-typed-test_test.cc
+ gtest-typed-test_test.h
+ gtest-unittest-api_test.cc
+ gtest_all_test.cc
+ gtest_assert_by_exception_test.cc
+ gtest_dirs_test.cc
+ gtest_environment_test.cc
+ gtest_help_test.py
+ gtest_help_test_.cc
+ gtest_json_test_utils.py
+ gtest_list_output_unittest.py
+ gtest_list_output_unittest_.cc
+ gtest_main_unittest.cc
+ gtest_no_test_unittest.cc
+ gtest_pred_impl_unittest.cc
+ gtest_premature_exit_test.cc
+ gtest_prod_test.cc
+ gtest_repeat_test.cc
+ gtest_skip_check_output_test.py
+ gtest_skip_environment_check_output_test.py
+ gtest_skip_in_environment_setup_test.cc
+ gtest_skip_test.cc
+ gtest_sole_header_test.cc
+ gtest_stress_test.cc
+ gtest_test_macro_stack_footprint_test.cc
+ gtest_test_utils.py
+ gtest_testbridge_test.py
+ gtest_testbridge_test_.cc
+ gtest_throw_on_failure_ex_test.cc
+ gtest_unittest.cc
+ gtest_xml_outfile1_test_.cc
+ gtest_xml_outfile2_test_.cc
+ gtest_xml_outfiles_test.py
+ gtest_xml_output_unittest.py
+ gtest_xml_output_unittest_.cc
+ gtest_xml_test_utils.py
+ production.cc
+ production.h
+
+./cmake-build-release/_deps/googletest-tmp:
+
+./cmake-build-release/benchmarks:
+󰡯 blockCombinations_benchmark
+󰡯 blockCombinationsHeavy_benchmark
+󰡯 blockCombinationsLight_benchmark
+ cmake_install.cmake
+ CMakeFiles
+󰡯 combinationsFull_benchmark
+󰡯 combinationsHeavyHardOperation_benchmark
+󰡯 combinationsLightweightHardOperation_benchmark
+󰡯 combinationsStrictlyUpper_benchmark
+󰡯 combinationsStrictlyUpperHeavyHardOperation_benchmark
+󰡯 combinationsStrictlyUpperLightweihgtHardOperation_benchmark
+󰡯 combinationsWindowedStrictlyUpper_benchmark
+󰡯 combinationsWindowedStrictlyUpperHeavy_benchmark
+󰡯 combinationsWindowedStrictlyUpperLight_benchmark
+ CTestTestfile.cmake
+󰡯 discreture_vs_comet
+󰡯 discreture_vs_comet_full_combinations
+󰡯 discreture_vs_comet_strictly_upper
+󰡯 discretureVsCometFullCombinations_benchmark
+󰡯 discretureVsCometStrictlyUpper_benchmark
+󰡯 groupedCombinations_benchmark
+󰡯 groupedCombinationsHeavy_benchmark
+󰡯 groupedCombinationsLight_benchmark
+
+./cmake-build-release/benchmarks/CMakeFiles:
+ blockCombinations_benchmark.dir
+ blockCombinationsHeavy_benchmark.dir
+ blockCombinationsLight_benchmark.dir
+ combinationsFull_benchmark.dir
+ combinationsHeavyHardOperation_benchmark.dir
+ combinationsLightweightHardOperation_benchmark.dir
+ combinationsStrictlyUpper_benchmark.dir
+ combinationsStrictlyUpperHeavyHardOperation_benchmark.dir
+ combinationsStrictlyUpperLightweihgtHardOperation_benchmark.dir
+ combinationsWindowedStrictlyUpper_benchmark.dir
+ combinationsWindowedStrictlyUpperHeavy_benchmark.dir
+ combinationsWindowedStrictlyUpperLight_benchmark.dir
+ discreture_vs_comet.dir
+ discreture_vs_comet_full_combinations.dir
+ discreture_vs_comet_strictly_upper.dir
+ discretureVsCometFullCombinations_benchmark.dir
+ discretureVsCometStrictlyUpper_benchmark.dir
+ groupedCombinations_benchmark.dir
+ groupedCombinationsHeavy_benchmark.dir
+ groupedCombinationsLight_benchmark.dir
+ std_vs_comet_full_combinations.dir
+ stdVsCometFullCombinations_benchmark.dir
+
+./cmake-build-release/benchmarks/CMakeFiles/blockCombinations_benchmark.dir:
+ blockCombinations_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/blockCombinationsHeavy_benchmark.dir:
+ blockCombinationsHeavy_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/blockCombinationsLight_benchmark.dir:
+ blockCombinationsLight_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/combinationsFull_benchmark.dir:
+ combinationsFull_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/combinationsHeavyHardOperation_benchmark.dir:
+ combinationsHeavyHardOperation_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/combinationsLightweightHardOperation_benchmark.dir:
+ combinationsLightweightHardOperation_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/combinationsStrictlyUpper_benchmark.dir:
+ combinationsStrictlyUpper_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/combinationsStrictlyUpperHeavyHardOperation_benchmark.dir:
+ combinationsStrictlyUpperHeavyHardOperation_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/combinationsStrictlyUpperLightweihgtHardOperation_benchmark.dir:
+ combinationsStrictlyUpperLightweihgtHardOperation_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/combinationsWindowedStrictlyUpper_benchmark.dir:
+ combinationsWindowedStrictlyUpper_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/combinationsWindowedStrictlyUpperHeavy_benchmark.dir:
+ combinationsWindowedStrictlyUpperHeavy_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/combinationsWindowedStrictlyUpperLight_benchmark.dir:
+ combinationsWindowedStrictlyUpperLight_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/discreture_vs_comet.dir:
+ discreture_vs_comet.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/discreture_vs_comet_full_combinations.dir:
+ discreture_vs_comet_full_combinations.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/discreture_vs_comet_strictly_upper.dir:
+ discreture_vs_comet_strictly_upper.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/discretureVsCometFullCombinations_benchmark.dir:
+ discretureVsCometFullCombinations_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/discretureVsCometStrictlyUpper_benchmark.dir:
+ discretureVsCometStrictlyUpper_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/groupedCombinations_benchmark.dir:
+ groupedCombinations_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/groupedCombinationsHeavy_benchmark.dir:
+ groupedCombinationsHeavy_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/groupedCombinationsLight_benchmark.dir:
+ groupedCombinationsLight_benchmark.cpp.o
+
+./cmake-build-release/benchmarks/CMakeFiles/std_vs_comet_full_combinations.dir:
+
+./cmake-build-release/benchmarks/CMakeFiles/stdVsCometFullCombinations_benchmark.dir:
+
+./cmake-build-release/bin:
+
+./cmake-build-release/CMakeFiles:
+ 3.30.5
+ clion-environment.txt
+ clion-Release-log.txt
+ cmake.check_cache
+ CMakeConfigureLog.yaml
+ CMakeTmp
+ fc-stamp
+ fc-tmp
+ pkgRedirects
+󰝴 rules.ninja
+ TargetDirectories.txt
+
+./cmake-build-release/CMakeFiles/3.30.5:
+ CMakeCCompiler.cmake
+ CMakeCXXCompiler.cmake
+ CMakeDetermineCompilerABI_C.bin
+ CMakeDetermineCompilerABI_CXX.bin
+ CMakeSystem.cmake
+ CompilerIdC
+ CompilerIdCXX
+
+./cmake-build-release/CMakeFiles/3.30.5/CompilerIdC:
+ CMakeCCompilerId.c
+ CMakeCCompilerId.o
+ tmp
+
+./cmake-build-release/CMakeFiles/3.30.5/CompilerIdC/tmp:
+
+./cmake-build-release/CMakeFiles/3.30.5/CompilerIdCXX:
+ CMakeCXXCompilerId.cpp
+ CMakeCXXCompilerId.o
+ tmp
+
+./cmake-build-release/CMakeFiles/3.30.5/CompilerIdCXX/tmp:
+
+./cmake-build-release/CMakeFiles/CMakeTmp:
+
+./cmake-build-release/CMakeFiles/fc-stamp:
+ googlebenchmark
+ googletest
+
+./cmake-build-release/CMakeFiles/fc-stamp/googlebenchmark:
+ download.stamp
+ googlebenchmark-gitclone-lastrun.txt
+ googlebenchmark-gitinfo.txt
+ googlebenchmark-patch-info.txt
+ googlebenchmark-update-info.txt
+ patch.stamp
+ update.stamp
+
+./cmake-build-release/CMakeFiles/fc-stamp/googletest:
+ download.stamp
+ googletest-gitclone-lastrun.txt
+ googletest-gitinfo.txt
+ googletest-patch-info.txt
+ googletest-update-info.txt
+ patch.stamp
+ update.stamp
+
+./cmake-build-release/CMakeFiles/fc-tmp:
+ googlebenchmark
+ googletest
+
+./cmake-build-release/CMakeFiles/fc-tmp/googlebenchmark:
+ download.cmake
+ googlebenchmark-gitclone.cmake
+ googlebenchmark-gitupdate.cmake
+ patch.cmake
+ update.cmake
+
+./cmake-build-release/CMakeFiles/fc-tmp/googletest:
+ download.cmake
+ googletest-gitclone.cmake
+ googletest-gitupdate.cmake
+ patch.cmake
+ update.cmake
+
+./cmake-build-release/CMakeFiles/pkgRedirects:
+
+./cmake-build-release/dependencies:
+ cmake_install.cmake
+ CMakeFiles
+ gbenchmark
+ gtest
+
+./cmake-build-release/dependencies/CMakeFiles:
+
+./cmake-build-release/dependencies/gbenchmark:
+ cmake_install.cmake
+ CMakeFiles
+
+./cmake-build-release/dependencies/gbenchmark/CMakeFiles:
+
+./cmake-build-release/dependencies/gtest:
+ cmake_install.cmake
+ CMakeFiles
+
+./cmake-build-release/dependencies/gtest/CMakeFiles:
+
+./cmake-build-release/examples:
+󰡯 blockCombinations
+ cmake_install.cmake
+ CMakeFiles
+󰡯 combinations
+ CTestTestfile.cmake
+󰡯 groupedCombinations
+
+./cmake-build-release/examples/CMakeFiles:
+ blockCombinations.dir
+ combinations.dir
+ groupedCombinations.dir
+
+./cmake-build-release/examples/CMakeFiles/blockCombinations.dir:
+ blockCombinations.cpp.o
+
+./cmake-build-release/examples/CMakeFiles/combinations.dir:
+ combinations.cpp.o
+
+./cmake-build-release/examples/CMakeFiles/groupedCombinations.dir:
+ groupedCombinations.cpp.o
+
+./cmake-build-release/lib:
+ cmake_install.cmake
+ CMakeFiles
+ libgmock.a
+ libgmock_main.a
+ libgtest.a
+ libgtest_main.a
+
+./cmake-build-release/lib/CMakeFiles:
+
+./cmake-build-release/Testing:
+ Temporary
+
+./cmake-build-release/Testing/Temporary:
+ CTestCostData.txt
+ LastTest.log
+
+./cmake-build-release/tests:
+ cmake_install.cmake
+ CMakeFiles
+󰡯 COMET_test
+ COMET_test[1]_include.cmake
+ COMET_test[1]_tests.cmake
+ CTestTestfile.cmake
+
+./cmake-build-release/tests/CMakeFiles:
+ COMET_test.dir
+
+./cmake-build-release/tests/CMakeFiles/COMET_test.dir:
+ addOneFull_test.cpp.o
+ addOneSameTypeFull_test.cpp.o
+ addOneSameTypeStrictlyUpper_test.cpp.o
+ addOneStrictlyUpper_test.cpp.o
+ blockFullCombinations_test.cpp.o
+ blockSameKind_test.cpp.o
+ blockStricktlyUpper_test.cpp.o
+ bucketSortHelpers_test.cpp.o
+ bucketSortView_test.cpp.o
+ findIndex_test.cpp.o
+ getBucket_test.cpp.o
+ groupedCombination_test.cpp.o
+
+./dependencies:
+ CMakeLists.txt
+ gbenchmark
+ gtest
+
+./dependencies/gbenchmark:
+ CMakeLists.txt
+
+./dependencies/gtest:
+ CMakeLists.txt
+
+./examples:
+ blockCombinations.cpp
+ CMakeLists.txt
+ combinations.cpp
+ groupedCombinations.cpp
+
+./lib:
+ BucketPolicy.h
+ BucketSortHelpers.h
+ BucketSortView.h
+ CMakeLists.txt
+ Combinations.h
+ Helpers.h
+ Producers.h
+ SpanView.h
+
+./scripts:
+ apply_clang_format.sh
+ check_clang_format.sh
+ clang_format_utils.sh
+
+./tests:
+ addOneFull_test.cpp
+ addOneSameTypeFull_test.cpp
+ addOneSameTypeStrictlyUpper_test.cpp
+ addOneStrictlyUpper_test.cpp
+ blockFullCombinations_test.cpp
+ blockSameKind_test.cpp
+ blockStricktlyUpper_test.cpp
+ bucketSortHelpers_test.cpp
+ bucketSortView_test.cpp
+ CMakeLists.txt
+ findIndex_test.cpp
+ getBucket_test.cpp
+ groupedCombination_test.cpp
