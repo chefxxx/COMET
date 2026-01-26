@@ -1,5 +1,6 @@
 message(STATUS "Loading the benchmarks targets...")
 
+find_package(Boost)
 file(GLOB BENCHMARK_SOURCES "*benchmark.cpp")
 
 foreach(bench_source ${BENCHMARK_SOURCES})
@@ -8,6 +9,12 @@ foreach(bench_source ${BENCHMARK_SOURCES})
 
     if (${TARGET_NAME} STREQUAL "stdVsCometFullCombinations_benchmark" AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
         message("The std::ranges::views::cartesian_product is not supported on the AppleClang!")
+        message("Skipping the benchmark build...")
+        continue()
+    endif ()
+
+    if (${TARGET_NAME} STREQUAL "discretureVsCometFullCombinations_benchmark" OR ${TARGET_NAME} STREQUAL "discretureVsCometStrictlyUpper_benchmark" AND NOT Boost_FOUND)
+        message("The Boost not found, it is required to run the discreture benchmarks!")
         message("Skipping the benchmark build...")
         continue()
     endif ()
@@ -24,12 +31,3 @@ foreach(bench_source ${BENCHMARK_SOURCES})
             ${CMAKE_SOURCE_DIR}/lib
     )
 endforeach()
-
-find_package(Boost)
-
-if(Boost_FOUND)
-    target_include_directories(discretureVsCometFullCombinations_benchmark PRIVATE ${Boost_INCLUDE_DIRS})
-    target_include_directories(discretureVsCometStrictlyUpper_benchmark PRIVATE ${Boost_INCLUDE_DIRS})
-else()
-    message("The Boost not found, it is required to run the discreture benchmarks!")
-endif()
