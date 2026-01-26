@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include "Combinations.h"
-#include "Producers.h"
+#include "include/Combinations.h"
+#include "include/Producers.h"
 
 TEST(AddOneStrictlyUpper, twoVectorsSameSize)
 {

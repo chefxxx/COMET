@@ -2,9 +2,9 @@
 // Created by mshamrai on 1/3/26.
 //
 
-#include "BucketPolicy.h"
-#include "Combinations.h"
-#include "Producers.h"
+#include "include/BucketPolicy.h"
+#include "include/Combinations.h"
+#include "include/Producers.h"
 #include "gtest/gtest.h"
 
 struct GroupingElement {

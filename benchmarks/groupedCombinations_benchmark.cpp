@@ -4,9 +4,9 @@
 #include <benchmark/benchmark.h>
 #include <vector>
 
-#include "BucketPolicy.h"
-#include "Combinations.h"
-#include "Producers.h"
+#include "include/BucketPolicy.h"
+#include "include/Combinations.h"
+#include "include/Producers.h"
 
 #include "HeavyStructures.h"
 

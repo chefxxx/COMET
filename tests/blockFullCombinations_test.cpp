@@ -2,12 +2,12 @@
 // Created by Mateusz Mikiciuk on 17/09/2025.
 //
 
-#include <Combinations.h>
+#include <include/Combinations.h>
 #include <gtest/gtest.h>
 #include <numeric>
 
-#include "BucketPolicy.h"
-#include "Producers.h"
+#include "include/BucketPolicy.h"
+#include "include/Producers.h"
 
 class BlockFullCombinationsTest : public ::testing::Test
 {

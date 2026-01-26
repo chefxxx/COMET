@@ -7,8 +7,8 @@
 #include <tuple>
 #include <vector>
 
-#include "Combinations.h"
-#include "Producers.h"
+#include "include/Combinations.h"
+#include "include/Producers.h"
 
 class SameTypeFullCombinationsTest : public ::testing::Test
 {

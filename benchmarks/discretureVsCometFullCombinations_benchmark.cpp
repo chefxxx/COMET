@@ -3,9 +3,9 @@
 #include <vector>
 
 // Our Library Headers
-#include "Combinations.h"
+#include "include/Combinations.h"
 #include "HeavyStructures.h"
-#include "Producers.h"
+#include "include/Producers.h"
 
 // Discreture Header
 #include <../discreture/include/discreture.hpp>

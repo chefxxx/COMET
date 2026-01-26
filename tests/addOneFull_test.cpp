@@ -5,9 +5,9 @@
 #include <gtest/gtest.h>
 #include <iomanip>
 
-#include "Combinations.h"
-#include "Producers.h"
-#include "SpanView.h"
+#include "include/Combinations.h"
+#include "include/Producers.h"
+#include "include/SpanView.h"
 
 TEST(AddOneFullTest, twoVectorsSameSize)
 {

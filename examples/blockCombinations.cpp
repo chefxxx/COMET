@@ -5,9 +5,9 @@
 #include <iostream>
 #include <vector>
 
-#include "Combinations.h"
-#include "BucketPolicy.h"
-#include "Producers.h"
+#include "include/Combinations.h"
+#include "include/BucketPolicy.h"
+#include "include/Producers.h"
 
 struct Car
 {

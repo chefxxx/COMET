@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "BucketPolicy.h"
+#include "include/BucketPolicy.h"
 
 TEST(BinarySearchTest, oneElementVector_indexOne)
 {

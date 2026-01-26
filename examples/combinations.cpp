@@ -6,8 +6,8 @@
 #include <deque>
 #include <vector>
 
-#include "Combinations.h"
-#include "Producers.h"
+#include "include/Combinations.h"
+#include "include/Producers.h"
 
 int main() {
     // containers that satisfy random access iterator concept

@@ -5,8 +5,8 @@
 #include <benchmark/benchmark.h>
 #include <vector>
 
-#include "Combinations.h"
-#include "Producers.h"
+#include "include/Combinations.h"
+#include "include/Producers.h"
 
 #include "HeavyStructures.h"
 

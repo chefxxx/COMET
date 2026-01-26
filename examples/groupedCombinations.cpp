@@ -5,9 +5,9 @@
 #include <random>
 #include <iostream>
 
-#include "Producers.h"
-#include "Combinations.h"
-#include "BucketPolicy.h"
+#include "include/Producers.h"
+#include "include/Combinations.h"
+#include "include/BucketPolicy.h"
 
 auto generateData(const int N)
 {
