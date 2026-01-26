@@ -1,4 +1,4 @@
-message("Loading examples...")
+message("Loading the examples...")
 
 # ------------------------------------------------------------------------------ #
 #                            Gather source files                                 #
