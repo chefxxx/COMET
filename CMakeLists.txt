@@ -19,7 +19,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #                                  Load dirs                                     #
 # ------------------------------------------------------------------------------ #
 
-add_subdirectory(lib)
+add_subdirectory(lib/include)
 add_subdirectory(dependencies)
 
 # ------------------------------------------------------------------------------ #
