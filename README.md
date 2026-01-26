@@ -131,7 +131,7 @@ int main() {
 
 ## 🛠️ Building Tests and Benchmarks
 
-Before the build run the following command to fetch the *discreture* library, without running it, the whole solution does not build.
+Before the build run the following command to fetch the *discreture* library, without running it, the whole solution does not build. Alternatively you can comment out the ```add_subdirectory(benchmarks)``` in the top level CMakeLists.txt.
 
 ```bash
 git submodule update --init --recursive
