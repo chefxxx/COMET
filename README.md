@@ -31,7 +31,7 @@ Originally developed to address specific requirements of the **ALICE experiment 
 Since COMET is header-only, integration is straightforward.
 
 ### Option 1: Copy the headers
-Simply copy the contents of the `lib/` directory into your project's include path.
+Simply copy the contents of the `lib/` directory into your project's include path. You can remove the CMakeLists.txt if needed.
 
 ### Option 2: CMake `add_subdirectory`
 If you include this repository as a submodule:
@@ -50,7 +50,7 @@ The library provides factory functions (e.g., `makeCombinations`, `makeBlockComb
 **👉 Comprehensive usage examples can be found in the [`examples/`](examples/) directory.**
 
 ### 1. Basic Combinations
-Generate simple pairs or n-tuples.
+Generate simple pairs, triples or n-tuples.
 
 ```cpp
 #include "comet.h"
