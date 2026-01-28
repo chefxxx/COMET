@@ -56,14 +56,18 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             $<$<CONFIG:Debug>: -fsanitize=undefined -fsanitize=address>
     )
 else ()
-    message(FATAL_ERROR "Compiler ${BUILD_TYPE_UPPER} not supported!")
+    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported!")
 endif ()
 
 # ------------------------------------------------------------------------------ #
 #                                   Load tests                                   #
 # ------------------------------------------------------------------------------ #
 
-enable_testing()
-add_subdirectory(examples)
-add_subdirectory(tests)
-add_subdirectory(benchmarks)
+option(BUILD_TESTS "Build tests, benchmarks, and examples" OFF)
+
+if (BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(examples)
+    add_subdirectory(tests)
+    add_subdirectory(benchmarks)
+endif()
