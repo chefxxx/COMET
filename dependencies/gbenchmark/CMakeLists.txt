@@ -2,19 +2,21 @@
 #                               Add google benchmark                             #
 # ------------------------------------------------------------------------------ #
 
-message(STATUS "Adding gbenchmark...")
+if (COMET_BUILD_BENCHMARKS)
+    message(STATUS "Adding gbenchmark...")
 
-include(FetchContent)
+    include(FetchContent)
 
-set(BENCHMARK_ENABLE_TESTING OFF)
-set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
-set(BENCHMARK_ENABLE_INSTALL OFF)
+    set(BENCHMARK_ENABLE_TESTING OFF)
+    set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+    set(BENCHMARK_ENABLE_INSTALL OFF)
 
-FetchContent_Declare(
-        googlebenchmark
-        GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG main
-        GIT_PROGRESS TRUE
-)
+    FetchContent_Declare(
+            googlebenchmark
+            GIT_REPOSITORY https://github.com/google/benchmark.git
+            GIT_TAG main
+            GIT_PROGRESS TRUE
+    )
 
-FetchContent_MakeAvailable(googlebenchmark)
+    FetchContent_MakeAvailable(googlebenchmark)
+endif ()

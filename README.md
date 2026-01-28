@@ -138,11 +138,11 @@ If you want to clear previous build:
 rm -rf build 
 ```
 
-Then to build the project:
+Then to build the project's tests and benchmarks:
 
 ```bash
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DCOMET_BUILD_TESTS=ON ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCOMET_BUILD_TESTS=ON -DCOMET_BUILD_BENCHMARKS=ON ..
 cmake --build .
 ```
 

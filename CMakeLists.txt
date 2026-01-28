@@ -63,11 +63,18 @@ endif ()
 #                                   Load tests                                   #
 # ------------------------------------------------------------------------------ #
 
-option(COMET_BUILD_TESTS "Build tests, benchmarks, and examples" OFF)
+option(COMET_BUILD_TESTS "Build tests" OFF)
+option(COMET_BUILD_BENCHMARKS "Build benchmarks" OFF)
+
+# examples dir
+add_subdirectory(examples)
 
 if (COMET_BUILD_TESTS)
     enable_testing()
-    add_subdirectory(examples)
     add_subdirectory(tests)
-    add_subdirectory(benchmarks)
 endif()
+
+if (COMET_BUILD_BENCHMARKS)
+    # benchmarks
+    add_subdirectory(benchmarks)
+endif ()

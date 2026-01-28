@@ -2,7 +2,7 @@
 #                               Add discreture                                   #
 # ------------------------------------------------------------------------------ #
 
-if (COMET_BUILD_TESTS)
+if (COMET_BUILD_BENCHMARKS)
     message(STATUS "Adding discreture...")
 
     include(FetchContent)
