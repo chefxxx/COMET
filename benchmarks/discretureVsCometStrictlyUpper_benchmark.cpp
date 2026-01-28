@@ -8,7 +8,7 @@
 #include "include/Producers.h"
 
 // Discreture Header
-#include <../discreture/include/discreture.hpp>
+#include <discreture.hpp>
 
 class StrictlyUpperComparisonFixture : public benchmark::Fixture
 {

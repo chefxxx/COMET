@@ -7,6 +7,7 @@ set(LIB_NAME ${PROJECT_NAME}_lib)
 set(TEST_NAME ${PROJECT_NAME}_test)
 
 cmake_minimum_required(VERSION 3.30)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 project(${PROJECT_NAME} C CXX)
 
 set(PROJECT_VERSION "1.0")
@@ -25,7 +26,6 @@ add_subdirectory(dependencies)
 # ------------------------------------------------------------------------------ #
 #                               Compile options                                  #
 # ------------------------------------------------------------------------------ #
-
 
 # Set build type to Release by default:
 if (NOT CMAKE_BUILD_TYPE)
@@ -63,9 +63,9 @@ endif ()
 #                                   Load tests                                   #
 # ------------------------------------------------------------------------------ #
 
-option(BUILD_TESTS "Build tests, benchmarks, and examples" OFF)
+option(COMET_BUILD_TESTS "Build tests, benchmarks, and examples" OFF)
 
-if (BUILD_TESTS)
+if (COMET_BUILD_TESTS)
     enable_testing()
     add_subdirectory(examples)
     add_subdirectory(tests)
