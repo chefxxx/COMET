@@ -152,7 +152,7 @@ To run the tests paste this command:
 ./build/tests/COMET_test
 ```
 
-To run the benchmarks paste one of the followings commands - each for different kind of benchmark:
+To run the benchmark(s) run command - each for different kind of benchmark:
 
 ```bash
 ./build/benchmarks/combinationsFull_benchmark
