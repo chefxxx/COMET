@@ -31,7 +31,7 @@ Originally developed to address specific requirements of the **ALICE experiment 
 Since COMET is header-only, integration is straightforward.
 
 ### Option 1: Copy the headers
-Simply copy the contents of the `lib/` directory into your project's include path.
+Simply copy the contents of the `lib/` directory into your project's include path. You can remove the CMakeLists.txt if needed.
 
 ### Option 2: CMake `add_subdirectory`
 If you include this repository as a submodule:
@@ -50,7 +50,7 @@ The library provides factory functions (e.g., `makeCombinations`, `makeBlockComb
 **👉 Comprehensive usage examples can be found in the [`examples/`](examples/) directory.**
 
 ### 1. Basic Combinations
-Generate simple pairs or n-tuples.
+Generate simple pairs, triples or n-tuples.
 
 ```cpp
 #include "comet.h"
@@ -131,33 +131,43 @@ int main() {
 
 ## 🛠️ Building Tests and Benchmarks
 
-Before the build run the following command to fetch the *discreture* library, without running it, the whole solution does not build. Alternatively you can comment out the ```add_subdirectory(benchmarks)``` in the top level CMakeLists.txt.
+In order to build the tests and benchmarks you have to run the following commands.
+If you want to clear previous build:
 
 ```bash
-git submodule update --init --recursive
+rm -rf build 
 ```
 
-Then you can build directly from the command line using commands below.
+Then to build the project's tests and benchmarks:
 
 ```bash
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCOMET_BUILD_TESTS=ON -DCOMET_BUILD_BENCHMARKS=ON ..
 cmake --build .
 ```
 
-To run the tests paste this command. 
+To run the tests paste this command: 
 
 ```bash
-./tests/COMET_test
+./build/tests/COMET_test
 ```
 
-To run the benchmarks paste one of the followings commands - each for different kind of benchmark.
+To run the benchmark(s) run command - each for different kind of benchmark:
 
 ```bash
-./benchmarks/combinationsFull_benchmark
-./benchmarks/blockCombinations_benchmark
-./benchmarks/groupedCombinations_benchmark
+./build/benchmarks/combinationsFull_benchmark
 ```
+
+There are several benchmarks that can be run:
+
+*   ```blockCombinations_benchmark```
+*   ```combinationsFull_benchmark```
+*   ```combinationsStrictlyUpper_benchmark```
+*   ```combinationsWindowedStrictlyUpper_benchmark```
+*   ```discretureVsCometFullCombinations_benchmark```
+*   ```discretureVsCometStrictlyUpper_benchmark```
+*   ```groupedCombinations_benchmark```
+*   ```stdVsCometFullCombinations_benchmark```
 
 ## 📊 Performance
 

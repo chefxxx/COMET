@@ -3,7 +3,9 @@ message(STATUS "Loading the benchmarks targets...")
 find_package(Boost)
 if (Boost_FOUND)
     message("Boost dependency found.")
-endif()
+else()
+    message("Boost must be installed for the discreture's benchmarks!")
+endif ()
 
 file(GLOB BENCHMARK_SOURCES "*benchmark.cpp")
 
@@ -37,7 +39,7 @@ foreach(bench_source ${BENCHMARK_SOURCES})
     )
 
     if (IS_DISCRETURE_BENCH)
-        target_link_libraries(${TARGET_NAME} PRIVATE Boost::boost)
+        target_link_libraries(${TARGET_NAME} PRIVATE discreture Boost::boost)
     endif ()
 
     target_include_directories(${TARGET_NAME} PRIVATE

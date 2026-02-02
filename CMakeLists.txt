@@ -7,6 +7,7 @@ set(LIB_NAME ${PROJECT_NAME}_lib)
 set(TEST_NAME ${PROJECT_NAME}_test)
 
 cmake_minimum_required(VERSION 3.30)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 project(${PROJECT_NAME} C CXX)
 
 set(PROJECT_VERSION "1.0")
@@ -19,13 +20,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #                                  Load dirs                                     #
 # ------------------------------------------------------------------------------ #
 
-add_subdirectory(lib/include)
+add_subdirectory(lib)
 add_subdirectory(dependencies)
 
 # ------------------------------------------------------------------------------ #
 #                               Compile options                                  #
 # ------------------------------------------------------------------------------ #
-
 
 # Set build type to Release by default:
 if (NOT CMAKE_BUILD_TYPE)
@@ -56,14 +56,25 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             $<$<CONFIG:Debug>: -fsanitize=undefined -fsanitize=address>
     )
 else ()
-    message(FATAL_ERROR "Compiler ${BUILD_TYPE_UPPER} not supported!")
+    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported!")
 endif ()
 
 # ------------------------------------------------------------------------------ #
 #                                   Load tests                                   #
 # ------------------------------------------------------------------------------ #
 
-enable_testing()
+option(COMET_BUILD_TESTS "Build tests" OFF)
+option(COMET_BUILD_BENCHMARKS "Build benchmarks" OFF)
+
+# examples dir
 add_subdirectory(examples)
-add_subdirectory(tests)
-add_subdirectory(benchmarks)
+
+if (COMET_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
+if (COMET_BUILD_BENCHMARKS)
+    # benchmarks
+    add_subdirectory(benchmarks)
+endif ()
